@@ -4,7 +4,7 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 const SigninButton = () => {
   const { data: session } = useSession();
-
+  // console.log(JSON.stringify(session))
   if (session && session.user) {
     return (
       <div className="flex gap-4 ml-auto items-center">

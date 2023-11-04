@@ -11,7 +11,7 @@ const Appbar = () => {
       <Link className="text-gray-800 hover:text-sky-400 transition-colors" href={"/profile"}>
         User Profile
       </Link>
-      <Link className="text-gray-800 hover:text-sky-400 transition-colors" href={"/admin"}>
+      <Link className="text-gray-800 hover:text-sky-400 transition-colors" href={"/dashboard"}>
         Admin Dashboard
       </Link>
 
