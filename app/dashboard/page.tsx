@@ -1,5 +1,7 @@
 
+'use client'
 import EmailList from "../ui/EmailList"
+import withAuth from "../auth/withAuth"
 const emailsData = {
     "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('shreeya.shevade%40processwisede.onmicrosoft.com')/messages",
     "value": [
@@ -567,7 +569,7 @@ const emailsData = {
     ],
     "@odata.nextLink": "https://graph.microsoft.com/v1.0/users/shreeya.shevade@processwisede.onmicrosoft.com/messages?%24top=10&%24skip=10"
 }
-export default function Page() {
+function Page() {
     console.log(`Total number of emails are ${emailsData.value.length}`);
     
     return (
@@ -576,3 +578,5 @@ export default function Page() {
       </div>
     )
 }
+
+export default withAuth(Page)

@@ -15,7 +15,7 @@ export async function middleware(req: NextRequest) {
   }
 
   // Paths that don't require authentication
-  const publicPaths = ['/page']; // Assuming '/page' is where your sign-in page is
+  const publicPaths = ['/']; // Assuming '/page' is where your sign-in page is
 
   // If the user is authenticated, or the page is in the list of public paths, continue.
   if (session || publicPaths.includes(req.nextUrl.pathname)) {
@@ -26,10 +26,10 @@ export async function middleware(req: NextRequest) {
   // Redirect them to the sign-in page if they are not authenticated and trying to access a protected route
   console.log('Redirecting to sign-in page');
   const url = req.nextUrl.clone();
-  url.pathname = '/page'; // Set the pathname to your sign-in route
+  url.pathname = '/'; // Set the pathname to your sign-in route
   return NextResponse.redirect(url);
 }
 
 export const config = {
-  matcher: '/((?!page).*)', // This will apply the middleware to all routes except '/page'
+  matcher: '/', // This will apply the middleware to all routes except '/page'
 };
