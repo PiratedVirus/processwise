@@ -19,7 +19,7 @@ const EmailList = ({ emails }) => {
     subject: email.subject,
     bodyPreview: email.bodyPreview,
     receivedDateTime: email.receivedDateTime,
-    sender: email.sender.emailAddress.name,
+    // sender: email.sender.emailAddress.name,
   }));
 
 

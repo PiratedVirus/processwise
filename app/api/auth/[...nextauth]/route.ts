@@ -3,7 +3,7 @@ import { AuthOptions } from "next-auth";
 import NextAuth from "next-auth/next";
 import AzureADProvider from "next-auth/providers/azure-ad";
 import { PrismaAdapter } from "@auth/prisma-adapter"
-export const authOptions: AuthOptions = {
+const authOptions: AuthOptions = {
   session: {
     strategy: "jwt"
   },
@@ -40,3 +40,4 @@ export const authOptions: AuthOptions = {
 
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST}
+
