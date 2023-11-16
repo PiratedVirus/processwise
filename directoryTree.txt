@@ -1,0 +1,119 @@
+.
+├── .DS_Store
+├── .env
+├── .gitignore
+├── .nvmrc
+├── .vscode
+│   ├── extensions.json
+│   ├── launch.json
+│   ├── settings.json
+│   └── tasks.json
+├── README.md
+├── app
+│   ├── api
+│   │   └── auth
+│   │       └── [...nextauth]
+│   │           └── route.ts
+│   ├── auth
+│   │   └── withAuth.js
+│   ├── dashboard
+│   │   ├── customers
+│   │   │   └── page.tsx
+│   │   ├── invoices
+│   │   │   └── page.tsx
+│   │   ├── layout.tsx
+│   │   └── page.tsx
+│   ├── layout.tsx
+│   ├── lib
+│   │   ├── Providers.tsx
+│   │   ├── data.ts
+│   │   ├── definitions.ts
+│   │   ├── placeholder-data.js
+│   │   ├── prisma.ts
+│   │   ├── types.d.ts
+│   │   └── utils.ts
+│   ├── page.tsx
+│   ├── profile
+│   │   └── page.tsx
+│   └── ui
+│       ├── Appbar.tsx
+│       ├── EmailList.jsx
+│       ├── SigninButton.tsx
+│       ├── acme-logo.tsx
+│       ├── button.tsx
+│       ├── customers
+│       │   └── table.tsx
+│       ├── dashboard
+│       │   ├── cards.tsx
+│       │   ├── latest-invoices.tsx
+│       │   ├── nav-links.tsx
+│       │   ├── revenue-chart.tsx
+│       │   └── sidenav.tsx
+│       ├── fonts.ts
+│       ├── global.css
+│       ├── invoices
+│       │   ├── breadcrumbs.tsx
+│       │   ├── buttons.tsx
+│       │   ├── create-form.tsx
+│       │   ├── edit-form.tsx
+│       │   ├── pagination.tsx
+│       │   ├── status.tsx
+│       │   └── table.tsx
+│       ├── login-form.tsx
+│       ├── search.tsx
+│       └── skeletons.tsx
+├── backend
+│   ├── .funcignore
+│   ├── .gitignore
+│   ├── configs
+│   │   └── msalConfig.js
+│   ├── fetchMails
+│   │   ├── function.json
+│   │   ├── index.js
+│   │   └── sample.dat
+│   ├── host.json
+│   ├── local.settings.json
+│   ├── package-lock.json
+│   └── package.json
+├── directoryTree.txt
+├── middleware.ts
+├── next-env.d.ts
+├── next.config.js
+├── package-lock.json
+├── package.json
+├── postcss.config.js
+├── prisma
+│   ├── dev.db
+│   ├── migrations
+│   │   ├── 20231103202247_init
+│   │   │   └── migration.sql
+│   │   ├── 20231103210601_init_2
+│   │   │   └── migration.sql
+│   │   ├── 20231103212411_init_3
+│   │   │   └── migration.sql
+│   │   └── migration_lock.toml
+│   └── schema.prisma
+├── public
+│   ├── customers
+│   │   ├── amy-burns.png
+│   │   ├── balazs-orban.png
+│   │   ├── delba-de-oliveira.png
+│   │   ├── emil-kowalski.png
+│   │   ├── evil-rabbit.png
+│   │   ├── guillermo-rauch.png
+│   │   ├── hector-simpson.png
+│   │   ├── jared-palmer.png
+│   │   ├── lee-robinson.png
+│   │   ├── michael-novotny.png
+│   │   ├── steph-dietz.png
+│   │   └── steven-tey.png
+│   ├── hero-desktop.png
+│   └── hero-mobile.png
+├── scripts
+│   └── seed.js
+├── src
+│   └── functions
+├── tailwind.config.ts
+└── tsconfig.json
+
+29 directories, 88 files

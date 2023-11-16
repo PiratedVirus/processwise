@@ -1,7 +1,9 @@
+'use client'
 import AcmeLogo from '@/app/ui/acme-logo';
 import {lusitana} from '@/app/ui/fonts';
 import Link from 'next/link';
 import Image from 'next/image';
+import Login from './ui/SigninButton';
 export default function Page() {
   return (
     <main className="flex min-h-screen flex-col p-6">
@@ -26,6 +28,7 @@ export default function Page() {
           >
             <span>Log in</span>
           </Link>
+          <Login/>
         </div>
         <div className="flex items-center justify-center p-6 md:w-3/5 md:px-28 md:py-12">
           {/* Add Hero Images Here */}
@@ -36,13 +39,13 @@ export default function Page() {
         className="hidden md:block"
         alt="Screenshots of the dashboard project showing desktop and mobile versions"
       />
-             <Image
+             {/* <Image
         src="/hero-mobile.png"
         width={560}
         height={620}
         className="hidden md:block"
         alt="Screenshots of the dashboard project showing desktop and mobile versions"
-      />
+      /> */}
         </div>
       </div>
     </main>
