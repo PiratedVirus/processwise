@@ -18,7 +18,7 @@ async function getAccessToken() {
     }
 }
 
-async function fetchOutlookEmails() {
+async function fetchOutlookEmails(userEmail) {
     try {
         const accessToken = await getAccessToken();
 
@@ -28,7 +28,8 @@ async function fetchOutlookEmails() {
             }
         };
 
-        const response = await axios.get('https://graph.microsoft.com/v1.0/users/shreeya.shevade@processwisede.onmicrosoft.com/messages', config);
+        const url = `https://graph.microsoft.com/v1.0/users/${userEmail}/messages`;
+        const response = await axios.get(url, config);
         return response.data;
     } catch (error) {
         console.error('Error fetching emails', error);
@@ -38,7 +39,15 @@ async function fetchOutlookEmails() {
 
 module.exports = async function (context, req) {
     try {
-        const emails = await fetchOutlookEmails();
+        const userEmail = req.body.userEmail; // Get userEmail from the request body with the key "userEmail"
+        if (!userEmail) {
+          context.res = {
+            status: 400,
+            body: "User email is required in the request body."
+          };
+          return;
+        }        
+        const emails = await fetchOutlookEmails(userEmail);
         context.res = {
             body: emails
         };

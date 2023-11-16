@@ -1,32 +1,39 @@
-
 'use client'
-// pages/emails.js
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import EmailList from "../ui/EmailList";
 import withAuth from "../auth/withAuth";
+import EmailInputComponent from '../components/EmailInputComponent';
 
 function Page() {
   const [emailsData, setEmailsData] = useState({ value: [] });
+  const [showEmailList, setShowEmailList] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('http://localhost:7071/api/fetchMails');
-        const data = await response.json();
-        setEmailsData(data);
-      } catch (error) {
-        console.error("Error fetching emails:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  console.log(`Total number of emails are ${emailsData.value.length}`);
+  const fetchData = async (email: string) => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('http://localhost:7071/api/fetchMails', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userEmail: email }), // Sending the email as part of the request body
+      });     
+      const data = await response.json();
+      setEmailsData(data);
+    } catch (error) {
+      console.error("Error fetching emails:", error);
+    } finally {
+      setIsLoading(false);
+      setShowEmailList(true);
+    }
+  };
 
   return (
     <div>
-      <EmailList emails={emailsData.value} />
+      <EmailInputComponent onSubmit={fetchData} isLoading={isLoading} />
+
+      {showEmailList && !isLoading && <EmailList emails={emailsData.value} />}
     </div>
   );
 }

@@ -9,7 +9,7 @@ export async function middleware(req: NextRequest) {
   const session = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
   if (session) {
-    console.log('User is authenticated');
+    // console.log('User is authenticated');
   } else {
     console.log('User is not authenticated');
   }
@@ -19,7 +19,7 @@ export async function middleware(req: NextRequest) {
 
   // If the user is authenticated, or the page is in the list of public paths, continue.
   if (session || publicPaths.includes(req.nextUrl.pathname)) {
-    console.log('Access allowed');
+    // console.log('Access allowed');
     return NextResponse.next();
   }
 
