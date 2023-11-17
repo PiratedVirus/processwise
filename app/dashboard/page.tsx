@@ -1,41 +1,33 @@
-'use client'
-import React, { useState } from 'react';
-import EmailList from "../ui/EmailList";
-import withAuth from "../auth/withAuth";
-import EmailInputComponent from '../components/EmailInputComponent';
+// ParentComponent.tsx
+import React from 'react';
+import { Button, Grid, GridItem } from '@chakra-ui/react';
+import Link from 'next/link';
 
-function Page() {
-  const [emailsData, setEmailsData] = useState({ value: [] });
-  const [showEmailList, setShowEmailList] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const fetchData = async (email: string) => {
-    setIsLoading(true);
-    try {
-      const response = await fetch('http://localhost:7071/api/fetchMails', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userEmail: email }), // Sending the email as part of the request body
-      });     
-      const data = await response.json();
-      setEmailsData(data);
-    } catch (error) {
-      console.error("Error fetching emails:", error);
-    } finally {
-      setIsLoading(false);
-      setShowEmailList(true);
-    }
-  };
-
+const Page: React.FC = () => {
   return (
-    <div>
-      <EmailInputComponent onSubmit={fetchData} isLoading={isLoading} />
-
-      {showEmailList && !isLoading && <EmailList emails={emailsData.value} />}
-    </div>
+    <Grid
+      templateColumns="repeat(12, 1fr)" // Create a 12 column grid
+      gap={4} // This sets up the gap between grid items
+      alignItems="center"
+      justifyContent="center"
+      height="100vh"
+    >
+      <GridItem colStart={2} colSpan={5}> 
+        <Link href="/dashboard/mailboxes" passHref>
+          <Button as="a" colorScheme="messenger" size="lg" width="full">
+            Configure Mailboxes
+          </Button>
+        </Link>
+      </GridItem>
+      <GridItem colStart={8} colSpan={5}>
+        <Link href="/dashboard/users" passHref>
+          <Button as="a" colorScheme="messenger" size="lg" width="full">
+            Manage Users
+          </Button>
+        </Link>
+      </GridItem>
+    </Grid>
   );
-}
+};
 
-export default withAuth(Page);
+export default Page;

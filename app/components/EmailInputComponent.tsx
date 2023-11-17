@@ -19,24 +19,29 @@ const EmailInputComponent: React.FC<EmailInputComponentProps> = ({ onSubmit, isL
   };
 
   return (
-    <div className="flex flex-col items-center">
-      <InputGroup>
-        <InputLeftElement pointerEvents="none">
-          <EmailIcon />
-        </InputLeftElement>
-        <Input ref={inputRef} placeholder="Enter your email" className="mt-2" />
-      </InputGroup>
-      <Button 
-        onClick={handleConnect} 
-        colorScheme="blue" 
-        mt={4} 
-        isLoading={isLoading}
-        isDisabled={isLoading}
-        className="mt-4" // Tailwind class for margin
-      >
-        Connect
-      </Button>
-    </div>
+      <div className="flex flex-col items-center">
+        <div className="flex justify-center items-center w-full">
+          <InputGroup size='lg' className="flex-grow-0">
+            <InputLeftElement pointerEvents="none">
+              <EmailIcon />
+            </InputLeftElement>
+            <Input ref={inputRef} placeholder="Enter your email"/>
+          </InputGroup>
+
+          <Button 
+            onClick={handleConnect} 
+            colorScheme="messenger" 
+            ml={4} // Margin left
+            isLoading={isLoading}
+            isDisabled={isLoading}
+            className="flex-grow-0" // Prevents the button from growing
+          >
+            Test
+          </Button>
+        </div>
+      </div>
+
+  
   );
 };
 

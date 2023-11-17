@@ -18,7 +18,7 @@ async function getAccessToken() {
     }
 }
 
-async function fetchOutlookEmails(userEmail) {
+async function fetchOutlookEmails(userEmail, numberOfMessages) {
     try {
         const accessToken = await getAccessToken();
 
@@ -28,7 +28,7 @@ async function fetchOutlookEmails(userEmail) {
             }
         };
 
-        const url = `https://graph.microsoft.com/v1.0/users/${userEmail}/messages`;
+        const url = `https://graph.microsoft.com/v1.0/users/${userEmail}/messages?$top=${numberOfMessages}`;
         const response = await axios.get(url, config);
         return response.data;
     } catch (error) {
@@ -39,7 +39,8 @@ async function fetchOutlookEmails(userEmail) {
 
 module.exports = async function (context, req) {
     try {
-        const userEmail = req.body.userEmail; // Get userEmail from the request body with the key "userEmail"
+        const userEmail = req.body.userEmail; 
+        const numberOfMessages = req.body.numberOfMessages
         if (!userEmail) {
           context.res = {
             status: 400,
@@ -47,7 +48,7 @@ module.exports = async function (context, req) {
           };
           return;
         }        
-        const emails = await fetchOutlookEmails(userEmail);
+        const emails = await fetchOutlookEmails(userEmail, numberOfMessages);
         context.res = {
             body: emails
         };
