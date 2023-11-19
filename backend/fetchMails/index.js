@@ -21,7 +21,6 @@ async function getAccessToken() {
 async function fetchOutlookEmails(userEmail, numberOfMessages) {
     try {
         const accessToken = await getAccessToken();
-
         const config = {
             headers: {
                 Authorization: `Bearer ${accessToken}`

@@ -2,9 +2,9 @@
 "use client";
 import React from 'react';
 import { AgGridReact } from 'ag-grid-react';
-import Card from '../components/Card';
+import Card from '../../components/CardComponent';
 import { Button } from '@chakra-ui/react';
-import ErrorAlertComponent from '../components/ErrorAlertComponent';
+import AlertComponent from '../../components/AlertComponent';
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 
@@ -48,10 +48,13 @@ const EmailList = ({ emails }) => {
         footer={<Button align="right" colorScheme='messenger'>Connect Mailbox</Button>}
       />
     ) : (
-      <ErrorAlertComponent 
-        mainHeader="Error! Unable to connect your mailbox."
-        subHeader="Please check your mail address once again."
-    />
+        <AlertComponent
+          mainHeader="Error! Unable to connect your mailbox."
+          subHeader="Please check your mail address once again."
+          status="error"
+          link="/dashboard/mailboxes" // Replace with your actual link
+          linkText="Return to Configuration" // Replace with your actual link text
+      />
     )
    
   );

@@ -3,6 +3,8 @@ import {
   UserGroupIcon,
   HomeIcon,
   DocumentDuplicateIcon,
+  PlusCircleIcon,
+  InboxStackIcon
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -14,9 +16,10 @@ const links = [
   {
     name: 'Configure Mailboxes',
     href: '/dashboard/mailboxes',
-    icon: DocumentDuplicateIcon,
+    icon: InboxStackIcon,
   },
   { name: 'Manage Users', href: '/dashboard/users', icon: UserGroupIcon },
+  { name: 'Register a Client', href: '/dashboard/register', icon: PlusCircleIcon },
 ];
 
 export default function NavLinks() {

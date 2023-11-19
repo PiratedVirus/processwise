@@ -6,9 +6,10 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
 
 model Account {
   id                       String  @id @default(cuid())
@@ -58,4 +59,12 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model ClientDetail {
+  clientId    String @unique @id 
+  clientName  String @unique
+  clientEmail String  @unique 
+
+  @@map("client_details")
 }

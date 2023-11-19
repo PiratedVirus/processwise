@@ -1,10 +1,10 @@
 'use client'
 import React, { useState } from 'react';
-import EmailList from '@/components/EmailList';
 import withAuth from '@/app/auth/withAuth';
-import EmailInputComponent from '@/app/components/EmailInputComponent';
+import EmailInput from '@/app/dashboard/mailboxes/EmailInput';
+import EmailList from '@/app/dashboard/mailboxes/EmailList';
 
-function Page() {
+function Mailboxes() {
   const [emailsData, setEmailsData] = useState({ value: [] });
   const [showEmailList, setShowEmailList] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -32,11 +32,11 @@ function Page() {
 
   return (
     <div>
-      <EmailInputComponent onSubmit={fetchData} isLoading={isLoading} />
+      <EmailInput onSubmit={fetchData} isLoading={isLoading} />
 
       {showEmailList && !isLoading && <EmailList emails={emailsData.value} />}
     </div>
   );
 }
 
-export default withAuth(Page);
+export default withAuth(Mailboxes);
