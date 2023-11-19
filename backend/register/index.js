@@ -1,34 +1,39 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
-const uuidv4 = require('uuid').v4;
 
 module.exports = async function (context, req) {
     try {
-        const { clientName, clientEmail } = req.body;
+        const { modelName } = req.body;
+        const { userData: data } = req.body;
 
-        if (!clientName || !clientEmail) {
+        if (!modelName || !data) {
             context.res = {
                 status: 400,
-                body: "Please provide both client name and email."
+                body: "Please provide both modelName and data."
             };
             return;
         }
-        const newClientId = uuidv4(); 
-        const newClient = await prisma.ClientDetail.create({
-            data: {
-                clientId: newClientId,
-                clientName,
-                clientEmail
-            }
+
+        if (!prisma[modelName]) {
+            context.res = {
+                status: 400,
+                body: "Invalid model name."
+            };
+            return;
+        }
+
+        const newRecord = await prisma[modelName].create({
+            data: data
         });
+
         context.res = {
             status: 200,
-            body: newClient
+            body: newRecord
         };
     } catch (error) {
         context.res = {
             status: 500,
-            body: "Error registering client: " + error.message
+            body: "Error creating record: " + error.message
         };
     }
 };

@@ -5,6 +5,7 @@ import { SmallAddIcon, EmailIcon } from '@chakra-ui/icons';
 import UserInput from '@/app/components/UserInputComponent';
 import SubmitButton from '@/app/components/SubmitButtonComponent';
 import AlertComponent from '@/app/components/AlertComponent';
+import { v4 as uuidv4 } from 'uuid';
 
 const RegisterForm: React.FC = () => {
   const [formData, setFormData] = useState({ clientName: '', clientEmail: '' });
@@ -21,10 +22,17 @@ const RegisterForm: React.FC = () => {
     setResponse(null);
 
     try {
+      const clientId = uuidv4();
+      const modelName = 'ClientDetail';
+      const userData = {
+        clientId: clientId,
+        clientName: formData.clientName,
+        clientEmail: formData.clientEmail,
+      };
       const response = await fetch('http://localhost:7071/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({ modelName, userData })
       });
 
       if (!response.ok) {
@@ -48,8 +56,8 @@ const RegisterForm: React.FC = () => {
         mainHeader={response.status === 'success' ? 'Success!' : 'Error!'}
         subHeader={response.message}
         status={response.status}
-        link="/dashboard/register" // Replace with your actual link
-        linkText="Return to Registration" // Replace with your actual link text
+        link="/dashboard/register" 
+        linkText="Return to Registration"
       />
     );
   }
@@ -77,7 +85,7 @@ const RegisterForm: React.FC = () => {
           </>
         ))}
         <SubmitButton isLoading={submitting} buttonText="Register" />
-        {/* {error && <div className="error-message">{error}</div>} */}
+        
       </form>
     </Box>
   );

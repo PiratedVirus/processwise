@@ -31,6 +31,6 @@
     ".next/types/**/*.ts",
     "app/lib/placeholder-data.js",
     "scripts/seed.js"
-, "app/ui/EmailList.jsx"  ],
+, "app/ui/EmailList.tsx"  ],
   "exclude": ["node_modules"]
 }

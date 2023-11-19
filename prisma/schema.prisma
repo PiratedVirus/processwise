@@ -68,3 +68,22 @@ model ClientDetail {
 
   @@map("client_details")
 }
+
+enum TemplateType {
+  Invocie
+  PURCHASE_ORDER
+  ORDER_CONFIRMATION
+  SHIPPING_DOCUMENT
+  CUSTOM_DOCUMENTS
+}
+
+model ClientMailboxes {
+  mailBoxId    String @unique           
+  clientId     String            
+  mailBoxAddress String       
+  mailBoxTemplate TemplateType  
+  @@id([mailBoxId, clientId])
+  @@map("client_mailboxes")
+}
+
+
