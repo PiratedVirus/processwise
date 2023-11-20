@@ -1,6 +1,22 @@
-## Next.js App Router Course - Final
+<h1 align="center">ProcessWise</h1>
 
-This is the final template for the Next.js App Router Course. It contains the final code for the dashboard application.
 
-For more information, see the [course curriculum](https://nextjs.org/learn) on the Next.js Website.
-# next-js-CRUD
+
+<p align="center">
+  Streamline document processing with OCR technology at an enterprise level. Powered by Next.js, Azure Functions, and TypeScript.
+</p>
+
+<!-- Add Badges here ![Build Status](https://travis-ci.com/yourusername/your-repo.svg?branch=main)
+ -->
+
+---
+
+## 🚀 Quick Start
+
+Get started with our enterprise document processing solution in minutes! Follow these simple steps:
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/PiratedVirus/processwise.git
+   cd your-repo
