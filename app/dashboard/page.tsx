@@ -1,41 +1,41 @@
-'use client'
-import React, { useState } from 'react';
-import EmailList from "../ui/EmailList";
-import withAuth from "../auth/withAuth";
-import EmailInputComponent from '../components/EmailInputComponent';
+import React from 'react';
+import { Button, Grid, GridItem } from '@chakra-ui/react';
+import Link from 'next/link';
 
-function Page() {
-  const [emailsData, setEmailsData] = useState({ value: [] });
-  const [showEmailList, setShowEmailList] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+const Page: React.FC = () => {
+  const buttons = [
+    { href: "/dashboard/mailboxes", text: "Configure Mailboxes" },
+    { href: "/dashboard/users", text: "Manage Users" },
+    { href: "/dashboard/register", text: "Register a Client" },
+  ];
 
-  const fetchData = async (email: string) => {
-    setIsLoading(true);
-    try {
-      const response = await fetch('http://localhost:7071/api/fetchMails', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userEmail: email }), // Sending the email as part of the request body
-      });     
-      const data = await response.json();
-      setEmailsData(data);
-    } catch (error) {
-      console.error("Error fetching emails:", error);
-    } finally {
-      setIsLoading(false);
-      setShowEmailList(true);
-    }
+  const renderButtons = () => {
+    return buttons.map((button, index) => {
+      return (
+        <GridItem key={index} colStart={(index * 4) + 1} colSpan={4}>
+          <Link href={button.href} passHref>
+            <Button as="a" colorScheme="messenger" size="lg" width="full">
+              {button.text}
+            </Button>
+          </Link>
+        </GridItem>
+      );
+    });
   };
+  
 
   return (
-    <div>
-      <EmailInputComponent onSubmit={fetchData} isLoading={isLoading} />
-
-      {showEmailList && !isLoading && <EmailList emails={emailsData.value} />}
-    </div>
+    <Grid
+      templateColumns="repeat(12, 1fr)"
+      columnGap={4}
+      gap={2}
+      alignItems="center"
+      justifyContent="center"
+      height="100vh"
+    >
+      {renderButtons()}
+    </Grid>
   );
-}
+};
 
-export default withAuth(Page);
+export default Page;
