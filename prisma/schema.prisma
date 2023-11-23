@@ -86,4 +86,14 @@ model ClientMailboxes {
   @@map("client_mailboxes")
 }
 
-
+model UserDetails {
+  userId String @unique @id
+  clientId String
+  userName String
+  userEmail String @unique
+  userPassword String
+  userVerified Boolean
+  
+  @@map("user_details")
+  
+}

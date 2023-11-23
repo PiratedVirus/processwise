@@ -7,6 +7,7 @@ import Card from '../../components/CardComponent';
 import AlertComponent from '../../components/AlertComponent';
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
+import "@/app/lib/scss/CustomAGGridStyles.css";
 import SubmitButton from '@/app/components/SubmitButtonComponent';
 import { v4 as uuidv4 } from 'uuid';
 import { RootState } from '@/redux/reducers/store';

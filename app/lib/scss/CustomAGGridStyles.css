@@ -1,0 +1,82 @@
+/* CustomAGGridStyles.css */
+
+/* Adjust AG-Grid's colors, fonts, and other properties to match Chakra UI's design */
+.ag-theme-alpine {
+    /* Use Chakra UI's font and background colors */
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #EDF2F7;
+    color: #2D3748;
+    border-radius: 0.5rem; /* 8px rounded corners */
+    overflow: hidden; 
+  }
+  
+  /* Style the header to look like Chakra UI's table header */
+  .ag-theme-alpine .ag-header-cell {
+    background-color: #EDF2F7; /* Chakra UI light gray background */
+    color: #1A202C; /* Chakra UI text color */
+    font-weight: 600; /* Bold font for headers */
+    border-bottom: 2px solid #E2E8F0; /* Light border for separation */
+    padding: 12px 24px; /* Chakra UI typical padding */
+  }
+  
+  /* Style the cells to match Chakra UI's table cells */
+  .ag-theme-alpine .ag-cell {
+    border-bottom: 1px solid #E2E8F0; /* Light border for separation */
+    padding: 12px 24px; /* Chakra UI typical padding */
+  }
+  
+  /* Style the row hover effect */
+  .ag-theme-alpine .ag-row:hover {
+    background-color: #BEE3F8; /* Chakra UI hover color */
+  }
+  
+  /* ... Include additional custom styles for buttons, badges, etc. ... */
+  
+  /* Style for active badges */
+  .ag-theme-alpine .ag-cell-value .badge-active {
+    display: inline-block;
+    background-color: #38A169; /* Chakra UI green */
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .ag-theme-alpine .ag-header-cell, .ag-theme-alpine .ag-cell {
+    border-right: none;
+  }
+  
+  .ag-theme-alpine .ag-cell {
+    padding: 0.75rem; /* Adjust the padding as needed */
+  }
+  
+  
+  /* Style for inactive badges */
+  .ag-theme-alpine .ag-cell-value .badge-inactive {
+    display: inline-block;
+    background-color: #E53E3E; /* Chakra UI red */
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  
+  /* ... */
+  
+  /* Style the action buttons */
+  .ag-theme-alpine .ag-cell-value .edit-button,
+  .ag-theme-alpine .ag-cell-value .delete-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .ag-theme-alpine .ag-cell-value .edit-button:hover,
+  .ag-theme-alpine .ag-cell-value .delete-button:hover {
+    background-color: #CBD5E0; /* Chakra UI hover background color */
+  }
+  
+  /* ... */
+  
