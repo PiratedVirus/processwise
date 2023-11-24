@@ -1,17 +1,14 @@
 'use client'
 import React, { useMemo, useState, useEffect } from 'react';
-import {
-  Avatar, Badge, Box, Stack, Checkbox, InputGroup, InputLeftElement, HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Input, ButtonGroup, Button, Grid, Select
+import axios from 'axios';
+import { useTable, useSortBy, useFilters, usePagination } from 'react-table';
+import { 
+  Badge, Box, Stack, InputGroup, InputLeftElement, HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Input, ButtonGroup, Button, Grid, Select
 } from '@chakra-ui/react';
 import { FiEdit2, FiTrash2, FiSearch } from 'react-icons/fi';
 import { IoArrowDown, IoArrowUp } from 'react-icons/io5';
-import { useTable, useSortBy, useFilters, usePagination } from 'react-table';
-import axios from 'axios';
 import { Spinner } from '@chakra-ui/react';
-
-function fetchDataFromApi(modelName) {
-  return axios.post('http://localhost:7071/api/fetchData', { modelName: modelName });
-}
+import useFetchApi from '@/app/hooks/useFetchApi';
 
 
 const DefaultColumnFilter = ({
@@ -28,24 +25,21 @@ const DefaultColumnFilter = ({
 
 export const MemberTable = (props) => {
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { fetchApi, isLoading } = useFetchApi();
   const [globalFilter, setGlobalFilter] = useState('');
+  
   useEffect(() => {
-    fetchDataFromApi('UserDetails').then(response => {
-      setData(response.data);
-      setLoading(false);
-    }).catch(error => {
-      console.error('Error:', error);
-      setLoading(false);
-    });
-  }, []);
+    fetchApi('http://localhost:7071/api/fetchData', 'POST', { modelName: 'UserDetails' })
+      .then(setData)
+      .catch(error => console.error('Error:', error));
+  }, [fetchApi]);
 
 
   const columns = useMemo(
     () => [
       {
         Header: 'Name',
-        accessor: 'userName', // accessor is the "key" in the data
+        accessor: 'userName', 
         Filter: DefaultColumnFilter
       },
       {
@@ -121,7 +115,7 @@ export const MemberTable = (props) => {
     useSortBy,
     usePagination
   );
-  if (loading) {
+  if (isLoading) {
     return <Spinner size="xl" />;
   }
 

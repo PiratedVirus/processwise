@@ -11,6 +11,7 @@ interface SubmitButtonProps {
 const SubmitButton: React.FC<SubmitButtonProps> = ({ isLoading, isDisabled = false, buttonText, onClick }) => {
   return (
     <Button
+      mt={5}
       type="submit"
       colorScheme="messenger"
       isLoading={isLoading}

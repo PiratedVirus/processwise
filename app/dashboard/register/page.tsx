@@ -1,53 +1,27 @@
 'use client'
-import React, { useState, FormEvent } from 'react';
+import React, { useState } from 'react';
 import { Box } from '@chakra-ui/react';
 import { SmallAddIcon, EmailIcon } from '@chakra-ui/icons';
 import UserInput from '@/app/components/UserInputComponent';
 import SubmitButton from '@/app/components/SubmitButtonComponent';
 import AlertComponent from '@/app/components/AlertComponent';
-import { v4 as uuidv4 } from 'uuid';
+import usePostApi from '@/app/hooks/usePostApi'; // Adjust the import path as needed
 
 const RegisterForm: React.FC = () => {
   const [formData, setFormData] = useState({ clientName: '', clientEmail: '' });
-  const [submitting, setSubmitting] = useState<boolean>(false);
-  const [response, setResponse] = useState<{ status: 'success' | 'error'; message: string } | null>(null);
+  const { submitting, response, handleSubmit } = usePostApi();
 
-  const handleInputChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (field: keyof typeof formData) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [field]: e.target.value });
   };
 
-  const handleSubmit = async (event: FormEvent) => {
+  const handleFormSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    setSubmitting(true);
-    setResponse(null);
-
-    try {
-      const clientId = uuidv4();
-      const modelName = 'ClientDetail';
-      const userData = {
-        clientId: clientId,
-        clientName: formData.clientName,
-        clientEmail: formData.clientEmail,
-      };
-      const response = await fetch('http://localhost:7071/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ modelName, userData })
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log('Client registered:', data);
-      setResponse({ status: 'success', message: 'Client registered successfully!' });
-    } catch (error) {
-      console.error('Error registering client:', error);
-      setResponse({ status: 'error', message: 'Failed to register client. Please try again.' });
-    } finally {
-      setSubmitting(false);
-    }
+    const userData = {
+      clientName: formData.clientName,
+      clientEmail: formData.clientEmail,
+    };
+    await handleSubmit('ClientDetail', userData);
   };
 
   if (response) {
@@ -61,6 +35,7 @@ const RegisterForm: React.FC = () => {
       />
     );
   }
+
   const formFields = [
     { id: 'client-name', icon: <SmallAddIcon/>, label: 'Client Name', value: formData.clientName, onChange: handleInputChange('clientName') },
     { id: 'client-email',icon: <EmailIcon/>, label: 'Client Email Address', type: 'email', value: formData.clientEmail, onChange: handleInputChange('clientEmail') }
@@ -68,11 +43,10 @@ const RegisterForm: React.FC = () => {
 
   return (
     <Box className="p-6 mx-auto">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleFormSubmit}>
         {formFields.map(({ id, label, type, value, onChange, icon }) => (
-          <>
+          <React.Fragment key={id}>
             <UserInput
-              key={id}
               id={id}
               type={type}
               placeholder={`Enter ${label}`}
@@ -82,14 +56,12 @@ const RegisterForm: React.FC = () => {
               icon={icon}
             />
             <div className="mb-5"></div>
-          </>
+          </React.Fragment>
         ))}
         <SubmitButton isLoading={submitting} buttonText="Register" />
-        
       </form>
     </Box>
   );
 };
 
 export default RegisterForm;
-

@@ -1,6 +1,7 @@
 // components/EmailList.tsx
 "use client";
 import React, { useState, FormEvent } from 'react';
+import axios from 'axios';
 import { AgGridReact } from 'ag-grid-react';
 import { ColDef } from 'ag-grid-community';
 import Card from '../../components/CardComponent';
@@ -12,6 +13,7 @@ import SubmitButton from '@/app/components/SubmitButtonComponent';
 import { v4 as uuidv4 } from 'uuid';
 import { RootState } from '@/redux/reducers/store';
 import { useSelector } from 'react-redux';
+import usePostApi from '@/app/hooks/usePostApi';
 
 
 // Assuming this is the structure of your email object
@@ -30,10 +32,8 @@ interface EmailListProps {
   emails: Email[];
 }
 const EmailList: React.FC<EmailListProps> = ({ emails }) => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [response, setResponse] = useState<{ status: 'success' | 'error'; message: string } | null>(null);
   const { userInputMailAddress, userInputTemplate } = useSelector((state:RootState) => state.emails);
-
+  const { submitting, response, handleSubmit } = usePostApi();
 
   const columns: ColDef[] = [
     { headerName: "Subject", field: "subject", sortable: true, filter: true },
@@ -55,46 +55,17 @@ const EmailList: React.FC<EmailListProps> = ({ emails }) => {
     sender: email.sender?.emailAddress?.name || 'No Sender',
   }));
 
-  const handleApiCall = async (event: FormEvent) => {
-    event.preventDefault();
-    setResponse(null);
-    try {
-      setIsLoading(true);
-      const clientId = uuidv4();
-      const mailId = uuidv4();
-      const modelName = "ClientMailboxes";
-      const userData = {
-        mailBoxId: mailId,
-        clientId: clientId, // this to be later fetched from DB based on user logged in. The logged in user will be associated with a client
-        mailBoxAddress: userInputMailAddress,
-        mailBoxTemplate: userInputTemplate
-      }
-
-      const response = await fetch('http://localhost:7071/api/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          modelName, userData
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      } 
-      const data = await response.json();
-      console.log('Mailbox connected:', data);
-      setResponse({ status: 'success', message: 'Mailbox connected successfully!' });
-
-    } catch (error) {
-      console.error('Error registering client:', error);
-      setResponse({ status: 'error', message: 'Failed to connect Mailbox. Please try again.' });
-
-
-    } finally {
-      setIsLoading(false);
-    }
+  const handleApiCall = async () => {
+    const clientId = uuidv4();
+    const mailId = uuidv4();
+    const modelName = "ClientMailboxes";
+    const userData = {
+      mailBoxId: mailId,
+      clientId: clientId, 
+      mailBoxAddress: userInputMailAddress,
+      mailBoxTemplate: userInputTemplate
+    };
+    await handleSubmit(modelName, userData);
   };
   if (response) {
     return (
@@ -125,7 +96,7 @@ const EmailList: React.FC<EmailListProps> = ({ emails }) => {
         }
         footer={ 
           <SubmitButton
-            isLoading={isLoading}
+            isLoading={submitting}
             buttonText="Connect Mailbox"
             onClick={handleApiCall} // Call the handleApiCall function when the button is clicked
           />
