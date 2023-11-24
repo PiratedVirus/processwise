@@ -1,4 +1,9 @@
-export const members = [
+const { PrismaClient } = require('@prisma/client');
+const { v4: uuidv4 } = require('uuid'); // npm install uuid
+
+const prisma = new PrismaClient();
+
+const members = [
     {
       "id": "1",
       "name": "Amit",
@@ -139,5 +144,29 @@ export const members = [
       "status": "active",
       "role": "End User"
     },
-    // ... (27 more End User users)
-  ]
+  ];
+
+async function main() {
+  const userDetailsData = members.map(member => ({
+    userId: uuidv4(), // Generate a new UUID for each member
+    clientId: "2308d03b-83cf-4be7-8fec-eba78492aa81",
+    userName: member.name,
+    userEmail: member.email,
+    userStatus: member.status,
+    userRole: member.role,
+    userVerified: false
+    // Add other fields as necessary
+  }));
+
+  await prisma.UserDetails.createMany({
+    data: userDetailsData,
+  });
+}
+
+main()
+  .catch(e => {
+    throw e;
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

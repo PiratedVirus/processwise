@@ -1,13 +1,18 @@
 'use client'
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import {
   Avatar, Badge, Box, Stack, Checkbox, InputGroup, InputLeftElement, HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Input, ButtonGroup, Button, Grid, Select
 } from '@chakra-ui/react';
 import { FiEdit2, FiTrash2, FiSearch } from 'react-icons/fi';
 import { IoArrowDown, IoArrowUp } from 'react-icons/io5';
 import { useTable, useSortBy, useFilters, usePagination } from 'react-table';
-import { Rating } from './Rating';
-import { members as data } from './data';
+import axios from 'axios';
+import { Spinner } from '@chakra-ui/react';
+
+function fetchDataFromApi(modelName) {
+  return axios.post('http://localhost:7071/api/fetchData', { modelName: modelName });
+}
+
 
 const DefaultColumnFilter = ({
   column: { filterValue, setFilter },
@@ -20,38 +25,32 @@ const DefaultColumnFilter = ({
     />
   );
 };
-// const RatingFilter = ({ column: { filterValue, setFilter } }) => {
-//   // Define the options for rating filter (adjust as per your data)
-//   const options = useMemo(() => [1, 2, 3, 4, 5], []);
 
-//   return (
-//     <select mt={2}
-//     size={'sm'}
-//       value={filterValue}
-//       onChange={e => setFilter(e.target.value || undefined)}
-//     >
-//       <option mt={2} size={'sm'} value="">All</option>
-//       {options.map(option => (
-//         <option key={option} value={option}>
-//           {option} Stars
-//         </option>
-//       ))}
-//     </select>
-//   );
-// };
 export const MemberTable = (props) => {
-  // Define columns for React Table
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [globalFilter, setGlobalFilter] = useState('');
+  useEffect(() => {
+    fetchDataFromApi('UserDetails').then(response => {
+      setData(response.data);
+      setLoading(false);
+    }).catch(error => {
+      console.error('Error:', error);
+      setLoading(false);
+    });
+  }, []);
+
+
   const columns = useMemo(
     () => [
       {
         Header: 'Name',
-        accessor: 'name', // accessor is the "key" in the data
+        accessor: 'userName', // accessor is the "key" in the data
         Filter: DefaultColumnFilter
       },
       {
         Header: 'Status',
-        accessor: 'status',
+        accessor: 'userStatus',
         Filter: DefaultColumnFilter,
         Cell: ({ value }) => (
           <Badge colorScheme={value === 'active' ? 'green' : 'red'}>
@@ -61,20 +60,14 @@ export const MemberTable = (props) => {
       },
       {
         Header: 'Email',
-        accessor: 'email',
+        accessor: 'userEmail',
         Filter: DefaultColumnFilter
       },
       {
         Header: 'Role',
-        accessor: 'role',
+        accessor: 'userRole',
         Filter: DefaultColumnFilter
       },
-      // {
-      //   Header: 'Rating',
-      //   accessor: 'rating',
-      //   Filter: RatingFilter,
-      //   Cell: ({ value }) => <Rating defaultValue={value} size="xl" />,
-      // },
       {
         Header: 'Actions',
         id: 'actions',
@@ -128,10 +121,13 @@ export const MemberTable = (props) => {
     useSortBy,
     usePagination
   );
-  console.log('Current Page Index:', pageIndex);
-  console.log('Total Page Count:', pageOptions.length);
-  console.log('Can go to Previous Page:', canPreviousPage);
-  console.log('Can go to Next Page:', canNextPage);
+  if (loading) {
+    return <Spinner size="xl" />;
+  }
+
+  if (!data) {
+    return <Text>No data available.</Text>;
+  }
 
   return (
     <Stack spacing="5">

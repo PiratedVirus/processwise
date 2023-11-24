@@ -87,11 +87,12 @@ model ClientMailboxes {
 }
 
 model UserDetails {
-  userId String @unique @id
+  userId String @id @default(uuid())
   clientId String
   userName String
   userEmail String @unique
-  userPassword String
+  userStatus String
+  userRole String
   userVerified Boolean
   
   @@map("user_details")
