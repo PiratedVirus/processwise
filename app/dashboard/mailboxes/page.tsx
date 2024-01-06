@@ -8,10 +8,11 @@ import EmailList from '@/app/dashboard/mailboxes/EmailList';
 import { RootState } from '@/redux/reducers/store';
 import { fetchEmailsBegin, fetchEmailsSuccess, fetchEmailsFailure } from '@/redux/reducers/emailsReducer'; 
 import useFetchApi from '@/app/hooks/useFetchApi';
+import AlertComponent from '@/app/components/AlertComponent';
 
 function Mailboxes() {
   const dispatch = useDispatch();
-  const { emailsData, showEmailList } = useSelector((state:RootState) => state.emails);
+  const { emailsData, showEmailList, error } = useSelector((state:RootState) => state.emails);
   const { fetchApi, isLoading } = useFetchApi();
 
   const fetchData = async (email: string) => {
@@ -30,13 +31,15 @@ function Mailboxes() {
       dispatch(fetchEmailsSuccess(data));
     } catch (error) {
       console.error("Error fetching emails:", error);
-      dispatch(fetchEmailsFailure());
+      dispatch(fetchEmailsFailure(error || 'Unknown error occurred')); // Pass the error message
     }
+    
   };
 
   return (
     <div>
       <EmailInput onSubmit={fetchData} isLoading={isLoading} />
+      {error && <AlertComponent mainHeader="Error" subHeader="Failed to fetch emails" status="error" />}
       {showEmailList && !isLoading && <EmailList emails={emailsData.value} />}
     </div>
   );

@@ -1,6 +1,5 @@
 'use client'
 import React, { useMemo, useState, useEffect } from 'react';
-import axios from 'axios';
 import { useTable, useSortBy, useFilters, usePagination } from 'react-table';
 import { 
   Badge, Box, Stack, InputGroup, InputLeftElement, HStack, Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tr, Input, ButtonGroup, Button, Grid, Select
@@ -9,6 +8,7 @@ import { FiEdit2, FiTrash2, FiSearch } from 'react-icons/fi';
 import { IoArrowDown, IoArrowUp } from 'react-icons/io5';
 import { Spinner } from '@chakra-ui/react';
 import useFetchApi from '@/app/hooks/useFetchApi';
+import PaginationComponent from '@/app/components/Table/PaginationComponent';
 
 
 const DefaultColumnFilter = ({
@@ -182,57 +182,16 @@ export const MemberTable = (props) => {
         </Tbody>
       </Table>
       <div>
-        <Box mt={5} px={{ base: '4', md: '6' }} pb="5">
-          <Grid
-            templateColumns="repeat(3, 1fr)"
-            gap={6}
-            alignItems="center"
-          >
-            {/* Page Information */}
-            <Box>
-              <Text color="fg.muted" textStyle="sm">
-                Showing Page <strong> {pageIndex + 1} of {pageOptions.length} </strong>
-                | Go to page:
-                <Input
-                  size={'sm'}
-                  type="number"
-                  defaultValue={pageIndex + 1}
-                  onChange={e => {
-                    const page = e.target.value ? Number(e.target.value) - 1 : 0;
-                    gotoPage(page);
-                  }}
-                  style={{ width: '40px', display: 'inline-block' }}
-                />
-              </Text>
-            </Box>
-
-            {/* Page Size Selector */}
-            <Box justifySelf="center">
-              <Select
-                size={'sm'}
-                value={pageSize}
-                onChange={e => {
-                  setPageSize(Number(e.target.value));
-                }}
-              >
-                {[5, 10, 15, 20].map(pageSize => (
-                  <option key={pageSize} value={pageSize}>
-                    Show {pageSize} users
-                  </option>
-                ))}
-              </Select>
-            </Box>
-
-            {/* Navigation Buttons */}
-            <ButtonGroup
-              spacing="3"
-              justifySelf="end"
-            >
-              <Button colorScheme="messenger" size={'sm'} onClick={() => previousPage()} isDisabled={!canPreviousPage}>Previous</Button>
-              <Button colorScheme="messenger" size={'sm'} onClick={() => nextPage()} isDisabled={!canNextPage}>Next</Button>
-            </ButtonGroup>
-          </Grid>
-        </Box>
+      <PaginationComponent
+        tableType="users"
+        pageIndex={pageIndex}
+        pageOptions={pageOptions}
+        pageSize={pageSize}
+        canPreviousPage={canPreviousPage}
+        canNextPage={canNextPage}
+        gotoPage={gotoPage}
+        setPageSize={setPageSize}
+      />
 
       </div>
     </Stack>
