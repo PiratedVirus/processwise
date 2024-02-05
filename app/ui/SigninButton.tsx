@@ -1,31 +1,46 @@
-"use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
-import Image from "next/image";
+import useFetchApi from "@/app/hooks/useFetchApi";
+import { Spin, Button } from "antd";
+import { PoweroffOutlined } from '@ant-design/icons';
+import { Dropdown, Space } from 'antd';
 const SigninButton = () => {
   const { data: session } = useSession();
-  // console.log(JSON.stringify(session))
-  if (session && session.user) {
-    return (
-      <div className="flex gap-4 ml-auto items-center">
-        <p className="text-sky-600">{session.user.name}</p>
-        <Image
-          src={session.user.image ?? ""}
-          alt={session.user.name ?? ""}
-          className=" rounded-full"
-          width={32}
-          height={32}
-        />
-        <button onClick={() => signOut()} className="text-red-600">
-          Sign Out
-        </button>
-      </div>
-    );
-  }
+  const { fetchApi, isLoading, error } = useFetchApi();
+  const [userProfile, setUserProfile] = useState({ name: "" });
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (session) {
+        console.log("session " + session.user.email)
+        try {
+          console.log("inside try " + session.user.email)
+          const data = await fetchApi('http://localhost:7071/api/fetchProfile', 'POST', { userEmail: session.user.email });
+          setUserProfile({ name: data.givenName });
+        } catch (error) {
+          console.error("Error fetching user profile:", error);
+        }
+      }
+    };
+    fetchUserProfile();
+  }, [session, fetchApi]);
+
   return (
-    <button onClick={() => signIn()} className="text-green-600 ml-auto">
-      Sign In
-    </button>
+    <div>
+      <div className="flex gap-4 ml-auto items-center">
+        {session ? (
+          <>
+            {isLoading ? (<Spin className="mt-5 ml-10"> </Spin>) : (<Dropdown overlay={<Button type="primary" ghost onClick={() => signOut()} >Sign Out</Button>}>
+              <a onClick={(e) => e.preventDefault()}>
+                <Space className="font-bold text-blue-500">{userProfile.name}<PoweroffOutlined /></Space>
+              </a>
+            </Dropdown>)}
+          </>
+        ) : (
+          <p onClick={() => signIn()} className="ml-auto text-blue-500 font-bold">Sign In</p> 
+        )}
+      </div>
+    </div>
   );
 };
 

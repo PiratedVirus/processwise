@@ -27,7 +27,9 @@ const usePostApi = () => {
     }
   };
 
-  return { submitting, response, handleSubmit };
+  const resetResponse = () => setResponse(null);
+
+  return { submitting, response, handleSubmit, resetResponse };
 };
 
 export default usePostApi;

@@ -14,22 +14,53 @@
 │   │   └── auth
 │   │       └── [...nextauth]
 │   │           └── route.ts
+│   ├── assets
+│   │   └── svg
+│   │       └── logo.svg
 │   ├── auth
 │   │   └── withAuth.js
 │   ├── components
-│   │   ├── Card.tsx
+│   │   ├── AlertComponent.tsx
+│   │   ├── Button.tsx
+│   │   ├── CardComponent.tsx
 │   │   ├── EmailInputComponent.tsx
-│   │   ├── EmailList.jsx
-│   │   └── ErrorAlertComponent.tsx
+│   │   ├── MasterAdmin
+│   │   │   └── Clients
+│   │   │       ├── Edit
+│   │   │       │   └── EditClientPage.tsx
+│   │   │       ├── Manage
+│   │   │       │   ├── ClientCard.tsx
+│   │   │       │   ├── ClientGrid.tsx
+│   │   │       │   ├── CreateClientCard.tsx
+│   │   │       │   └── ManageClientsPage.tsx
+│   │   │       └── Register
+│   │   │           ├── RegisterClientForm.tsx
+│   │   │           └── RegisterClientsPage.tsx
+│   │   ├── SubmitButtonComponent.tsx
+│   │   ├── Table
+│   │   │   └── PaginationComponent.tsx
+│   │   ├── TopNavBar.tsx
+│   │   ├── UserInputComponent.tsx
+│   │   └── UserSelectComponent.tsx
 │   ├── dashboard
 │   │   ├── layout.tsx
 │   │   ├── mailboxes
+│   │   │   ├── EmailInput.tsx
+│   │   │   ├── EmailList.tsx
 │   │   │   └── page.tsx
+│   │   ├── manage
+│   │   │   ├── edit-client
+│   │   │   │   └── page.tsx
+│   │   │   ├── page.tsx
+│   │   │   └── register-client
+│   │   │       └── page.tsx
 │   │   ├── page.tsx
-│   │   ├── register
-│   │   │   └── page.tsx
 │   │   └── users
+│   │       ├── MemberTable.jsx
 │   │       └── page.tsx
+│   ├── hooks
+│   │   ├── useFetchApi.tsx
+│   │   └── usePostApi.tsx
 │   ├── layout.tsx
 │   ├── lib
 │   │   ├── Providers.tsx
@@ -37,34 +68,22 @@
 │   │   ├── definitions.ts
 │   │   ├── placeholder-data.js
 │   │   ├── prisma.ts
+│   │   ├── scss
+│   │   │   └── CustomAGGridStyles.css
 │   │   ├── types.d.ts
 │   │   └── utils.ts
 │   ├── page.tsx
-│   ├── profile
-│   │   └── page.tsx
 │   └── ui
 │       ├── Appbar.tsx
+│       ├── EmailList.jsx
 │       ├── SigninButton.tsx
 │       ├── acme-logo.tsx
 │       ├── button.tsx
-│       ├── customers
-│       │   └── table.tsx
 │       ├── dashboard
-│       │   ├── cards.tsx
-│       │   ├── latest-invoices.tsx
 │       │   ├── nav-links.tsx
-│       │   ├── revenue-chart.tsx
 │       │   └── sidenav.tsx
 │       ├── fonts.ts
 │       ├── global.css
-│       ├── invoices
-│       │   ├── breadcrumbs.tsx
-│       │   ├── buttons.tsx
-│       │   ├── create-form.tsx
-│       │   ├── edit-form.tsx
-│       │   ├── pagination.tsx
-│       │   ├── status.tsx
-│       │   └── table.tsx
 │       ├── login-form.tsx
 │       ├── search.tsx
 │       └── skeletons.tsx
@@ -73,17 +92,26 @@
 │   ├── .gitignore
 │   ├── configs
 │   │   └── msalConfig.js
+│   ├── createUsers
+│   │   ├── function.json
+│   │   └── index.js
+│   ├── fetch
+│   │   ├── function.json
+│   │   └── index.js
 │   ├── fetchMails
 │   │   ├── function.json
 │   │   ├── index.js
 │   │   └── sample.dat
+│   ├── fetchProfile
+│   │   ├── function.json
+│   │   └── index.js
 │   ├── host.json
 │   ├── local.settings.json
 │   ├── package-lock.json
 │   ├── package.json
-│   └── src
-│       └── functions
-│           └── registerClient.js
+│   └── post
+│       ├── function.json
+│       └── index.js
 ├── directoryTree.txt
 ├── middleware.ts
 ├── next-env.d.ts
@@ -92,9 +120,23 @@
 ├── package.json
 ├── postcss.config.js
 ├── prisma
+│   ├── deleteAllRows.js
 │   ├── dev.db
+│   ├── insertUserDetails.js
 │   ├── migrations
-│   │   ├── 20231118063007_sqlite_to_postgres
+│   │   ├── 20231124141332_restart
+│   │   │   └── migration.sql
+│   │   ├── 20231124142121_user_id_uuid
+│   │   │   └── migration.sql
+│   │   ├── 20231124142720_updated_to_user_details
+│   │   │   └── migration.sql
+│   │   ├── 20240202140227_updated_client_details
+│   │   │   └── migration.sql
+│   │   ├── 20240202142047_string_int
+│   │   │   └── migration.sql
+│   │   ├── 20240202162026_no_null
+│   │   │   └── migration.sql
+│   │   ├── 20240202162456_added_single_null
 │   │   │   └── migration.sql
 │   │   └── migration_lock.toml
 │   └── schema.prisma
@@ -114,9 +156,15 @@
 │   │   └── steven-tey.png
 │   ├── hero-desktop.png
 │   └── hero-mobile.png
+├── redux
+│   └── reducers
+│       ├── createUserReducer.ts
+│       ├── emailsReducer.ts
+│       ├── formDataReducer.ts
+│       └── store.ts
 ├── scripts
 │   └── seed.js
 ├── tailwind.config.ts
 └── tsconfig.json
 
-29 directories, 91 files
+48 directories, 120 files

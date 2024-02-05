@@ -4,9 +4,9 @@ import Link from 'next/link';
 
 const Page: React.FC = () => {
   const buttons = [
-    { href: "/dashboard/mailboxes", text: "Configure Mailboxes" },
+    { href: "/dashboard/mailboxes", text: "Manage Mailboxes" },
     { href: "/dashboard/users", text: "Manage Users" },
-    { href: "/dashboard/register", text: "Register a Client" },
+    { href: "/dashboard/manage", text: "Add new Orgnisation" },
   ];
 
   const renderButtons = () => {

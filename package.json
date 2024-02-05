@@ -20,6 +20,7 @@
     "@vercel/postgres": "^0.5.0",
     "ag-grid-community": "^30.2.1",
     "ag-grid-react": "^30.2.1",
+    "antd": "^5.13.3",
     "autoprefixer": "10.4.15",
     "axios": "^1.6.0",
     "bcrypt": "^5.1.1",
@@ -51,7 +52,7 @@
     "i": "^0.3.7",
     "npm": "^10.2.4",
     "prettier": "^3.0.3",
-    "prisma": "^5.6.0"
+    "prisma": "^5.9.1"
   },
   "engines": {
     "node": ">=18"

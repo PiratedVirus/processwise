@@ -34,7 +34,7 @@ const EmailInput: React.FC<EmailInputProps> = ({ onSubmit, isLoading }) => {
         <Flex alignItems="center" gap={4}>
           <Box flex={7} paddingRight={4}> 
             <UserInput
-              placeholder="Enter your email"
+              placeholder="Enter mailbox address"
               icon={<EmailIcon />}
               ref={inputRef}
             />
@@ -50,7 +50,7 @@ const EmailInput: React.FC<EmailInputProps> = ({ onSubmit, isLoading }) => {
           <Box flex={2}> 
             <SubmitButton
               isLoading={isLoading}
-              buttonText="Verify"
+              buttonText="Create Mailbox"
             />
           </Box>
         </Flex>

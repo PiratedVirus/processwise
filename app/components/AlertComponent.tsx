@@ -29,8 +29,8 @@ const AlertComponent: React.FC<AlertComponentProps> = ({
       bg={`${colorScheme}.50`}
       p={4}
       mt={4}
-      w="full"
       role="alert"
+      className='max-w-md p-10 mt-10 text-center min-w-3/4'
     >
       <Flex
         align="center"

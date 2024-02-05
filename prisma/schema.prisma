@@ -62,9 +62,23 @@ model VerificationToken {
 }
 
 model ClientDetail {
-  clientId    String @unique @id 
-  clientName  String @unique
-  clientEmail String  @unique 
+  clientId                String @unique @id 
+  companyName             String @unique
+  contactPerson           String
+  contactPersonEmail      String @unique
+  industryType            String
+  employeeCount           Int
+  streetAddress           String
+  city                    String
+  pinCode                 Int
+  currentDMSName          String
+  typeOfDocument          String
+  currentDocumentFlow     String
+  inputSourceOfDocument   String
+  numberOfUsersRequired   Int
+  endStorageSystem        String
+  totalDocumentsPerDay    Int
+  sampleInput             String?
 
   @@map("client_details")
 }

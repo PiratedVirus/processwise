@@ -19,7 +19,7 @@ const links = [
     icon: InboxStackIcon,
   },
   { name: 'Manage Users', href: '/dashboard/users', icon: UserGroupIcon },
-  { name: 'Register a Client', href: '/dashboard/register', icon: PlusCircleIcon },
+  { name: 'Register a Client', href: '/dashboard/manage', icon: PlusCircleIcon },
 ];
 
 export default function NavLinks() {
