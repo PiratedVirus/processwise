@@ -6,6 +6,9 @@ import { updateCombinedFormData } from '@/redux/reducers/editFormDataReducer';
 import EditClientForm from './EditClientForm';
 import useUpdateApi from '@/app/hooks/useUpdateApi';
 import ResponseModal from '@/app/components/ResponseModal';
+import DashboardLayout from '@/app/ui/DashboardLayout';
+import HeaderTitle from '@/app/ui/HeaderTitle';
+import { useRouter } from 'next/navigation';
 const { Content } = Layout;
 
 interface EditClientPageProps {
@@ -15,10 +18,12 @@ interface EditClientPageProps {
 
 const EditClientPage: React.FC<EditClientPageProps> = ({ clientName }) => {
   const dispatch = useDispatch();
+  const router = useRouter();
   const { updating, response, handleUpdate, resetResponse } = useUpdateApi();
 
   const generalInfo = useSelector((state: any) => state.editFormData.generalInfo);
   const processInfo = useSelector((state: any) => state.editFormData.processInfo);
+  const handleCancel = () => { router.back() };
 
   const handleSave = async () => {
     const combinedData = { ...generalInfo, ...processInfo };
@@ -29,28 +34,37 @@ const EditClientPage: React.FC<EditClientPageProps> = ({ clientName }) => {
 
   };
   const [hideSaveBtn, setHideSaveBtn] = useState(true);
+  const headerButtons = [
+    {
+      text: 'Edit',
+      onClick: () => setHideSaveBtn(false),
+      className: 'bg-blue-700 text-white',
+      hidden: !hideSaveBtn,
+    },
+    {
+      text: 'Save',
+      onClick: () => {
+        setHideSaveBtn(true);
+        handleSave();
+      },
+      className: 'bg-blue-700 text-white',
+      hidden: hideSaveBtn,
+    },
+  ];
   return (
     <>
-      {response && console.log('Response:', response.status)}
       {response && (
         <ResponseModal status={response.status} title={response.status === 'success' ? 'Success!' : 'Error!'} message={response.message} secondaryBtnText='Manage clients' secondaryBtnValue='/dashboard/manage' />
       )}
 
-      <div className="w-full bg-slate-100 mb-2 py-5 flex justify-between">
-        <h1 className="text-2xl text-blue-900 font-bold">Manage Clients / Edit Client</h1>
-        <div>
-          <Button>Cancel</Button>
-          <Button hidden={!hideSaveBtn} onClick={() => setHideSaveBtn(false)} className="ml-5 bg-blue-700 text-white">Edit</Button>
-          <Button hidden={hideSaveBtn} onClick={() => { setHideSaveBtn(true); handleSave() }} className="ml-5 bg-blue-700 text-white">Save</Button>
+      <HeaderTitle
+        title="Manage Clients / Edit Client"
+        buttons={headerButtons}
+        cancelAction={handleCancel}
+        showButtons={true}
+      />
+      <DashboardLayout children={<EditClientForm clientName={clientName} hideSaveBtn={hideSaveBtn} />} />
 
-        </div>
-
-      </div>
-      <Layout>
-        <Content style={{ padding: '2rem', backgroundColor: '#fff' }}>
-          <EditClientForm clientName={clientName} hideSaveBtn={hideSaveBtn} />
-        </Content>
-      </Layout>
     </>
   );
 };

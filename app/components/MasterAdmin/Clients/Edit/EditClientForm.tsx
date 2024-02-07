@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Row, Col, Spin } from 'antd'; // Import Spin from antd
-
+import { Form, Row, Col, Spin } from 'antd'; 
 import useFetchApi from '@/app/hooks/useFetchApi';
 import FormCard from '@/app/components/FormCard';
 
@@ -45,11 +44,8 @@ const EditClientForm: React.FC<EditClientFormProps> = ({ clientName, hideSaveBtn
                 setProcessInfoForm(processInforDataTemp);
             })
             .catch(error => console.error('Error:', error));
-    }, [fetchApi, selectedClientName]); // Added selectedClientName as a dependency
+    }, [fetchApi, selectedClientName]); 
 
-    // if (isLoading) {
-    //     return <Spin size="large" className="w-full flex justify-center">Loading...</Spin>; // Customize as needed
-    // }
 
     return (
         <Spin size="large" spinning={isLoading} tip="Loading..."> 

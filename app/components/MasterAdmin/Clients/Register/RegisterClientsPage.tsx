@@ -5,6 +5,10 @@ import { Layout, Button, Form, Spin, Space } from 'antd';
 import RegisterClientForm from './RegisterClientForm';
 import usePostApi from '@/app/hooks/usePostApi';
 import ResponseModal from '@/app/components/ResponseModal';
+import DashboardLayout from '@/app/ui/DashboardLayout';
+import { Header } from 'antd/es/layout/layout';
+import HeaderTitle from '@/app/ui/HeaderTitle';
+import { useRouter } from 'next/navigation';
 
 
 const { Content } = Layout;
@@ -12,6 +16,7 @@ interface FormRef {
     getFormData: () => any;
 }
 const RegisterClientsPage: React.FC = () => {
+    const router = useRouter();
     const [form] = Form.useForm();
     const dispatch = useDispatch();
     const formRef = useRef<FormRef | null>(null);
@@ -44,7 +49,14 @@ const RegisterClientsPage: React.FC = () => {
             await handleSubmit('ClientDetail', userData);
         }
     };
-
+    const handleCancel = () => { router.back() };
+    const headerButtons = [
+        {
+            text: 'Save',
+            onClick: () => { handleSave() },
+            className: 'bg-blue-700 text-white'
+        }
+    ];
 
 
     return (
@@ -53,19 +65,15 @@ const RegisterClientsPage: React.FC = () => {
                 {response && (
                     <ResponseModal status={response.status} title={response.status === 'success' ? 'Success!' : 'Error!'} message={response.message} secondaryBtnText='Manage clients' secondaryBtnValue='/dashboard/manage' />
                 )}
-                <div className="w-full bg-slate-100 mb-2 py-5 flex justify-between">
-                    <h1 className="text-2xl text-blue-900 font-bold">Manage Clients / Register Client</h1>
-                    <div>
-                        <Button>Cancel</Button>
-                        <Button onClick={handleSave} className="ml-5 bg-blue-700 text-white">Save</Button>
-                    </div>
+                <HeaderTitle
+                    title="Manage Clients / Register Client"
+                    buttons={headerButtons}
+                    cancelAction={handleCancel}
+                    showButtons={true}
+                />
 
-                </div>
-                <Layout>
-                    <Content style={{ padding: '2rem', backgroundColor: '#fff' }}>
-                        <RegisterClientForm ref={formRef} />
-                    </Content>
-                </Layout>
+                <DashboardLayout children={<RegisterClientForm ref={formRef} />} />
+
             </Spin>
         </>
     );

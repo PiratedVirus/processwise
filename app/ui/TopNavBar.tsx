@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Menu } from 'antd';
 import Link from 'next/link';
-import SigninButton from '../ui/SigninButton';
+import SigninButton from './SigninButton';
 import { HomeOutlined, UserOutlined, SettingOutlined, InboxOutlined, TeamOutlined, PlusCircleOutlined } from '@ant-design/icons';
 const links = [
   { name: 'Home', href: '/dashboard', icon: HomeOutlined },
