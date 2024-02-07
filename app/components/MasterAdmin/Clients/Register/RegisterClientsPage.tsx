@@ -1,21 +1,21 @@
 import React, { useState, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { saveFormData } from '@/redux/reducers/formDataReducer';
-import Link from 'next/link';
-import { Layout, Breadcrumb, Typography, Button, Form, Alert, Space } from 'antd';
+import { Layout, Button, Form, Spin, Space } from 'antd';
 import RegisterClientForm from './RegisterClientForm';
 import usePostApi from '@/app/hooks/usePostApi';
+import ResponseModal from '@/app/components/ResponseModal';
+
 
 const { Content } = Layout;
 interface FormRef {
     getFormData: () => any;
 }
-
 const RegisterClientsPage: React.FC = () => {
     const [form] = Form.useForm();
     const dispatch = useDispatch();
     const formRef = useRef<FormRef | null>(null);
-    const { submitting, response, handleSubmit, resetResponse } = usePostApi();
+    const { submitting, response, handleSubmit } = usePostApi();
 
     const handleSave = async () => {
         if (formRef.current) {
@@ -39,8 +39,8 @@ const RegisterClientsPage: React.FC = () => {
                 endStorageSystem: formData.endStorageSystem,
                 totalDocumentsPerDay: formData.totalDocumentsPerDay,
                 sampleInput: formData.sampleInput,
-               
-              };
+
+            };
             await handleSubmit('ClientDetail', userData);
         }
     };
@@ -49,45 +49,24 @@ const RegisterClientsPage: React.FC = () => {
 
     return (
         <>
-            {response && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <Alert
-                        message={response.status === 'success' ? 'Success!' : 'Error!'}
-                        description={response.message}
-                        type={response.status === 'success' ? 'success' : 'error'}
-                        showIcon
-                        action={
-                            <Space direction="vertical" className='ml-10 text-center'>
-                                {response.status === 'error' && <Button className='bg-blue-700 text-white mt-4' size="middle" onClick={resetResponse}>Try Again</Button>}
-                                {response.status === 'success' && (
-                                    <Link href="/dashboard/manage/register-client">
-                                        <Button className='bg-blue-700 text-white w-32' size="middle" onClick={resetResponse}>Add Client</Button>
-                                    </Link>
-                                )}
-                                {response.status === 'success' && (
-                                    <Link href="/dashboard/manage">
-                                        <Button className='bg-blue-700 text-white w-32' size="middle" onClick={resetResponse}>Manage Clients</Button>
-                                    </Link>
-                                )}                            
-                            </Space>
-                        }
-                        className="z-50"
-                    />
-                </div>
-            )}
-            <div className="w-full bg-slate-100 mb-2 py-5 flex justify-between">
-                <h1 className="text-2xl text-blue-900 font-bold">Manage Clients / Register Client</h1>
-                <div>
-                    <Button>Cancel</Button>
-                    <Button onClick={handleSave} className="ml-5 bg-blue-700 text-white">Save</Button>
-                </div>
+            <Spin spinning={submitting} tip="Submitting...">
+                {response && (
+                    <ResponseModal status={response.status} title={response.status === 'success' ? 'Success!' : 'Error!'} message={response.message} secondaryBtnText='Manage clients' secondaryBtnValue='/dashboard/manage' />
+                )}
+                <div className="w-full bg-slate-100 mb-2 py-5 flex justify-between">
+                    <h1 className="text-2xl text-blue-900 font-bold">Manage Clients / Register Client</h1>
+                    <div>
+                        <Button>Cancel</Button>
+                        <Button onClick={handleSave} className="ml-5 bg-blue-700 text-white">Save</Button>
+                    </div>
 
-            </div>
-            <Layout>
-                <Content style={{ padding: '2rem', backgroundColor: '#fff' }}>
-                    <RegisterClientForm ref={formRef} />
-                </Content>
-            </Layout>
+                </div>
+                <Layout>
+                    <Content style={{ padding: '2rem', backgroundColor: '#fff' }}>
+                        <RegisterClientForm ref={formRef} />
+                    </Content>
+                </Layout>
+            </Spin>
         </>
     );
 };

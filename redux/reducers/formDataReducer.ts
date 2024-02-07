@@ -1,5 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
-
+export interface FormDataState {
+  data: any;
+}
 export const formDataSlice = createSlice({
   name: 'formData',
   initialState: {

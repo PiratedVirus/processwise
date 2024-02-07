@@ -1,79 +1,57 @@
-import React, { useState, useEffect } from 'react';
-import { Form, Row, Col, Card, Input, Select, Button, InputNumber, Layout } from 'antd';
-
-import { useDispatch } from 'react-redux';
-import { saveFormData } from '@/redux/reducers/formDataReducer';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import useFetchApi from '@/app/hooks/useFetchApi';
+import { Button, Layout, Alert, Space, Modal, Result } from 'antd';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateCombinedFormData } from '@/redux/reducers/editFormDataReducer';
+import EditClientForm from './EditClientForm';
+import useUpdateApi from '@/app/hooks/useUpdateApi';
+import ResponseModal from '@/app/components/ResponseModal';
+const { Content } = Layout;
 
 interface EditClientPageProps {
   clientName: string;
 }
 
-const EditClientPage: React.FC<EditClientPageProps> = ({clientName}) => {
-  const [form] = Form.useForm();
-  const [clientsData, setClientsData] = useState([]);
-  const { fetchApi, isLoading } = useFetchApi();
 
-  useEffect(() => {
-    fetchApi('http://localhost:7071/api/fetchData', 'POST', { modelName: 'ClientDetail' })
-      .then(data => setClientsData(data)) // Assuming the API response is the data you want to set
-      .catch(error => console.error('Error:', error));
-  }, [fetchApi]);
+const EditClientPage: React.FC<EditClientPageProps> = ({ clientName }) => {
+  const dispatch = useDispatch();
+  const { updating, response, handleUpdate, resetResponse } = useUpdateApi();
 
-  // Split the clientsData into two parts
+  const generalInfo = useSelector((state: any) => state.editFormData.generalInfo);
+  const processInfo = useSelector((state: any) => state.editFormData.processInfo);
 
+  const handleSave = async () => {
+    const combinedData = { ...generalInfo, ...processInfo };
+    console.log('Combined Form Data:', combinedData);
+    dispatch(updateCombinedFormData({ generalInfo, processInfo }));
 
+    await handleUpdate('ClientDetail', "companyName", generalInfo.companyName, combinedData);
+
+  };
+  const [hideSaveBtn, setHideSaveBtn] = useState(true);
   return (
-    <Row>
-      <Col span={12} className='p-4'>
-        <Card title="General Information" className='w-full m-4'>
-          <Form
-            form={form}
-            name="basic"
-            initialValues={{ remember: true }}
-            autoComplete="off"
-            labelCol={{ span: 8 }}
-            wrapperCol={{ span: 14 }}
-            layout="horizontal"
-            size='middle'
-          >
-            {Object.entries(clientsData[0]).map(([key, value], index) => (
-              <Form.Item label={key} key={index}>
-                <Input defaultValue={JSON.stringify(value)} />
-              </Form.Item>
-              
-            ))}
-          </Form>
-        </Card>
-      </Col>
-      {/* <Col span={12} className='p-4'>
-        <Card title="Current document processing/ management system " className='w-full m-4'>
-          <Form
-            form={form}
-            name="basic"
-            initialValues={{ remember: true }}
-            autoComplete="off"
-            labelCol={{ span: 8 }}
-            wrapperCol={{ span: 14 }}
-            layout="horizontal"
-            size='middle'
-            style={{ maxWidth: 600 }}
-          >
-            {secondPart.map((item, index) => {
-              return (
-                <Form.Item label={item} name={item} key={index}>
-                  <Input className="ml-5" value={item} />
-                </Form.Item>
-              );
-            })}
-          </Form>
-        </Card>
-      </Col> */}
- 
-      <p>{JSON.stringify(clientsData)}</p>
+    <>
+      {response && console.log('Response:', response.status)}
+      {response && (
+        <ResponseModal status={response.status} title={response.status === 'success' ? 'Success!' : 'Error!'} message={response.message} secondaryBtnText='Manage clients' secondaryBtnValue='/dashboard/manage' />
+      )}
 
-    </Row>
+      <div className="w-full bg-slate-100 mb-2 py-5 flex justify-between">
+        <h1 className="text-2xl text-blue-900 font-bold">Manage Clients / Edit Client</h1>
+        <div>
+          <Button>Cancel</Button>
+          <Button hidden={!hideSaveBtn} onClick={() => setHideSaveBtn(false)} className="ml-5 bg-blue-700 text-white">Edit</Button>
+          <Button hidden={hideSaveBtn} onClick={() => { setHideSaveBtn(true); handleSave() }} className="ml-5 bg-blue-700 text-white">Save</Button>
+
+        </div>
+
+      </div>
+      <Layout>
+        <Content style={{ padding: '2rem', backgroundColor: '#fff' }}>
+          <EditClientForm clientName={clientName} hideSaveBtn={hideSaveBtn} />
+        </Content>
+      </Layout>
+    </>
   );
 };
 

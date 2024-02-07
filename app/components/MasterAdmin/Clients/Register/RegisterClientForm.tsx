@@ -1,4 +1,4 @@
-import React, { Ref } from 'react';
+import React from 'react';
 import { Form, Row, Col, Card, Input, Select, Button, InputNumber } from 'antd';
 const RegisterClientForm = React.forwardRef((props, ref) => {
   const [form] = Form.useForm();
@@ -7,7 +7,6 @@ const RegisterClientForm = React.forwardRef((props, ref) => {
     getFormData: () => form.getFieldsValue(),
   }));
 
-  
   const generalInformationFormItems = [
     { label: "Company name", name: "companyName", placeholder: "ABC GmBH", rules: [{ required: true, message: 'Please input your Company name!' }], inputType: "input" },
     { label: "Contact Person: ", name: "contactPerson", placeholder: "Patrick Mueller", rules: [{ required: true, message: 'Please input your Company name!' }], inputType: "input" },
@@ -99,9 +98,6 @@ const RegisterClientForm = React.forwardRef((props, ref) => {
     },
   ];
   
- 
-  
-
   return (
       <Row>
         <Col span={12} className='p-4'>

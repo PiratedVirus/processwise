@@ -1,16 +1,14 @@
 'use client'
 import React from 'react';
-import { useRouter } from 'next/router';
+import { useSearchParams } from 'next/navigation';
 import EditClientPage from '@/app/components/MasterAdmin/Clients/Edit/EditClientPage';
 const EditClient: React.FC = () => {
-  const router = useRouter();
-
-  if (!router.isReady) return null;
-
-  const { name } = router.query;
+  const name  = useSearchParams().toString();
+  console.log(` search param is ${name}`);
 return (
     <EditClientPage clientName = {name} />
   );
 };
 
 export default EditClient;
+

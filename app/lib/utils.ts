@@ -34,6 +34,15 @@ export const generateYAxis = (revenue: Revenue[]) => {
 
   return { yAxisLabels, topLabel };
 };
+export const camelToKebab = (camelCase: string) => {
+  let result = camelCase
+    .replace(/([a-z0-9]|(?=[A-Z]))([A-Z])/g, '$1 $2')
+    .trim();
+
+  return result.replace(/\b[a-z]/g, function (letter) {
+    return letter.toUpperCase();
+  });
+}
 
 export const generatePagination = (currentPage: number, totalPages: number) => {
   // If the total number of pages is 7 or less,
