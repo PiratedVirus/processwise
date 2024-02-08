@@ -1,4 +1,3 @@
-// HeaderTitle.tsx
 import React from 'react';
 import { Button } from 'antd';
 
@@ -10,40 +9,46 @@ interface ButtonConfig {
 }
 
 interface HeaderTitleProps {
-  title: string;
+  title?: string;
+  titleNode?: React.ReactNode;
   showButtons?: boolean;
   buttons?: ButtonConfig[];
   cancelAction?: () => void; // Add cancelAction prop
+  renderTabContent?: React.ReactNode;
 }
 
-const HeaderTitle: React.FC<HeaderTitleProps> = ({ title, showButtons = false, buttons = [], cancelAction }) => {
-  // Constant "Cancel" button configuration
-  const cancelButtonConfig: ButtonConfig = {
-    text: 'Cancel',
-    onClick: cancelAction ? cancelAction : () => {}, // Use cancelAction if provided, otherwise empty function
-    className: 'bg-white-500 text-white',
-  };
+const HeaderTitle: React.FC<HeaderTitleProps> = ({ title, titleNode, renderTabContent, showButtons = false, buttons = [], cancelAction }) => {
+
+  // const cancelButtonConfig: ButtonConfig = {
+  //   text: 'Cancel',
+  //   onClick: cancelAction ? cancelAction : () => {}, 
+  //   className: 'bg-white-500 text-white',
+  // };
 
   return (
-    <div className="w-full bg-slate-100 mb-2 py-5 flex justify-between items-center">
-      <h1 className="text-2xl text-blue-900 font-bold">{title}</h1>
-      {showButtons && (
-        <div>
-          <Button {...cancelButtonConfig} className="ml-5"> {cancelButtonConfig.text}</Button>  {/* Render the Cancel button */}
-         
-          {buttons.map(({ text, onClick, className = '', hidden = false }, index) => (
-            <Button
-              key={index}
-              onClick={onClick}
-              className={`${className} ml-2`}
-              hidden={hidden}
-            >
-              {text}
-            </Button>
-          ))}
-        </div>
-      )}
-    </div>
+    <>
+      <div className="w-full bg-slate-100 mb-2 py-5 flex justify-between items-center">
+
+          {titleNode ? titleNode : (title && <h1 className="text-2xl text-blue-900 font-bold">{title}</h1>)}    
+          {showButtons && (
+          <div>
+            <Button onClick={cancelAction ? cancelAction : () => {}} className="bg-white-500 ml-5">Cancel</Button>
+          
+            {buttons.map(({ text, onClick, className = '', hidden = false }, index) => (
+              <Button
+                key={index}
+                onClick={onClick}
+                className={`${className} ml-2`}
+                hidden={hidden}
+              >
+                {text}
+              </Button>
+            ))}
+          </div>
+        )}
+      </div>
+      {renderTabContent}    
+    </>
   );
 };
 

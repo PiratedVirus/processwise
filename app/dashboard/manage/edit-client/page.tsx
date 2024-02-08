@@ -1,7 +1,7 @@
 'use client'
 import React from 'react';
 import { useSearchParams } from 'next/navigation';
-import EditClientPage from '@/app/components/MasterAdmin/Clients/Edit/EditClientPage';
+import EditClientPage from '@/app/components/dashboard/Edit/EditClientPage';
 const EditClient: React.FC = () => {
   const name  = useSearchParams().toString();
   console.log(` search param is ${name}`);

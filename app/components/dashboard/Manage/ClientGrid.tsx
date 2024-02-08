@@ -1,7 +1,7 @@
 import React from 'react';
 import { Row, Col } from 'antd';
-import ClientCard  from '../Manage/ClientCard';
-import CreateClientCard from '../Manage/CreateClientCard';
+import ClientCard  from './ClientCard';
+import CreateClientCard from './CreateClientCard';
 
 interface Client {
   id: number;

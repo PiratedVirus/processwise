@@ -1,31 +1,33 @@
-import { useSession } from "next-auth/react";
-import { Center, Spinner, VStack, Text } from '@chakra-ui/react';
 import React from 'react';
+import { useSession } from "next-auth/react";
+import { Spin, Typography } from 'antd'; // Import Spin and Typography from Ant Design
+
+const { Title, Text } = Typography;
 
 const withAuth = (WrappedComponent) => {
   return function WithAuth(props) {
-    const { data: session, status } = useSession();
+    const { status } = useSession();
     const isLoading = status === "loading";
     const isAuthenticated = status === "authenticated";
 
     // Loading state
     if (isLoading) {
       return (
-        <Center minH="100vh">
-          <Spinner size="xl" color="blue.500" />
-        </Center>
+        <div className="flex items-center justify-center min-h-screen"> {/* Center with Tailwind CSS */}
+          <Spin size="large" /> {/* Ant Design Spinner */}
+        </div>
       );
     }
 
     // Unauthenticated state
     if (!isAuthenticated) {
       return (
-        <Center minH="100vh" bg="gray.100">
-          <VStack spacing={4}>
-            <Text fontSize="2xl" fontWeight="semibold">Access Denied</Text>
-            <Text>Please log in to continue.</Text>
-          </VStack>
-        </Center>
+        <div className="flex items-center justify-center min-h-screen bg-gray-100"> {/* Center with background color */}
+          <div className="space-y-4 text-center"> {/* VStack equivalent with spacing */}
+            <Title level={3}>Access Denied</Title> {/* Title text */}
+            <Text>Please log in to continue.</Text> {/* Regular text */}
+          </div>
+        </div>
       );
     }
 

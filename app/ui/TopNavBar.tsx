@@ -3,12 +3,10 @@ import React, { useState } from 'react';
 import { Menu } from 'antd';
 import Link from 'next/link';
 import SigninButton from './SigninButton';
-import { HomeOutlined, UserOutlined, SettingOutlined, InboxOutlined, TeamOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import { HomeOutlined, TeamOutlined } from '@ant-design/icons';
 const links = [
   { name: 'Home', href: '/dashboard', icon: HomeOutlined },
-  { name: 'Configure Mailboxes', href: '/dashboard/mailboxes', icon: InboxOutlined },
-  { name: 'Manage IT Admin', href: '/dashboard/users', icon: TeamOutlined },
-  { name: 'Manage Clients', href: '/dashboard/manage', icon: PlusCircleOutlined },
+  { name: 'Manage Clients', href: '/dashboard/manage', icon: TeamOutlined },
 ];
 
 const TopNav = () => {

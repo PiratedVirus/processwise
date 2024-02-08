@@ -1,6 +1,6 @@
 "use client";
-import '@/app/ui/global.css';
-import {inter} from '@/app/ui/fonts';
+import '@/app/ui/styles/global.css';
+import {inter} from '@/app/ui/styles/fonts';
 import Providers from './lib/Providers';
 import TopNav from './ui/TopNavBar';
 
