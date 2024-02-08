@@ -56,12 +56,22 @@ const EditClientPage: React.FC<EditClientPageProps> = ({ clientName }) => {
   const renderTabContent = () => {
     switch (activeTabKey) {
       case '1':
-        return <DashboardLayout children={<EditClientForm clientName={clientName} hideSaveBtn={hideSaveBtn} />} />;
+        return (
+          <DashboardLayout>
+            <EditClientForm clientName={clientName} hideSaveBtn={hideSaveBtn} />
+          </DashboardLayout>
+        );
       case '2':
         return <div>Your Content for Tab 2</div>;
       case '3':
-        return  <Result status="404" title="404" subTitle="Sorry, the page you visited does not exist." extra={<Button type="primary">Back Home</Button>}
-      />;
+        return  (
+          <Result 
+            status="404" 
+            title="404" 
+            subTitle="Sorry, the page you visited does not exist." 
+            extra={<Button type="primary">Back Home</Button>}
+          />
+        )
       default:
         return null;
     }

@@ -11,7 +11,7 @@ interface ResponseModalProps {
 }
 
 const ResponseModal: React.FC<ResponseModalProps> = ({ status, title, message, secondaryBtnText, secondaryBtnValue }) => {
-    secondaryBtnValue = secondaryBtnValue || '/';
+    secondaryBtnValue = secondaryBtnValue ?? '/';
     const [isModalOpen, setIsModalOpen] = useState(true);
     const isPrimaryBtnHidden = status === 'success' ? true : false;
     const cancelBtnText = 'Try Again';

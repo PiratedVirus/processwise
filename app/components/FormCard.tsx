@@ -1,5 +1,5 @@
-import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
-import { Form, Row, Col, Card, Input, Select, Button, InputNumber, Layout } from 'antd';
+import React, { useEffect } from 'react';
+import { Form, Card, Input } from 'antd';
 
 import { useDispatch } from 'react-redux';
 import { updateProcessInfo, updateGeneralInfo } from '@/redux/reducers/editFormDataReducer';
@@ -47,8 +47,8 @@ const FormCard: React.FC<FormCardProps> = ({ formHeader, formData, formFeilds, e
                 size='middle'
             >
                 {formData && Object.entries(formFeilds).map(([key, value], index) => (
-                    <Form.Item label={camelToKebab(key)} name={key} key={index}>
-                        {!editForm ? (<Input />) : <p className='font-medium'>{JSON.stringify(value).replace(/\"/g, '')}</p>}
+                    <Form.Item label={camelToKebab(key)} name={key} key={key}>
+                        {!editForm ? (<Input />) : <p className='font-medium'>{JSON.stringify(value).replace(/"/g, '')}</p>}
                     </Form.Item>
 
                 ))}
