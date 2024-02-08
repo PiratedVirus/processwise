@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { saveFormData } from '@/redux/reducers/formDataReducer';
-import { Layout, Form, Spin } from 'antd';
+import { Form, Spin } from 'antd';
 import RegisterClientForm from './RegisterClientForm';
 import usePostApi from '@/app/hooks/usePostApi';
 import ResponseModal from '@/app/components/ResponseModal';
@@ -9,8 +9,6 @@ import DashboardLayout from '@/app/ui/DashboardLayout';
 import HeaderTitle from '@/app/ui/HeaderTitle';
 import { useRouter } from 'next/navigation';
 
-
-const { Content } = Layout;
 interface FormRef {
     getFormData: () => any;
 }
