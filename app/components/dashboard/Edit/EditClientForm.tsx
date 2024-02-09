@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Spin } from 'antd'; 
 import useFetchApi from '@/app/hooks/useFetchApi';
-import FormCard from '@/app/components/FormCard';
+import FormCard from '@/app/components/dashboard/Edit/FormCard';
 
 interface ClientsData {
     [key: string]: string | number | null;

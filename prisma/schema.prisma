@@ -79,6 +79,7 @@ model ClientDetail {
   endStorageSystem        String
   totalDocumentsPerDay    Int
   sampleInput             String?
+  configuredMailboxes     String?
 
   @@map("client_details")
 }

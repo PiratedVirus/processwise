@@ -3,7 +3,7 @@ const prisma = new PrismaClient();
 
 module.exports = async function (context, req) {
     try {
-        const { modelName, idKey, idValue, userData } = req.body;
+        const { modelName, idKey, idValue, userData, columnToUpdate } = req.body;
         if (!modelName || !idKey || !idValue || !userData) {
             context.res = {
                 status: 400,
@@ -20,9 +20,11 @@ module.exports = async function (context, req) {
             return;
         }
 
+        const updateData = columnToUpdate ? { [columnToUpdate]: userData[columnToUpdate] } : userData;
+        console.log("updateData ", updateData)
         const updatedRecord = await prisma[modelName].update({
             where: { [idKey]: idValue },
-            data: userData
+            data: updateData
         });
 
         context.res = {

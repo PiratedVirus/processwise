@@ -11,6 +11,7 @@ import ResponseModal from '@/app/ui/ResponseModal';
 import DashboardLayout from '@/app/ui/DashboardLayout';
 import HeaderTitle from '@/app/ui/HeaderTitle';
 import CustomTabsPane from '@/app/ui/CustomTabsPane';
+import ITConfigForm from '@/app/components/dashboard/ITConfig/ITConfigForm';
 
 const EditClient: React.FC = () => {
   const clientName  = useSearchParams().toString();
@@ -61,7 +62,11 @@ const EditClient: React.FC = () => {
           </DashboardLayout>
         );
       case '2':
-        return <div>Your Content for Tab 2</div>;
+        return (
+          <DashboardLayout>
+            <ITConfigForm clientName={clientName}/>
+          </DashboardLayout>
+        );
       case '3':
         return  (
           <Result 
