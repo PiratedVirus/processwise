@@ -2,12 +2,14 @@ import { createSlice } from '@reduxjs/toolkit';
 export interface EditFormDataState {
   generalInfo: any;
   processInfo: any;
+  azureUserData: any;
 }
 export const editFormDataSlice = createSlice({
   name: 'editFormData',
   initialState: {
     generalInfo: {},
     processInfo: {},
+    azureUserData: {},
   },
   reducers: {
     updateGeneralInfo: (state, action) => {
@@ -16,7 +18,9 @@ export const editFormDataSlice = createSlice({
     updateProcessInfo: (state, action) => {
       state.processInfo = action.payload;
     },
-    // Optionally, a reducer to handle combined data if needed
+    updateAzureUserData: (state, action) => {
+      state.azureUserData = action.payload;
+    },
     updateCombinedFormData: (state, action) => {
       state.generalInfo = action.payload.generalInfo;
       state.processInfo = action.payload.processInfo;
@@ -24,6 +28,6 @@ export const editFormDataSlice = createSlice({
   },
 });
 
-export const { updateGeneralInfo, updateProcessInfo, updateCombinedFormData } = editFormDataSlice.actions;
+export const { updateGeneralInfo, updateProcessInfo, updateAzureUserData, updateCombinedFormData } = editFormDataSlice.actions;
 
 export default editFormDataSlice.reducer;

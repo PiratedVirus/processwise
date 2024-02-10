@@ -18,7 +18,7 @@ async function getAccessToken() {
     }
 }
 
-async function createUser(userData) {
+async function sendUserInvitation(invitationData) {
     try {
         const accessToken = await getAccessToken();
         const config = {
@@ -28,35 +28,35 @@ async function createUser(userData) {
             }
         };
 
-        const url = 'https://graph.microsoft.com/v1.0/users';
-        const response = await axios.post(url, userData, config);
+        const url = 'https://graph.microsoft.com/v1.0/invitations';
+        const response = await axios.post(url, invitationData, config);
         return response.data;
     } catch (error) {
-        console.error('Error creating user', error);
-        throw new Error('Error creating user');
+        console.error('Error sending user invitation', error);
+        throw new Error('Error sending user invitation');
     }
 }
 
 module.exports = async function (context, req) {
     try {
-        const userData = req.body; 
-        if (!userData || !userData.userPrincipalName || !userData.displayName) {
+        const invitationData = req.body; 
+        console.log("invivte data " + JSON.stringify(invitationData));
+        if (!invitationData  ) {
           context.res = {
             status: 400,
-            body: "Required user data is missing in the request body."
+            body: "Required invitation data is missing in the request body."
           };
           return;
         }
-        
-        const newUser = await createUser(userData);
+        const invitationResponse = await sendUserInvitation(invitationData);
         context.res = {
-            body: newUser
+            body: invitationResponse
         };
-        context.log("User created successfully!");
+        context.log("User invitation sent successfully!");
     } catch (error) {
         context.res = {
             status: 500,
-            body: "An error occurred while creating the user."
+            body: "An error occurred while sending the user invitation."
         };
         context.log.error(error);
     }

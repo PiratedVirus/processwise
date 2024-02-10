@@ -80,6 +80,7 @@ model ClientDetail {
   totalDocumentsPerDay    Int
   sampleInput             String?
   configuredMailboxes     String?
+  itAdminEmail            String?
 
   @@map("client_details")
 }

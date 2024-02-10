@@ -1,9 +1,9 @@
 'use client'
 import React from 'react';
-import ManageClientsPage from '@/app/components/dashboard/Manage/ManageClientsPage';
+import ManageClients from './dashboard/manage/page';
 const RegisterForm: React.FC = () => {
 return (
-    <ManageClientsPage />
+    <ManageClients />
   );
 };
 

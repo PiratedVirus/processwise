@@ -11,7 +11,7 @@ import ResponseModal from '@/app/ui/ResponseModal';
 import DashboardLayout from '@/app/ui/DashboardLayout';
 import HeaderTitle from '@/app/ui/HeaderTitle';
 import CustomTabsPane from '@/app/ui/CustomTabsPane';
-import ITConfigForm from '@/app/components/dashboard/ITConfig/ITConfigForm';
+import ItConfigForm from '@/app/components/dashboard/ItConfig/ItConfigForm';
 
 const EditClient: React.FC = () => {
   const clientName  = useSearchParams().toString();
@@ -64,7 +64,7 @@ const EditClient: React.FC = () => {
       case '2':
         return (
           <DashboardLayout>
-            <ITConfigForm clientName={clientName}/>
+            <ItConfigForm clientName={clientName}/>
           </DashboardLayout>
         );
       case '3':
@@ -73,7 +73,7 @@ const EditClient: React.FC = () => {
             status="404" 
             title="404" 
             subTitle="Sorry, the page you visited does not exist." 
-            extra={<Button type="primary">Back Home</Button>}
+            extra={<Button className='bg-blue-700 text-white'>Back Home</Button>}
           />
         )
       default:

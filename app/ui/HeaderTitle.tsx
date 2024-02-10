@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button } from 'antd';
+import { useDispatch, useSelector } from 'react-redux';
 
 interface ButtonConfig {
   text: string;
@@ -18,6 +19,7 @@ interface HeaderTitleProps {
 }
 
 const HeaderTitle: React.FC<HeaderTitleProps> = ({ title, titleNode, renderTabContent, showButtons = false, buttons = [], cancelAction }) => {
+  const isHeaderBtnVisible = useSelector((state: any) => state.uiInteraction.isHeaderBtnVisible);
 
   // const cancelButtonConfig: ButtonConfig = {
   //   text: 'Cancel',
@@ -30,7 +32,7 @@ const HeaderTitle: React.FC<HeaderTitleProps> = ({ title, titleNode, renderTabCo
       <div className="w-full bg-slate-100 mb-2 py-5 flex justify-between items-center">
 
           {titleNode ? titleNode : (title && <h1 className="text-2xl text-blue-900 font-bold">{title}</h1>)}    
-          {showButtons && (
+          {showButtons && isHeaderBtnVisible && (
           <div>
             <Button onClick={cancelAction ? cancelAction : () => {}} className="bg-white-500 ml-5">Cancel</Button>
           

@@ -1,13 +1,25 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { Row, Col, Spin, Form, Input, Card } from 'antd'; 
-import MailboxConfiguration from './MailboxConfig';
+import MailboxConfiguration from '@/app/components/dashboard/ItConfig/MailboxConfig';
+import AssignAdmin from '@/app/components/dashboard/ItConfig/AssignAdmin';
+import {hideHeaderBtn} from '@/redux/reducers/uiInteractionReducer';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/redux/reducers/store';
+
 interface ITConfigFormProps {
   clientName: string;
 }
 
-const ITConfigForm: React.FC<ITConfigFormProps> = ({clientName}) => {
+const ItConfigForm: React.FC<ITConfigFormProps> = ({clientName}) => {
+  const dispatch = useDispatch();
+  const isHeaderBtnVisible = useSelector((state: RootState) => state.uiInteraction.isHeaderBtnVisible);
 
-  const [form] = Form.useForm();
+  console.log('isHeaderBtnVisible B4:', isHeaderBtnVisible);
+
+  useEffect(() => {
+    dispatch(hideHeaderBtn());
+  });
+  console.log('isHeaderBtnVisible:', isHeaderBtnVisible);
     return (
       <Spin size="large" spinning={false} tip="Loading..."> 
         <Row>
@@ -18,11 +30,11 @@ const ITConfigForm: React.FC<ITConfigFormProps> = ({clientName}) => {
             </Col>
             <Col span={12} className='p-4'>
               <Card title="IT Admin Configuration" className='w-full m-4'>
-                  <MailboxConfiguration  clientName={clientName}/>
+                  <AssignAdmin  clientName={clientName}/>
               </Card>
             </Col>
         </Row>
       </Spin>
     );
 }
-export default ITConfigForm;
+export default ItConfigForm;

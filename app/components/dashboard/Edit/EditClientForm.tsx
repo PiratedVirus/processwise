@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Row, Col, Spin } from 'antd'; 
 import useFetchApi from '@/app/hooks/useFetchApi';
 import FormCard from '@/app/components/dashboard/Edit/FormCard';
+import { useSelector, useDispatch } from 'react-redux';
+import { showHeaderBtn } from '@/redux/reducers/uiInteractionReducer';
 
 interface ClientsData {
     [key: string]: string | number | null;
@@ -18,6 +20,10 @@ const EditClientForm: React.FC<EditClientFormProps> = ({ clientName, hideSaveBtn
     const [processInforForm, setProcessInfoForm] = useState<Partial<ClientsData>>({});
     const { fetchApi } = useFetchApi();
     const [isLoading, setIsLoading] = useState(true); // Add isLoading state
+    const dispatch = useDispatch();
+    useEffect(() => {
+        dispatch(showHeaderBtn());
+    });
 
     let selectedClientName = clientName.split("=")[1].replace(/\+/g, ' ');
 
@@ -29,6 +35,12 @@ const EditClientForm: React.FC<EditClientFormProps> = ({ clientName, hideSaveBtn
                 setIsLoading(false); 
                 let generalInfoKeys = ["clientId", "companyName", "contactPerson", "contactPersonEmail", "industryType", "employeeCount", "streetAddress", "city", "pinCode"];
                 let processInforKeys = selectClientData ? Object.keys(selectClientData).filter(key => !generalInfoKeys.includes(key)) : [];
+                if (processInforKeys.length > 0) {
+                    processInforKeys.pop();
+                    processInforKeys.pop();
+
+
+                } // temp adjustment
                 generalInfoKeys = generalInfoKeys.filter(key => key !== "clientId");
 
                 let generalInfoDataTemp: Partial<ClientsData> = {};
