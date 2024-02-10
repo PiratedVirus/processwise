@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateCombinedFormData } from '@/redux/reducers/editFormDataReducer';
 import useUpdateApi from '@/app/hooks/useUpdateApi';
-import EditClientForm from '@/app/components/dashboard/Edit/EditClientForm';
+import EditClientForm from '@/app/components/master-admin/Edit/EditClientForm';
 import ResponseModal from '@/app/ui/ResponseModal';
 import DashboardLayout from '@/app/ui/DashboardLayout';
 import HeaderTitle from '@/app/ui/HeaderTitle';

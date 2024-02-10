@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import ClientGrid from '@/app/components/dashboard/Manage/ClientGrid';
+import ClientGrid from '@/app/components/master-admin/Manage/ClientGrid';
 import useFetchApi from '@/app/hooks/useFetchApi';
 import { RootState } from '@/redux/reducers/store';
 import HeaderTitle from '@/app/ui/HeaderTitle';

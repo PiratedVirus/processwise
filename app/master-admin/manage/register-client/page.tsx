@@ -3,7 +3,7 @@ import React, { useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { saveFormData } from '@/redux/reducers/formDataReducer';
 import { Form, Spin } from 'antd';
-import RegisterClientForm from '@/app/components/dashboard/Register/RegisterClientForm';
+import RegisterClientForm from '@/app/components/master-admin/Register/RegisterClientForm';
 import usePostApi from '@/app/hooks/usePostApi';
 import ResponseModal from '@/app/ui/ResponseModal';
 import DashboardLayout from '@/app/ui/DashboardLayout';

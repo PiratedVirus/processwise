@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Spin } from 'antd'; 
 import useFetchApi from '@/app/hooks/useFetchApi';
-import FormCard from '@/app/components/dashboard/Edit/FormCard';
+import FormCard from '@/app/components/master-admin/Edit/FormCard';
 import { useSelector, useDispatch } from 'react-redux';
 import { showHeaderBtn } from '@/redux/reducers/uiInteractionReducer';
 

@@ -18,7 +18,6 @@ const AssignAdmin: React.FC<AssignAdminProps> = ({ clientName }) => {
 
   const { response, handleUpdate } = useUpdateApi();
   const { isLoading, fetchApi } = useFetchApi();
-  const { connecting, azureResponse, connectAzure, resetAzureResponse } = useAzureApi();
   const [clientsData, setClientsData] = useState<any>(null);
   const [initialized, setInitialized] = useState(false);
 
