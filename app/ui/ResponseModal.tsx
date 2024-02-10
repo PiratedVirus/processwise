@@ -8,13 +8,14 @@ interface ResponseModalProps {
     message: string;
     secondaryBtnText?: string;
     secondaryBtnValue?: string;
+    showPrimaryBtn?: boolean;
 }
 
-const ResponseModal: React.FC<ResponseModalProps> = ({ status, title, message, secondaryBtnText, secondaryBtnValue }) => {
+const ResponseModal: React.FC<ResponseModalProps> = ({ status, title, message, secondaryBtnText, secondaryBtnValue, showPrimaryBtn }) => {
     secondaryBtnValue = secondaryBtnValue ?? '/';
     const [isModalOpen, setIsModalOpen] = useState(true);
-    const isPrimaryBtnHidden = status === 'success' ? true : false;
-    const cancelBtnText = 'Try Again';
+    const isPrimaryBtnHidden = status === 'success' ? (showPrimaryBtn ? false : true) : false;
+    const cancelBtnText = status === 'success' ? 'Go Back' : 'Try Again';
     const handleCancel = () => {
         setIsModalOpen(false);
         console.log('Modal Closed');
@@ -29,13 +30,14 @@ const ResponseModal: React.FC<ResponseModalProps> = ({ status, title, message, s
             footer={[
                 <Button hidden={isPrimaryBtnHidden} key="back" onClick={handleCancel}>
                     {cancelBtnText}
-                </Button>
-                ,
-                <Link href={secondaryBtnValue}>
-                    <Button className="bg-blue-700 text-white ml-3" key="submit">
-                        {secondaryBtnText}
-                    </Button>
-                </Link>
+                </Button>,
+                secondaryBtnValue && secondaryBtnText && (
+                    <Link href={secondaryBtnValue} key="secondaryBtn">
+                        <a><Button className="bg-blue-700 text-white ml-3">
+                            {secondaryBtnText}
+                        </Button></a>
+                    </Link>
+                ),
             ]}
         >
             <Result

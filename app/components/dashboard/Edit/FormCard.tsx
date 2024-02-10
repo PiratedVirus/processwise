@@ -8,7 +8,7 @@ import { camelToKebab } from '@/app/lib/utils';
 interface FormCardProps {
     formHeader: string
     formData: any;
-    formFeilds: any;
+    formFeilds?: any;
     editForm: boolean;
 }
 
@@ -16,6 +16,7 @@ const FormCard: React.FC<FormCardProps> = ({ formHeader, formData, formFeilds, e
     const [form] = Form.useForm();
     const dispatch = useDispatch();
     delete formData?.clientId
+    console.log('formData:', JSON.stringify(formData));
 
     const onFormValuesChange = (changedValues: any, allValues: any) => {
     
@@ -42,7 +43,7 @@ const FormCard: React.FC<FormCardProps> = ({ formHeader, formData, formFeilds, e
                 initialValues={formData}
                 autoComplete="off"
                 labelCol={{ span: 8 }}
-                wrapperCol={{ span: 14 }}
+                wrapperCol={{ span: 16 }}
                 layout="horizontal"
                 size='middle'
             >

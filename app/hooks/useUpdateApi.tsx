@@ -5,8 +5,8 @@ const useUpdateApi = () => {
   const [updating, setUpdating] = useState<boolean>(false);
   const [response, setResponse] = useState<{ status: 'success' | 'error'; message: string } | null>(null);
 
-  const handleUpdate = async (modelName: string, idKey: string, idValue: any, formData: Record<string, any>) => {
-    console.log('ModelName:' + modelName + " idKey: " + idKey + " idValue: " + idValue + " form data " + formData);
+  const handleUpdate = async (modelName: string, idKey: string, idValue: any, formData: Record<string, any>, coloumToUpdate?: string) => {
+    console.log('ModelName:' + modelName + " idKey: " + idKey + " idValue: " + idValue + " form data " + formData + " col" + coloumToUpdate);
     setUpdating(true);
     setResponse(null);
     try {
@@ -15,7 +15,7 @@ const useUpdateApi = () => {
       };
       console.log('User Data: ', userData);
   
-      await axios.put(`http://localhost:7071/api/update`, { modelName, idKey, idValue, userData });
+      await axios.put(`http://localhost:7071/api/update`, { modelName, idKey, idValue, userData, coloumToUpdate });
   
       setResponse({ status: 'success', message: `${modelName} updated successfully!` });
     } catch (error) {
