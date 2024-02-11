@@ -9,7 +9,7 @@ const Page: React.FC = () => {
     status="404"
     title="Manage Clients"
     subTitle="Head on to Manage Clients to explore the dashboard."
-    extra={<Link href='/dashboard/manage'><Button  className='bg-blue-700 text-white'>Manage Clients</Button></Link>}
+    extra={<Link href='/master-admin/manage'><Button  className='bg-blue-700 text-white'>Manage Clients</Button></Link>}
   />
   );
 };

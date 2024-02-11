@@ -2,11 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Form,  Spin } from 'antd';
 import useUpdateApi from '@/app/hooks/useUpdateApi';
 import useFetchApi from '@/app/hooks/useFetchApi';
-import useAzureApi from '@/app/hooks/useAzureApi';
 import ResponseModal from '@/app/ui/ResponseModal';
 import CreateUserModal from '@/app/ui/CreateUsersModal';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '@/redux/reducers/store';
 import CreateUserForm from '@/app/ui/CreateUserForm';
 
 interface AssignAdminProps {
@@ -14,7 +11,6 @@ interface AssignAdminProps {
 }
 const AssignAdmin: React.FC<AssignAdminProps> = ({ clientName }) => {
   const [form] = Form.useForm();
-  const { azureUserData } = useSelector((state: RootState) => state.editFormData);
 
   const { response, handleUpdate } = useUpdateApi();
   const { isLoading, fetchApi } = useFetchApi();
@@ -23,21 +19,6 @@ const AssignAdmin: React.FC<AssignAdminProps> = ({ clientName }) => {
 
   let selectedClientName = clientName.split("=")[1].replace(/\+/g, ' ');
 
-  // useEffect(() => {
-  //   const inviteData = {
-  //     "invitedUserEmailAddress": azureUserData.Email,
-  //     "invitedUserDisplayName": azureUserData.Name,
-  //     "invitedUserType": "Member",
-  //     "inviteRedirectUrl": "https://www.example.com/welcome",
-  //     "sendInvitationMessage": true,
-  //     "invitedUserMessageInfo": {
-  //       "customizedMessageBody": "Hello, we're excited to welcome you to our team! Please accept this invitation to join our organization's platform.",
-  //       "messageLanguage": "en-US"
-  //     }
-
-  //   }
-  //   connectAzure('createUsers', inviteData);
-  // }, [azureUserData]);
 
   useEffect(() => {
     const fetchData = async () => {

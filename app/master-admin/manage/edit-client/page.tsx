@@ -1,8 +1,7 @@
 'use client'
 import React, { useState } from 'react';
 import { Button, Result } from 'antd';
-import { useSearchParams } from 'next/navigation';
-import { useRouter } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateCombinedFormData } from '@/redux/reducers/editFormDataReducer';
 import useUpdateApi from '@/app/hooks/useUpdateApi';
@@ -11,7 +10,7 @@ import ResponseModal from '@/app/ui/ResponseModal';
 import DashboardLayout from '@/app/ui/DashboardLayout';
 import HeaderTitle from '@/app/ui/HeaderTitle';
 import CustomTabsPane from '@/app/ui/CustomTabsPane';
-import ItConfigForm from '@/app/components/dashboard/ItConfig/ItConfigForm';
+import ItConfigForm from '@/app/components/master-admin/ITConfig/ITConfigForm';
 
 const EditClient: React.FC = () => {
   const clientName  = useSearchParams().toString();
@@ -85,7 +84,7 @@ const EditClient: React.FC = () => {
   return (
     <>
       {response && (
-        <ResponseModal status={response.status} title={response.status === 'success' ? 'Success!' : 'Error!'} message={response.message} secondaryBtnText='Manage clients' secondaryBtnValue='/dashboard/manage' />
+        <ResponseModal status={response.status} title={response.status === 'success' ? 'Success!' : 'Error!'} message={response.message} secondaryBtnText='Manage clients' secondaryBtnValue='/master-admin/manage' />
       )}
 
       <HeaderTitle
