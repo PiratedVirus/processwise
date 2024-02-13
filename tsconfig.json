@@ -31,6 +31,6 @@
     ".next/types/**/*.ts",
     "app/lib/placeholder-data.js",
     "scripts/seed.js"
-, "app/ui/EmailList.tsx", "app/master-admin/users/MemberTable.jsx", "app/components/master-admin/ItConfig/MailboxConfig.tsx"  ],
+, "app/ui/EmailList.tsx", "app/master-admin/users/MemberTable.jsx", "app/components/master-admin/ItConfig/MailboxConfig.tsx", "app/components/it-admin/UserOverviewTable.jsx"  ],
   "exclude": ["node_modules"]
 }

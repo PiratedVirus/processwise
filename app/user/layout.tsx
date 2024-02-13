@@ -19,7 +19,7 @@ const links = [
 ];
 
 const sideMenuItems: MenuProps['items'] = [
-  { key: '1', label: 'Document Overview', icon: React.createElement(FileOutlined) },
+  { key: '1', label: 'Manage Users', icon: React.createElement(FileOutlined) },
   { key: '2', label: 'Services', icon: React.createElement(CustomerServiceOutlined) },
   { key: '2', label: 'Resources', icon: React.createElement(FolderOpenOutlined) }
 ];

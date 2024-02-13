@@ -89,7 +89,7 @@ const ScrollabelCardHolder: React.FC = () => {
               <CustomCard
                 key={index}
                 headerText={card.headerText}
-                subText={card.subText}
+                // subText={card.subText}
                 customHeight={card.height}
                 customWidth={card.width}
                 link={card.link}

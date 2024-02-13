@@ -4,7 +4,7 @@ import { RightOutlined, CheckCircleFilled } from '@ant-design/icons';
 
 interface CustomCardProps {
   headerText: string;
-  subText: string;
+  subText?: string;
   link: string;
   icon: React.ReactNode;
   selected: boolean;
