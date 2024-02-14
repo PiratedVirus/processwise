@@ -11,6 +11,8 @@ import DashboardLayout from '@/app/ui/DashboardLayout';
 import HeaderTitle from '@/app/ui/HeaderTitle';
 import CustomTabsPane from '@/app/ui/CustomTabsPane';
 import ItConfigForm from '@/app/components/master-admin/ITConfig/ITConfigForm';
+import withAuth from '@/app/auth/withAuth'
+
 
 const EditClient: React.FC = () => {
   const clientName  = useSearchParams().toString();
@@ -99,5 +101,5 @@ const EditClient: React.FC = () => {
   );
 };
 
-export default EditClient;
+export default withAuth(EditClient);
 

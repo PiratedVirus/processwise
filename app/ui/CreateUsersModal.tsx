@@ -4,7 +4,7 @@ import {useDispatch} from 'react-redux';
 import useAzureApi from '@/app/hooks/useAzureApi';
 import { updateAzureUserData } from '@/redux/reducers/editFormDataReducer';
 import  CreateUserForm  from '@/app/ui/CreateUserForm';
-import { userFormFields } from '@/app/lib/form-feilds/createUserFormFeild';
+import { userFormFields } from '@/app/lib/form-defination/createUserFormFeild';
 import ResponseModal from '@/app/ui/ResponseModal';
 
 interface CreateUserModalProps {

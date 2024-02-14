@@ -9,6 +9,8 @@ import ResponseModal from '@/app/ui/ResponseModal';
 import DashboardLayout from '@/app/ui/DashboardLayout';
 import HeaderTitle from '@/app/ui/HeaderTitle';
 import { useRouter } from 'next/navigation';
+import withAuth from '@/app/auth/withAuth'
+
 interface FormRef {
   getFormData: () => any;
 }
@@ -77,4 +79,4 @@ const RegisterClient: React.FC = () => {
   );
 };
 
-export default RegisterClient;
+export default withAuth(RegisterClient);

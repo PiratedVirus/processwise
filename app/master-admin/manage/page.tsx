@@ -8,6 +8,8 @@ import HeaderTitle from '@/app/ui/HeaderTitle';
 import DashboardLayout from '@/app/ui/DashboardLayout';
 import CenterSpin from '@/app/ui/CenterSpin';
 import { fetchClientsBegin, fetchClientsSuccess, fetchClientsFailure } from '@/redux/reducers/clientReducer';
+import withAuth from '@/app/auth/withAuth'
+
 
 const ManageClients: React.FC = () => {
   const dispatch = useDispatch();
@@ -35,4 +37,4 @@ const ManageClients: React.FC = () => {
   );
 };
 
-export default ManageClients;
+export default withAuth(ManageClients);
