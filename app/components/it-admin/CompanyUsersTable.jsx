@@ -1,28 +1,27 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { Table, Input, Button, Badge, Space, Typography, Spin, Row, Col } from 'antd';
-import { FiEdit2, FiTrash2 } from 'react-icons/fi';
 import { SearchOutlined, FilterOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import useFetchApi from '@/app/hooks/useFetchApi'; // Make sure this path matches your project structure
-
+import useFetchApi from '@/app/hooks/useFetchApi'; 
+import { parseRoleToCheckedStates } from '@/app/lib/utils';
+import CreateUserModal from '@/app/ui/CreateUsersModal';
 const { Text } = Typography;
 
 export const MemberTable = () => {
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState('');
-  const { fetchApi } = useFetchApi();
+  const { fetchApi, isLoading, error } = useFetchApi();
 
   useEffect(() => {
-    setLoading(true);
-    fetchApi('http://localhost:7071/api/fetchData', 'POST', { modelName: 'UserDetails' })
-      .then(response => {
-        setData(response);
-        setLoading(false);
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        setLoading(false);
-      });
+    const fetchData = async () => {
+      try {
+        const responseData = await fetchApi('http://localhost:7071/api/fetchData', 'POST', { modelName: 'UserDetails', columnName: 'userCompany', columnValue: 'OYO' });
+        setData(responseData);
+      } catch (fetchError) {
+        console.error('Fetch error:', fetchError);
+      }
+    };
+
+    fetchData();
   }, [fetchApi]);
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
@@ -75,34 +74,37 @@ export const MemberTable = () => {
       return a[dataIndex].localeCompare(b[dataIndex]);
     },
   });
-
+  const roleColumns = ['Processing', 'Approving', 'Reporting', 'Admin'];
   const columns = useMemo(() => [
     {
       title: 'Name',
       dataIndex: 'userName',
       key: 'userName',
       ...getColumnSearchProps('userName'),
-    },
-    {
-      title: 'Status',
-      dataIndex: 'userStatus',
-      key: 'userStatus',
-      render: value => (
-        <Badge status={value === 'active' ? 'success' : 'error'} text={value} />
+      render: (text, record) => (
+        <div>
+          <div>{record.userName}</div>
+          <div className='text-gray-500'>{record.userEmail}</div> {/* Display email in a smaller or different style */}
+        </div>
       ),
-      ...getColumnSearchProps('userStatus'),
     },
-    {
-      title: 'Email',
-      dataIndex: 'userEmail',
-      key: 'userEmail',
-      ...getColumnSearchProps('userEmail'),
-    },
-    {
-      title: 'Role',
+    ...roleColumns.map((role, index) => ({
+      title: role,
       dataIndex: 'userRole',
-      key: 'userRole',
-      ...getColumnSearchProps('userRole'),
+      key: role,
+      render: (userRole) => {
+        const checkedStates = parseRoleToCheckedStates(userRole);
+        return (
+          <input type="checkbox" checked={checkedStates[index]} disabled />
+        );
+      },
+    })),
+
+    {
+      title: 'Position',
+      dataIndex: 'userPosition',
+      key: 'userPosition',
+      ...getColumnSearchProps('userPosition'),
     },
     {
       title: 'Actions',
@@ -119,27 +121,32 @@ export const MemberTable = () => {
   const globalSearch = () => {
     const filteredData = data.filter(entry => 
       Object.values(entry).some(value => 
-        value.toString().toLowerCase().includes(searchText.toLowerCase())
+        value ? value.toString().toLowerCase().includes(searchText.toLowerCase()) : false
       )
     );
     return filteredData.length > 0 ? filteredData : data;
   };
 
   return (
-    <Spin spinning={loading} size="large">
+    <Spin spinning={isLoading} size="large">
       <div className="space-y-5">
-        <Row justify="space-between" align="middle" className="px-4 py-2">
+        <Row justify="space-between" align="middle" className="px-4 pt-5">
           <Col>
             <Text strong className="text-lg">User Table</Text>
           </Col>
+          </Row>
+          <Row justify="space-between" align="middle" className="px-4 py-2">
           <Col>
             <Input
+              className='w-96'
               prefix={<SearchOutlined className="text-gray-400" />}
               placeholder="Global search..."
               onChange={e => setSearchText(e.target.value)}
               value={searchText}
             />
           </Col>
+          <CreateUserModal modalOpenText='Create New User ' modalOpenType='button' />
+
         </Row>
         <Table
           columns={columns}

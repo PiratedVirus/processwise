@@ -11,7 +11,6 @@ export const camelToKebab = (camelCase: string) => {
 }
 
 export const parseRoleToCheckedStates = (userRole: string) => {
-  // Assuming userRole is a string like '1001', convert it to an array of booleans
   return [...userRole].map(char => char === '1');
 };
 
