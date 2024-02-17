@@ -108,7 +108,7 @@ model UserDetails {
   userName String
   userEmail String @unique
   userCompany String?
-  userStatus String
+  userStatus String?
   userPosition String?
   userVerified Boolean
   userMailboxesAccess String?

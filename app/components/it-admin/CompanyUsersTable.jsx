@@ -4,6 +4,7 @@ import { SearchOutlined, FilterOutlined, EditOutlined, DeleteOutlined } from '@a
 import useFetchApi from '@/app/hooks/useFetchApi'; 
 import { parseRoleToCheckedStates } from '@/app/lib/utils';
 import CreateUserModal from '@/app/ui/CreateUsersModal';
+import {createCompanyUser} from '@/app/lib/form-defination/createCompanyUser'
 const { Text } = Typography;
 
 export const MemberTable = () => {
@@ -145,7 +146,7 @@ export const MemberTable = () => {
               value={searchText}
             />
           </Col>
-          <CreateUserModal modalOpenText='Create New User ' modalOpenType='button' />
+          <CreateUserModal modalOpenText='Create New User' modalOpenType='button' modalFormFields={createCompanyUser}/>
 
         </Row>
         <Table

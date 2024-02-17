@@ -5,6 +5,8 @@ import useFetchApi from '@/app/hooks/useFetchApi';
 import ResponseModal from '@/app/ui/ResponseModal';
 import CreateUserModal from '@/app/ui/CreateUsersModal';
 import CreateUserForm from '@/app/ui/CreateUserForm';
+import { createITAdminOnAzure } from '@/app/lib/form-defination/createITAdminAzure';
+
 
 interface AssignAdminProps {
   clientName: string;
@@ -54,7 +56,8 @@ const AssignAdmin: React.FC<AssignAdminProps> = ({ clientName }) => {
   const userFormFields = [{
     name: 'adminEmail',
     label: 'Admin Email',
-    rules: [{ type: 'email', required: true, message: 'Email is required' }]
+    rules: [{ type: 'email', required: true, message: 'Email is required' }],
+    inputType: 'Input',
   }];
 
   return (
@@ -66,7 +69,7 @@ const AssignAdmin: React.FC<AssignAdminProps> = ({ clientName }) => {
       <Spin spinning={isLoading} tip="Loading...">
         <CreateUserForm form={form} formName='dynamic_form_nest_item' layout={{ offset: 4, span: 18 }} submitBtnText='Assign IT Admin' onFinish={assignAdmin} formFields={userFormFields} />
         <p className="text-gray-400 p-2 text-center">Make sure you fisrt <b> created user on Azure </b> before assiging user as IT Admin.</p>
-        <CreateUserModal modalOpenText='Create User on Azure' modalOpenType='text' />
+        <CreateUserModal modalOpenText='Create User on Azure' modalOpenType='text' modalFormFields={createITAdminOnAzure} />
 
       </Spin>
     </>

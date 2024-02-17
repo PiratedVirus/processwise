@@ -10,6 +10,10 @@ export const camelToKebab = (camelCase: string) => {
   });
 }
 
+export const arrayToString = (arr: string[]) => {
+  return arr.join(", ");
+};
+
 export const parseRoleToCheckedStates = (userRole: string) => {
   return [...userRole].map(char => char === '1');
 };

@@ -1,4 +1,4 @@
-export const userFormFields = [
+export const createITAdminOnAzure = [
     {
       name: 'Name',
       label: 'Name',
