@@ -3,12 +3,12 @@ import axios from 'axios';
 
 const useUpdateApi = () => {
   const [updating, setUpdating] = useState<boolean>(false);
-  const [response, setResponse] = useState<{ status: 'success' | 'error'; message: string } | null>(null);
+  const [updateResponse, setUpdateResponse] = useState<{ status: 'success' | 'error'; message: string } | null>(null);
 
   const handleUpdate = async (modelName: string, idKey: string, idValue: any, formData: Record<string, any>, coloumToUpdate?: string) => {
     console.log('ModelName:' + modelName + " idKey: " + idKey + " idValue: " + idValue + " form data " + formData + " col" + coloumToUpdate);
     setUpdating(true);
-    setResponse(null);
+    setUpdateResponse(null);
     try {
       const userData = {
         ...formData,
@@ -17,18 +17,18 @@ const useUpdateApi = () => {
   
       await axios.put(`http://localhost:7071/api/update`, { modelName, idKey, idValue, userData, coloumToUpdate });
   
-      setResponse({ status: 'success', message: `${modelName} updated successfully!` });
+      setUpdateResponse({ status: 'success', message: `${modelName} updated successfully!` });
     } catch (error) {
       console.error(`Error updating ${modelName}:`, error);
-      setResponse({ status: 'error', message: `Failed to update ${modelName}. Please try again.` });
+      setUpdateResponse({ status: 'error', message: `Failed to update ${modelName}. Please try again.` });
     } finally {
       setUpdating(false);
     }
   };
 
-  const resetResponse = () => setResponse(null);
+  const resetUpdateResponse = () => setUpdateResponse(null);
 
-  return { updating, response, handleUpdate, resetResponse };
+  return { updating, updateResponse, handleUpdate, resetUpdateResponse };
 };
 
 export default useUpdateApi;

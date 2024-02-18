@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2015",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -31,6 +31,6 @@
     ".next/types/**/*.ts",
     "app/lib/placeholder-data.js",
     "scripts/seed.js"
-, "app/ui/EmailList.tsx", "app/dashboard/users/MemberTable.jsx", "app/components/dashboard/ItConfig/MailboxConfig.tsx"  ],
+, "app/ui/EmailList.tsx", "app/master-admin/users/MemberTable.jsx", "app/components/master-admin/ItConfig/MailboxConfig.tsx", "app/components/it-admin/CompanyUsersTable.jsx", "app/components/it-admin/FilterDropdown.tsx"  ],
   "exclude": ["node_modules"]
 }

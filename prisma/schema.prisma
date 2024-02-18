@@ -107,9 +107,12 @@ model UserDetails {
   clientId String
   userName String
   userEmail String @unique
-  userStatus String
-  userRole String
+  userCompany String?
+  userStatus String?
+  userPosition String?
   userVerified Boolean
+  userMailboxesAccess String?
+  userRole String?
   
   @@map("user_details")
   

@@ -1,11 +1,17 @@
-import React from 'react';
-import { Form, Input, Button } from 'antd';
+import React, { useMemo } from 'react';
+import { Form, Input, Button, Checkbox, Select } from 'antd';
+import { useDispatch } from 'react-redux';
 import { FormInstance } from 'antd/lib/form';
+import { updateSelectedMailBoxes } from '@/redux/reducers/editFormDataReducer';
+import { parseBinaryToRoles } from '../lib/utils';
 
 interface FormField {
   name: string;
   label: string;
-  rules: any[]; 
+  rules: any[];
+  inputType: 'Checkbox' | 'Dropdown' | 'Input';
+  options?: string[];
+  optionalText?: string;
 }
 
 interface CreateUserFormProps {
@@ -14,39 +20,91 @@ interface CreateUserFormProps {
   formFields: FormField[];
   submitBtnText: string;
   formName: string;
-  layout: any;
+  layout?: any;
+  existingData?: any;
+  formType: 'create' | 'edit';
 }
-const CreateUserForm: React.FC<CreateUserFormProps> = ({ form, formName, submitBtnText, onFinish, formFields, layout }) => {
-    return (
-      <Form
-        form={form}
-        name={formName}
-        initialValues={{ remember: true }}
-        autoComplete="off"
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 14 }}
-        layout="horizontal"
-        size="middle"
-        onFinish={onFinish}
-        className='mt-8'
-      >
-        {formFields.map((field) => (
-          <Form.Item
-            key={field.name}
-            name={field.name}
-            label={field.label}
-            rules={field.rules}
-          >
-            <Input />
-          </Form.Item>
-          
-        ))}
-        <Form.Item wrapperCol={layout}>
-          <Button className="bg-blue-700 text-white w-full" htmlType="submit"> {submitBtnText} </Button>
-        </Form.Item>
-      </Form>
-    );
-  };
-  
-  export default CreateUserForm;
-  
+
+interface FormItemProps {
+  field: FormField;
+  existingData: any;
+  formType: 'create' | 'edit';
+}
+
+const FormItem: React.FC<FormItemProps> = React.memo(({ field, existingData, formType }) => {
+  const dispatch = useDispatch();
+  let inputElement: React.ReactNode;
+  const userMailboxesAccessArr = existingData?.userMailboxesAccess?.split(", ");
+  switch (field.inputType) {
+    case 'Checkbox':
+      inputElement = (
+        <Checkbox.Group>
+          {field.options?.map((option, index) => (
+            <Checkbox key={index} value={option}>{option}</Checkbox>
+          ))}
+        </Checkbox.Group>
+      );
+      break;
+    case 'Dropdown':
+      inputElement = (
+        <>
+          <Select defaultValue={formType === 'edit' ? userMailboxesAccessArr : undefined} mode="multiple" onChange={(value: string[]) => dispatch(updateSelectedMailBoxes(value))}>
+            {field.options?.map((option, index) => (
+              <Select.Option key={index} value={option}>{option}</Select.Option>
+            ))}
+          </Select>
+          {field.optionalText && <p className='text-gray-500 mt-2'>{field.optionalText}</p>}
+        </>
+      );
+      break;
+    default:
+      inputElement = <Input />;
+  }
+
+  return (
+    <Form.Item key={field.name} name={field.name} label={field.label} rules={field.rules}>
+      {inputElement}
+    </Form.Item>
+  );
+});
+
+
+const CreateUserForm: React.FC<CreateUserFormProps> = ({ form, formName, submitBtnText, onFinish, formFields, layout, existingData, formType }) => {
+  const initialValues = useMemo(() => {
+    if (formType === 'edit' && existingData) {
+      return {
+        ...existingData,
+        userRole: parseBinaryToRoles(existingData.userRole),
+      };
+    }
+    return {};
+  }, [existingData, formType]);
+
+  return (
+    <Form
+      form={form}
+      name={formName}
+      initialValues={initialValues}
+      autoComplete="off"
+      labelCol={{ span: 8 }}
+      wrapperCol={{ span: 24 }}
+      layout="vertical"
+      size="middle"
+      onFinish={onFinish}
+      className="mt-8"
+    >
+      {formFields.map((field) => (
+        <FormItem key={field.name} field={field} existingData={initialValues} formType={formType} />
+      ))}
+      <Form.Item>
+        <Button className="bg-blue-700 text-white w-full" htmlType="submit">
+          {submitBtnText}
+        </Button>
+      </Form.Item>
+    </Form>
+  );
+};
+
+export default CreateUserForm;
+
+
