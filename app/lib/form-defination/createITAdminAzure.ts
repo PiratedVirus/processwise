@@ -1,13 +1,13 @@
 export const createITAdminOnAzure = [
     {
-      name: 'Name',
-      label: 'Name',
+      name: 'userName',
+      label: 'Admin Name',
       rules: [{ required: true }],
       inputType: 'Input',
     },
     {
-      name: 'Email',
-      label: 'Email',
+      name: 'userEmail',
+      label: 'Admin Email',
       rules: [{ type: 'email', required: true }],
       inputType: 'Input',
     },

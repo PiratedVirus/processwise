@@ -13,8 +13,8 @@ const Page: React.FC = () => {
     subTitle="Head on to Manage Clients to explore the dashboard."
     extra={
     <>
-      <Link href='/master-admin/manage'><Button  className='bg-blue-700 text-white'>Manage Clients</Button></Link> 
-      <Link href='/user/it-admin'><Button  className='bg-blue-700 text-white'>Go to IT  Admin</Button></Link>
+      <Link href='/master-admin/manage' legacyBehavior><Button  className='bg-blue-700 text-white'>Manage Clients</Button></Link> 
+      <Link href='/user/it-admin' legacyBehavior><Button  className='bg-blue-700 text-white'>Go to IT  Admin</Button></Link>
     </>
     }
   />

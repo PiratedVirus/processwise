@@ -3,7 +3,7 @@ import { Form,  Spin } from 'antd';
 import useUpdateApi from '@/app/hooks/useUpdateApi';
 import useFetchApi from '@/app/hooks/useFetchApi';
 import ResponseModal from '@/app/ui/ResponseModal';
-import CreateUserModal from '@/app/ui/CreateUsersModal';
+import CreateUserModal from '@/app/ui/CreateUserModal';
 import CreateUserForm from '@/app/ui/CreateUserForm';
 import { createITAdminOnAzure } from '@/app/lib/form-defination/createITAdminAzure';
 

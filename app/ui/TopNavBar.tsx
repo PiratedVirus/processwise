@@ -28,7 +28,7 @@ const TopNav: React.FC<TopNavProps> = ({links}) => {
       <Menu onClick={handleClick} selectedKeys={[current]} mode="horizontal" className="justify-center">
         {links.map((link, index) => (
           <Menu.Item key={link.name} icon={<link.icon />}>
-            <Link href={link.href}>{link.name}</Link>
+            <Link href={link.href} legacyBehavior>{link.name}</Link>
           </Menu.Item>
         ))}
       </Menu>
@@ -43,7 +43,6 @@ const TopNav: React.FC<TopNavProps> = ({links}) => {
       </Menu>
     </div>
   </div>
-
   );
 };
 

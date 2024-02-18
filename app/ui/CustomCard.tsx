@@ -29,7 +29,7 @@ const CustomCard: React.FC<CustomCardProps> = ({
 
   return (
     <div onClick={onSelect} className={`relative mx-2 ${cardWidthClass} ${cardHeightClass}`}>
-      <Link href={link}>
+      <Link href={link} legacyBehavior>
         <div
           className={`flex items-center bg-white py-4 pl-4 mb-5 cursor-pointer rounded-md transition-shadow duration-200 ease-in ${selected ? 'border-blue-500 border-2 text-blue-500' : 'border-gray-300'}`}
         >

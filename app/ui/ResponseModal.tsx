@@ -33,9 +33,9 @@ const ResponseModal: React.FC<ResponseModalProps> = ({ status, title, message, s
                 </Button>,
                 secondaryBtnValue && secondaryBtnText && (
                     <Link href={secondaryBtnValue} key="secondaryBtn">
-                        <a><Button className="bg-blue-700 text-white ml-3">
+                        <Button className="bg-blue-700 text-white ml-3">
                             {secondaryBtnText}
-                        </Button></a>
+                        </Button>
                     </Link>
                 ),
             ]}

@@ -3,14 +3,14 @@ import { Table, Input, Button, Badge, Space, Typography, Spin, Row, Col } from '
 import { SearchOutlined, FilterOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import useFetchApi from '@/app/hooks/useFetchApi'; 
 import { parseRoleToCheckedStates } from '@/app/lib/utils';
-import CreateUserModal from '@/app/ui/CreateUsersModal';
+import CreateUserModal from '@/app/ui/CreateUserModal';
 import {createCompanyUser} from '@/app/lib/form-defination/createCompanyUser'
 const { Text } = Typography;
 
 export const MemberTable = () => {
   const [data, setData] = useState([]);
   const [searchText, setSearchText] = useState('');
-  const { fetchApi, isLoading, error } = useFetchApi();
+  const { fetchApi, isLoading } = useFetchApi();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -110,9 +110,9 @@ export const MemberTable = () => {
     {
       title: 'Actions',
       key: 'actions',
-      render: () => (
+      render: (record) => (
         <Space size="middle">
-          <Button icon={<EditOutlined />} />
+          <CreateUserModal formType='edit' modalOpenText='Edit User' modalOpenType='icon' modalFormFields={createCompanyUser} selectedUserData={record}/>
           <Button icon={<DeleteOutlined />} />
         </Space>
       ),

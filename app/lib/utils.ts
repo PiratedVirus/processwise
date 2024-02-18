@@ -17,6 +17,29 @@ export const arrayToString = (arr: string[]) => {
 export const parseRoleToCheckedStates = (userRole: string) => {
   return [...userRole].map(char => char === '1');
 };
+export const parseRoleToBinary = (selectedRoles: string[]) => {
+  const allRoles = ["Processing", "Approving", "Reporting", "Admin"];
+  let binary = '';
+
+  allRoles.forEach((role) => {
+    binary += selectedRoles.includes(role) ? '1' : '0';
+  });
+
+  return binary;
+};
+
+export const parseBinaryToRoles = (binary: string) => {
+  const allRoles = ["Processing", "Approving", "Reporting", "Admin"];
+  let selectedRoles: string[] = [];
+
+  binary.split('').forEach((bit, index) => {
+    if (bit === '1') {
+      selectedRoles.push(allRoles[index]);
+    }
+  });
+
+  return selectedRoles;
+};
 
 
 

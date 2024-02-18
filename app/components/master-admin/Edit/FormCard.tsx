@@ -34,7 +34,6 @@ const FormCard: React.FC<FormCardProps> = ({ formHeader, formData, formFeilds, e
       
 
     return (
-
         <Card title={formHeader} className='w-full m-4'>
             <Form
                 form={form}
@@ -55,7 +54,6 @@ const FormCard: React.FC<FormCardProps> = ({ formHeader, formData, formFeilds, e
                 ))}
             </Form>
         </Card>
-
     );
 };
 
