@@ -4,6 +4,7 @@ import { SearchOutlined, FilterOutlined, DeleteOutlined } from '@ant-design/icon
 import useFetchApi from '@/app/hooks/useFetchApi'; 
 import { parseRoleToCheckedStates } from '@/app/lib/utils';
 import CreateUserModal from '@/app/ui/CreateUserModal';
+import DeleteUserModal from '@/app/ui/DeleteUserModal';
 import {createCompanyUser} from '@/app/lib/form-defination/createCompanyUser'
 import { useSelector } from 'react-redux';
 const { Text } = Typography;
@@ -116,8 +117,19 @@ export const MemberTable = () => {
       key: 'actions',
       render: (record) => (
         <Space size="middle">
-          <CreateUserModal formName='editUser' formType='edit' modalOpenText='Edit User' modalOpenType='icon' modalFormFields={createCompanyUser} selectedUserData={record}/>
-          <Button icon={<DeleteOutlined />} />
+          <CreateUserModal 
+            formName='editUser' 
+            formType='edit' 
+            modalOpenText='Edit User' 
+            modalOpenType='icon' 
+            modalFormFields={createCompanyUser} 
+            selectedUserData={record}
+          />
+          <DeleteUserModal  
+            modalOpenText='Delete User' 
+            modalOpenType='icon' 
+            selectedUserData={record}
+          />
         </Space>
       ),
     },
