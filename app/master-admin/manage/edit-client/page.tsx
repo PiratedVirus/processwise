@@ -20,7 +20,7 @@ const EditClient: React.FC = () => {
 
   const dispatch = useDispatch();
   const router = useRouter();
-  const { response, handleUpdate } = useUpdateApi();
+  const { updateResponse, handleUpdate } = useUpdateApi();
   const [activeTabKey, setActiveTabKey] = useState('1');
   const [hideSaveBtn, setHideSaveBtn] = useState(true);
   const tabs = ['Client Info', 'IT configurations', 'Reports'];
@@ -85,8 +85,8 @@ const EditClient: React.FC = () => {
 
   return (
     <>
-      {response && (
-        <ResponseModal status={response.status} title={response.status === 'success' ? 'Success!' : 'Error!'} message={response.message} secondaryBtnText='Manage clients' secondaryBtnValue='/master-admin/manage' />
+      {updateResponse && (
+        <ResponseModal status={updateResponse.status} title={updateResponse.status === 'success' ? 'Success!' : 'Error!'} message={updateResponse.message} secondaryBtnText='Manage clients' secondaryBtnValue='/master-admin/manage' />
       )}
 
       <HeaderTitle

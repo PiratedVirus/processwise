@@ -1,16 +1,20 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { Table, Input, Button, Badge, Space, Typography, Spin, Row, Col } from 'antd';
-import { SearchOutlined, FilterOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Table, Input, Button, Space, Typography, Spin, Row, Col } from 'antd';
+import { SearchOutlined, FilterOutlined, DeleteOutlined } from '@ant-design/icons';
 import useFetchApi from '@/app/hooks/useFetchApi'; 
 import { parseRoleToCheckedStates } from '@/app/lib/utils';
 import CreateUserModal from '@/app/ui/CreateUserModal';
 import {createCompanyUser} from '@/app/lib/form-defination/createCompanyUser'
+import { useSelector } from 'react-redux';
 const { Text } = Typography;
 
 export const MemberTable = () => {
   const [data, setData] = useState([]);
   const [searchText, setSearchText] = useState('');
   const { fetchApi, isLoading } = useFetchApi();
+  const azureUserData = useSelector((state) => state.editFormData.azureUserData);
+  console.log('azureUserData', JSON.stringify(azureUserData));
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -23,7 +27,7 @@ export const MemberTable = () => {
     };
 
     fetchData();
-  }, [fetchApi]);
+  }, [fetchApi, azureUserData]);
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -112,7 +116,7 @@ export const MemberTable = () => {
       key: 'actions',
       render: (record) => (
         <Space size="middle">
-          <CreateUserModal formType='edit' modalOpenText='Edit User' modalOpenType='icon' modalFormFields={createCompanyUser} selectedUserData={record}/>
+          <CreateUserModal formName='editUser' formType='edit' modalOpenText='Edit User' modalOpenType='icon' modalFormFields={createCompanyUser} selectedUserData={record}/>
           <Button icon={<DeleteOutlined />} />
         </Space>
       ),
@@ -146,13 +150,13 @@ export const MemberTable = () => {
               value={searchText}
             />
           </Col>
-          <CreateUserModal modalOpenText='Create New User' modalOpenType='button' modalFormFields={createCompanyUser}/>
+          <CreateUserModal formName='createUser' formType='create' modalOpenText='Create New User' modalOpenType='button' modalFormFields={createCompanyUser}/>
 
         </Row>
         <Table
           columns={columns}
           dataSource={searchText ? globalSearch() : data}
-          rowKey="id"
+          rowKey={record => record.userId}
         />
       </div>
     </Spin>

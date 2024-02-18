@@ -1,78 +1,89 @@
 import React, { useState, useEffect } from 'react';
-import { Form,  Spin } from 'antd';
+import { Form, Spin } from 'antd';
 import useUpdateApi from '@/app/hooks/useUpdateApi';
 import useFetchApi from '@/app/hooks/useFetchApi';
 import ResponseModal from '@/app/ui/ResponseModal';
-import CreateUserModal from '@/app/ui/CreateUserModal';
 import CreateUserForm from '@/app/ui/CreateUserForm';
-import { createITAdminOnAzure } from '@/app/lib/form-defination/createITAdminAzure';
+import CreateUserModal from '@/app/ui/CreateUserModal';
+import  {createITAdminOnAzure}  from '@/app/lib/form-defination/createITAdminAzure';
 
+interface ClientDetail {
+  companyName: string;
+  itAdminEmail?: string;
+}
 
 interface AssignAdminProps {
   clientName: string;
 }
+
 const AssignAdmin: React.FC<AssignAdminProps> = ({ clientName }) => {
   const [form] = Form.useForm();
-
-  const { response, handleUpdate } = useUpdateApi();
+  const { updateResponse, handleUpdate } = useUpdateApi();
   const { isLoading, fetchApi } = useFetchApi();
-  const [clientsData, setClientsData] = useState<any>(null);
-  const [initialized, setInitialized] = useState(false);
-
-  let selectedClientName = clientName.split("=")[1].replace(/\+/g, ' ');
-
+  const [clientsData, setClientsData] = useState<ClientDetail | null>(null);
+  const selectedClientName = decodeURIComponent(clientName.split("=")[1]);
 
   useEffect(() => {
     const fetchData = async () => {
-      const selectedClientName = clientName.split("=")[1].replace(/\+/g, ' ');
       try {
         const data = await fetchApi('http://localhost:7071/api/fetchData', 'POST', { modelName: 'ClientDetail' });
-        const selectClientData = data.find((client: any) => client.companyName === selectedClientName);
-        setClientsData(selectClientData);
+        const selectedClientData = data.find((client: ClientDetail) => client.companyName === selectedClientName);
+        setClientsData(selectedClientData);
+        if (selectedClientData?.itAdminEmail) {
+          form.setFieldsValue({ adminEmail: selectedClientData.itAdminEmail });
+        }
       } catch (error) {
         console.error('Error:', error);
       }
     };
-
     fetchData();
-  }, [fetchApi, clientName]);
+  }, [clientName]); // Removed fetchApi from dependencies to avoid re-fetching due to function re-creation
 
-  useEffect(() => {
-    if (clientsData && !initialized) {
-      const preMail: string = clientsData.itAdminEmail;
-      form.setFieldsValue({
-        adminEmail: preMail,
-      });
-      setInitialized(true); // Prevent re-initialization
-    }
-  }, [clientsData, form, initialized]);
-
-  const assignAdmin = async (values: any) => {
-    const emailObject = JSON.parse(JSON.stringify(values));
-    const email = emailObject.adminEmail;
-    const itAdminEmail = { "itAdminEmail": email };
-    await handleUpdate('ClientDetail', "companyName", selectedClientName, itAdminEmail, "itAdminEmail");
+  const assignAdmin = async (values: { adminEmail: string }) => {
+    await handleUpdate('ClientDetail', "companyName", selectedClientName, { "itAdminEmail": values.adminEmail }, "itAdminEmail");
   };
-  const userFormFields = [{
-    name: 'adminEmail',
-    label: 'Admin Email',
-    rules: [{ type: 'email', required: true, message: 'Email is required' }],
-    inputType: 'Input',
-  }];
+
+  const userFormFields = [
+    {
+      name: 'adminEmail',
+      label: 'Admin Email',
+      rules: [{ type: 'email', required: true, message: 'Email is required' }],
+      inputType: 'Input',
+    },
+  ];
 
   return (
     <>
-
-      {response && (
-        <ResponseModal status={response.status} title={response.status === 'success' ? 'Success!' : 'Error!'} message={response.message} showPrimaryBtn={true} />
+      {updateResponse && (
+        <ResponseModal
+          status={updateResponse.status}
+          title={updateResponse.status === 'success' ? 'Success!' : 'Error!'}
+          message={updateResponse.message}
+          showPrimaryBtn={true}
+        />
       )}
       <Spin spinning={isLoading} tip="Loading...">
-        <CreateUserForm form={form} formName='dynamic_form_nest_item' layout={{ offset: 4, span: 18 }} submitBtnText='Assign IT Admin' onFinish={assignAdmin} formFields={userFormFields} />
-        <p className="text-gray-400 p-2 text-center">Make sure you fisrt <b> created user on Azure </b> before assiging user as IT Admin.</p>
-        <CreateUserModal modalOpenText='Create User on Azure' modalOpenType='text' modalFormFields={createITAdminOnAzure} />
-
+        <CreateUserForm
+          form={form}
+          formType="create"
+          formName="assignITAdmin"
+          layout={{ offset: 4, span: 18 }}
+          submitBtnText="Assign IT Admin"
+          onFinish={assignAdmin}
+          formFields={userFormFields}
+        />
+        <p className="text-gray-400 p-2 text-center">
+          Make sure you first <b>create user on Azure</b> before assigning user as IT Admin.
+        </p>
+        <CreateUserModal
+          formType="create"
+          modalOpenText="Create User on Azure"
+          modalOpenType="text"
+          modalFormFields={createITAdminOnAzure}
+        />
       </Spin>
     </>
   );
-}
+};
+
 export default AssignAdmin;

@@ -20,7 +20,7 @@ interface FormValues {
 
 const MailboxConfiguration: React.FC<MailboxProps> = ({ clientName }) => {
   const [form] = Form.useForm<FormValues>();
-  const { response, handleUpdate } = useUpdateApi();
+  const { updateResponse, handleUpdate } = useUpdateApi();
   const { isLoading, fetchApi } = useFetchApi();
   const [clientsData, setClientsData] = useState<any>(null);
   const [initialized, setInitialized] = useState(false);
@@ -63,8 +63,8 @@ const MailboxConfiguration: React.FC<MailboxProps> = ({ clientName }) => {
 
   return (
     <>
-      {response && (
-        <ResponseModal status={response.status} title={response.status === 'success' ? 'Success!' : 'Error!'} message={response.message} secondaryBtnText='Go Back' secondaryBtnValue='/master-admin/manage' />
+      {updateResponse && (
+        <ResponseModal status={updateResponse.status} title={updateResponse.status === 'success' ? 'Success!' : 'Error!'} message={updateResponse.message} secondaryBtnText='Go Back' secondaryBtnValue='/master-admin/manage' />
       )}
       <Spin spinning={isLoading} tip="Loading...">
         <Form

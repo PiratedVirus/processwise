@@ -83,7 +83,12 @@ const ScrollabelCardHolder: React.FC = () => {
           <div
             ref={scrollContainerRef}
             className="flex overflow-auto scrollbar-hide my-5 px-10 pt-3" // Added padding for buttons
-            style={{ scrollBehavior: "smooth" }}
+            style={{ 
+              scrollBehavior: "smooth",
+              overflowY: 'hidden',
+              scrollbarWidth: 'none', // For Firefox
+              msOverflowStyle: 'none' // For Internet Explorer and Edge
+            }}
           >
             {cardData.map((card, index) => (
               <CustomCard

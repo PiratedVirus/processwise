@@ -20,7 +20,7 @@ interface CreateUserFormProps {
   formFields: FormField[];
   submitBtnText: string;
   formName: string;
-  layout: any;
+  layout?: any;
   existingData?: any;
   formType: 'create' | 'edit';
 }
@@ -34,7 +34,7 @@ interface FormItemProps {
 const FormItem: React.FC<FormItemProps> = React.memo(({ field, existingData, formType }) => {
   const dispatch = useDispatch();
   let inputElement: React.ReactNode;
-
+  const userMailboxesAccessArr = existingData?.userMailboxesAccess?.split(", ");
   switch (field.inputType) {
     case 'Checkbox':
       inputElement = (
@@ -48,7 +48,7 @@ const FormItem: React.FC<FormItemProps> = React.memo(({ field, existingData, for
     case 'Dropdown':
       inputElement = (
         <>
-          <Select defaultValue={formType === 'edit' ? [existingData.userMailboxesAccess] : undefined} mode="multiple" onChange={(value: string[]) => dispatch(updateSelectedMailBoxes(value))}>
+          <Select defaultValue={formType === 'edit' ? userMailboxesAccessArr : undefined} mode="multiple" onChange={(value: string[]) => dispatch(updateSelectedMailBoxes(value))}>
             {field.options?.map((option, index) => (
               <Select.Option key={index} value={option}>{option}</Select.Option>
             ))}
