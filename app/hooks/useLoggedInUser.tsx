@@ -4,7 +4,7 @@ import useFetchApi from '@/app/hooks/useFetchApi';
 import { useDispatch } from 'react-redux';
 import { updateLoggedInUser } from '@/redux/reducers/loggedInUserReducer';
 
-const getLoggedInUser = () => {
+const useLoggedInUser = () => {
   const { data: session } = useSession();
   const dispatch = useDispatch();
   const { fetchApi } = useFetchApi();
@@ -35,4 +35,4 @@ const getLoggedInUser = () => {
   return { loadingUser };
 };
 
-export default getLoggedInUser;
+export default useLoggedInUser;
