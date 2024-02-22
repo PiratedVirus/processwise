@@ -10,25 +10,31 @@ import { useSelector } from 'react-redux';
 const { Text } = Typography;
 
 export const MemberTable = () => {
-  const [data, setData] = useState([]);
+  const [mailboxAssignedUsers, setMailboxAssignedUsers] = useState([]);
   const [searchText, setSearchText] = useState('');
   const { fetchApi, isLoading } = useFetchApi();
   const azureUserData = useSelector((state) => state.editFormData.azureUserData);
+  const dashboardSelectedMailbox = useSelector((state) => state.editFormData.dashboardSelectedMailbox);
   console.log('azureUserData', JSON.stringify(azureUserData));
+  console.log('dashboardSelectedMailbox', JSON.stringify(dashboardSelectedMailbox));
 
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responseData = await fetchApi('http://localhost:7071/api/fetchData', 'POST', { modelName: 'UserDetails', columnName: 'userCompany', columnValue: 'OYO' });
-        setData(responseData);
+        const whereConditions = [
+          { columnName: 'userCompany', columnValue: 'OYO'},
+          { columnName: 'userMailboxesAccess', columnValue: dashboardSelectedMailbox, contains: true}
+        ];
+        const responseData = await fetchApi('http://localhost:7071/api/fetchData', 'POST', { modelName: 'UserDetails', conditions: whereConditions});
+        setMailboxAssignedUsers(responseData);
       } catch (fetchError) {
         console.error('Fetch error:', fetchError);
       }
     };
 
     fetchData();
-  }, [fetchApi, azureUserData]);
+  }, [fetchApi, azureUserData, dashboardSelectedMailbox]);
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -136,12 +142,12 @@ export const MemberTable = () => {
   ], []);
 
   const globalSearch = () => {
-    const filteredData = data.filter(entry => 
+    const filteredData = mailboxAssignedUsers.filter(entry => 
       Object.values(entry).some(value => 
         value ? value.toString().toLowerCase().includes(searchText.toLowerCase()) : false
       )
     );
-    return filteredData.length > 0 ? filteredData : data;
+    return filteredData.length > 0 ? filteredData : mailboxAssignedUsers;
   };
 
   return (
@@ -167,7 +173,7 @@ export const MemberTable = () => {
         </Row>
         <Table
           columns={columns}
-          dataSource={searchText ? globalSearch() : data}
+          dataSource={searchText ? globalSearch() : mailboxAssignedUsers}
           rowKey={record => record.userId}
         />
       </div>

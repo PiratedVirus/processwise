@@ -1,17 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { Modal, Form, Button, Spin, Input, Alert} from 'antd';
+import React, { useState } from 'react';
+import { Modal, Form, Button, Spin, Input, Alert, message} from 'antd';
 import { useDispatch } from 'react-redux';
-import { useSession } from 'next-auth/react';
 import { updateAzureUserData } from '@/redux/reducers/editFormDataReducer';
 import ResponseModal from '@/app/ui/ResponseModal';
-import { DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import useFetchApi from '@/app/hooks/useFetchApi';
+import { DeleteOutlined } from '@ant-design/icons';
 import useDeleteApi from '@/app/hooks/useDeleteApi';
 
 interface DeleteUserModalProps {
     modalOpenText: string;
     modalOpenType: 'button' | 'text' | 'icon';
-    selectedUserData?: any; // It would be better to define a more specific type
+    selectedUserData?: any;
 }
 
 const DeleteUserModal: React.FC<DeleteUserModalProps> = ({
@@ -20,47 +18,29 @@ const DeleteUserModal: React.FC<DeleteUserModalProps> = ({
     selectedUserData,
 }) => {
     const dispatch = useDispatch();
-    const { data: session } = useSession();
-    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isFinalConfirmModalVisible, setIsFinalConfirmModalVisible] = useState(false);
     const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false);
-    const [loggedInUserData, setLoggedInUserData] = useState<any>(null); // A more specific type could be beneficial here
-    const { fetchApi } = useFetchApi();
     const { deleting, deleteResponse, handleDelete } = useDeleteApi();
     const [form] = Form.useForm();
 
-    useEffect(() => {
-        if (session) {
-            const fetchData = async () => {
-                try {
-                    const loggedInUser = session?.user?.email;
-                    const responseData = await fetchApi('http://localhost:7071/api/fetchData', 'POST', {
-                        modelName: 'UserDetails',
-                        columnName: 'userEmail',
-                        columnValue: loggedInUser,
-                    });
-                    setLoggedInUserData(responseData);
-                } catch (error) {
-                    console.error('Fetch error:', error);
-                }
-            };
-            fetchData();
-        }
-    }, [session, fetchApi]);
+  
 
     const openConfirmModal = () => setIsConfirmModalVisible(true);
     const closeConfirmModal = () => setIsConfirmModalVisible(false);
-    const openModal = () => setIsModalVisible(true);
-    const handleCancel = () => setIsModalVisible(false);
+    const openFinalConfirmModal = () => setIsFinalConfirmModalVisible(true);
+    const closeFinalConfirmModal = () => setIsFinalConfirmModalVisible(false);
 
-    const onFinish = (values: any) => {
-        console.log('Received values of form:', values);
+    const onFinish = async (values: any) => {
+    
+        console.log('Delete Request for: ', JSON.stringify(values));
         if (selectedUserData.userEmail === values.userEmail) {
+            console.log("Delete ID matched")
             dispatch(updateAzureUserData(values));
-            setIsModalVisible(false);
+            setIsFinalConfirmModalVisible(false);
             // Proceed with delete
-            handleDelete('UserDetails', 'userEmail', selectedUserData.userEmail);
+            await handleDelete('UserDetails', 'userEmail', selectedUserData.userEmail);
         } else {
-            console.error('User email does not match');
+              message.error('Please enter the correct user email to delete');
         }
     };
 
@@ -78,7 +58,7 @@ const DeleteUserModal: React.FC<DeleteUserModalProps> = ({
                     </Button>,
                     <Button key="submit" className='bg-red-600 text-white' onClick={() => {
                         closeConfirmModal();
-                        openModal();
+                        openFinalConfirmModal();
                     }}>
                         Confirm
                     </Button>,
@@ -88,8 +68,8 @@ const DeleteUserModal: React.FC<DeleteUserModalProps> = ({
                 
             </Modal>
             <Modal
-                open={isModalVisible}
-                onCancel={handleCancel}
+                open={isFinalConfirmModalVisible}
+                onCancel={closeFinalConfirmModal}
                 title={modalOpenText}
                 footer={null}
                 closable={true}
@@ -139,14 +119,14 @@ const DeleteUserModal: React.FC<DeleteUserModalProps> = ({
     );
 };
 
-function isModalButtonOrIcon(modalOpenType: 'button' | 'text' | 'icon', modalOpenText: string, openModal: () => void) {
+function isModalButtonOrIcon(modalOpenType: 'button' | 'text' | 'icon', modalOpenText: string, openFinalConfirmModal: () => void) {
     switch (modalOpenType) {
         case 'button':
-            return <Button onClick={openModal} className="bg-blue-700 text-white">{modalOpenText}</Button>;
+            return <Button onClick={openFinalConfirmModal} className="bg-blue-700 text-white">{modalOpenText}</Button>;
         case 'icon':
-            return <Button onClick={openModal} icon={<DeleteOutlined />}  />;
+            return <Button onClick={openFinalConfirmModal} icon={<DeleteOutlined />}  />;
         case 'text':
-            return <p onClick={openModal} className="text-blue-500 cursor-pointer">{modalOpenText}</p>;
+            return <p onClick={openFinalConfirmModal} className="text-blue-500 cursor-pointer">{modalOpenText}</p>;
         default:
             return null;
     }

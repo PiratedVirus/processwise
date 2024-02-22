@@ -3,8 +3,8 @@ const prisma = new PrismaClient();
 
 module.exports = async function fetchData(context, req) {
     try {
-        const { modelName, columnName, columnValue } = req.body;
-        console.log('modelName:', modelName , 'columnName:', columnName, 'columnValue:', columnValue);
+        const { modelName, conditions } = req.body;
+        console.log('modelName:', modelName , '@#@ conditions:', conditions);
         // Check if modelName is provided
         if (!modelName) {
             context.res = {
@@ -24,15 +24,17 @@ module.exports = async function fetchData(context, req) {
         }
 
         let data;
-        // If both columnName and columnValue are provided, fetch a single row
-        if (columnName && columnValue !== undefined) {
+        // If conditions are provided, fetch rows that match all conditions
+        if (conditions && conditions.length > 0) {
+            const whereConditions = conditions.reduce((acc, condition) => {
+                acc[condition.columnName] = condition.contains ? { contains: condition.columnValue } : condition.columnValue;
+                return acc;
+            }, {});
             data = await prisma[modelName].findMany({
-                where: {
-                    [columnName]: columnValue
-                }
+                where: whereConditions
             });
         } else {
-            // If columnName and columnValue are not provided, fetch all rows
+            // If conditions are not provided, fetch all rows
             data = await prisma[modelName].findMany();
         }
 
