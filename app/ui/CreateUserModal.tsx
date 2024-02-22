@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Modal, Form, Button, Spin } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import useAzureApi from '@/app/hooks/useAzureApi';

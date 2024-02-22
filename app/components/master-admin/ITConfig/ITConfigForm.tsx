@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import { Row, Col, Spin, Form, Input, Card } from 'antd'; 
-import MailboxConfiguration from '@/app/components/master-admin/ItConfig/MailboxConfig';
-import AssignAdmin from '@/app/components/master-admin/ItConfig/AssignAdmin';
+import MailboxConfiguration from '@/app/components/master-admin/ITConfig/MailboxConfig';
+import AssignAdmin from '@/app/components/master-admin/ITConfig/AssignAdmin';
 import {hideHeaderBtn} from '@/redux/reducers/uiInteractionReducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/redux/reducers/store';
