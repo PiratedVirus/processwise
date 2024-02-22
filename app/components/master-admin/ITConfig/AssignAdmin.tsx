@@ -16,6 +16,15 @@ interface AssignAdminProps {
   clientName: string;
 }
 
+interface FormField {
+  name: string;
+  label: string;
+  rules: any[];
+  inputType: 'Checkbox' | 'Dropdown' | 'Input';
+  options?: string[];
+  optionalText?: string;
+}
+
 const AssignAdmin: React.FC<AssignAdminProps> = ({ clientName }) => {
   const [form] = Form.useForm();
   const { updateResponse, handleUpdate } = useUpdateApi();
@@ -43,7 +52,16 @@ const AssignAdmin: React.FC<AssignAdminProps> = ({ clientName }) => {
     await handleUpdate('ClientDetail', "companyName", selectedClientName, { "itAdminEmail": values.adminEmail }, "itAdminEmail");
   };
 
-  const userFormFields = [
+  // const userFormFields = [
+  //   {
+  //     name: 'adminEmail',
+  //     label: 'Admin Email',
+  //     rules: [{ type: 'email', required: true, message: 'Email is required' }],
+  //     inputType: 'Input',
+  //   },
+  // ];
+
+  const userFormFields: FormField[] = [
     {
       name: 'adminEmail',
       label: 'Admin Email',
@@ -63,6 +81,8 @@ const AssignAdmin: React.FC<AssignAdminProps> = ({ clientName }) => {
         />
       )}
       <Spin spinning={isLoading} tip="Loading...">
+   
+
         <CreateUserForm
           form={form}
           formType="create"
@@ -76,6 +96,7 @@ const AssignAdmin: React.FC<AssignAdminProps> = ({ clientName }) => {
           Make sure you first <b>create user on Azure</b> before assigning user as IT Admin.
         </p>
         <CreateUserModal
+          formName='createITAdminAzure'
           formType="create"
           modalOpenText="Create User on Azure"
           modalOpenType="text"
