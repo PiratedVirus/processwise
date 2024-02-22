@@ -7,11 +7,12 @@ import useLoggedInUser from '@/app/hooks/useLoggedInUser';
 const SigninButton = () => {
   const { loadingUser } = useLoggedInUser();
   const loggedInUserData = useSelector((state: any) => state.loggedInUser);
+  console.log('loggedInUserData:', loggedInUserData);
 
   return (
     <div>
       <div className="flex gap-4 ml-auto items-center">
-        {loggedInUserData ? (
+        {loggedInUserData.length >= 1 ? (
           <>
             {loadingUser ? (<Spin className="mt-5 ml-10"> </Spin>) : (<Dropdown overlay={<Button type="primary" ghost onClick={() => signOut()} >Sign Out</Button>}>
               <a onClick={(e) => e.preventDefault()}>

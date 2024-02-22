@@ -106,3 +106,4 @@ __azurite_db*__.json
 .DS_Store
 
 directoryTree.txt
+.vercel
