@@ -3,9 +3,9 @@ import { signIn, signOut } from "next-auth/react";
 import { Spin, Button, Dropdown, Space  } from "antd";
 import { PoweroffOutlined } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
-import getLoggedInUser from '@/app/hooks/getLoggedInUser';
+import useLoggedInUser from '@/app/hooks/useLoggedInUser';
 const SigninButton = () => {
-  const { loadingUser } = getLoggedInUser();
+  const { loadingUser } = useLoggedInUser();
   const loggedInUserData = useSelector((state: any) => state.loggedInUser);
 
   return (

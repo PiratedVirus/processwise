@@ -2,12 +2,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import { MailOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import CustomCard from '@/app/ui/CustomCard';
 import useFetchApi from '@/app/hooks/useFetchApi';
-import getLoggedInUser from '@/app/hooks/getLoggedInUser';
+import useLoggedInUser from '@/app/hooks/useLoggedInUser';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateClientConfiguredMailboxes, updateDashboardSelectedMailbox } from '@/redux/reducers/editFormDataReducer';
 
 const ScrollableCardHolder: React.FC = () => {
-    getLoggedInUser();
+    useLoggedInUser();
     const loggedInUserData = useSelector((state: any) => state.loggedInUser);
     const { fetchApi } = useFetchApi();
     const dispatch = useDispatch();

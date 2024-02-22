@@ -9,7 +9,7 @@ import { EditOutlined } from '@ant-design/icons';
 import { arrayToString, parseRoleToBinary } from '@/app/lib/utils';
 import usePostApi from '@/app/hooks/usePostApi';
 import useUpdateApi from '@/app/hooks/useUpdateApi';
-import getLoggedInUser from '@/app/hooks/getLoggedInUser';
+import useLoggedInUser from '@/app/hooks/useLoggedInUser';
 
 interface CreateUserModalProps {
   modalOpenText: string;
@@ -35,7 +35,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
   const { updating, updateResponse, handleUpdate } = useUpdateApi();
   const [form] = Form.useForm();
 
-  getLoggedInUser();
+  useLoggedInUser();
   const loggedInUserData = useSelector((state: any) => state.loggedInUser);
 
   const openModal = () => setIsModalVisible(true);
