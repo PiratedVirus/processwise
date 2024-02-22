@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Form, Input, Button, Checkbox, Select } from 'antd';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { FormInstance } from 'antd/lib/form';
 import { updateSelectedMailBoxes } from '@/redux/reducers/editFormDataReducer';
 import { parseBinaryToRoles } from '../lib/utils';
@@ -34,6 +34,7 @@ interface FormItemProps {
 const FormItem: React.FC<FormItemProps> = React.memo(({ field, existingData, formType }) => {
   const dispatch = useDispatch();
   let inputElement: React.ReactNode;
+  const clientConfiguredMailboxes = useSelector((state: any) => state.editFormData.clientConfiguredMailboxes);
   const userMailboxesAccessArr = existingData?.userMailboxesAccess?.split(", ");
   switch (field.inputType) {
     case 'Checkbox':
@@ -49,7 +50,8 @@ const FormItem: React.FC<FormItemProps> = React.memo(({ field, existingData, for
       inputElement = (
         <>
           <Select defaultValue={formType === 'edit' ? userMailboxesAccessArr : undefined} mode="multiple" onChange={(value: string[]) => dispatch(updateSelectedMailBoxes(value))}>
-            {field.options?.map((option, index) => (
+            
+            {JSON.parse(clientConfiguredMailboxes).map((option: any, index: any) => (
               <Select.Option key={index} value={option}>{option}</Select.Option>
             ))}
           </Select>
@@ -81,6 +83,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ form, formName, submitB
   }, [existingData, formType]);
 
   return (
+    
     <Form
       form={form}
       name={formName}
@@ -100,6 +103,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ form, formName, submitB
         <Button className="bg-blue-700 text-white w-full" htmlType="submit">
           {submitBtnText}
         </Button>
+        
       </Form.Item>
     </Form>
   );

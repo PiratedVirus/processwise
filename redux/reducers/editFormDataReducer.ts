@@ -12,6 +12,8 @@ export const editFormDataSlice = createSlice({
     processInfo: {},
     azureUserData: {},
     selectedMailBoxes: [],
+    clientConfiguredMailboxes: [],
+    dashboardSelectedMailbox: ''
   },
   reducers: {
     updateGeneralInfo: (state, action) => {
@@ -29,10 +31,24 @@ export const editFormDataSlice = createSlice({
     },
     updateSelectedMailBoxes: (state, action) => {
       state.selectedMailBoxes = action.payload;
+    },
+    updateClientConfiguredMailboxes: (state, action) => {
+      state.clientConfiguredMailboxes = action.payload;
+    },
+    updateDashboardSelectedMailbox: (state, action) => {
+      state.dashboardSelectedMailbox = action.payload;
     }
   },
 });
 
-export const { updateGeneralInfo, updateProcessInfo, updateAzureUserData, updateCombinedFormData, updateSelectedMailBoxes } = editFormDataSlice.actions;
+export const { 
+  updateGeneralInfo, 
+  updateProcessInfo, 
+  updateAzureUserData, 
+  updateCombinedFormData, 
+  updateSelectedMailBoxes, 
+  updateClientConfiguredMailboxes,
+  updateDashboardSelectedMailbox
+ } = editFormDataSlice.actions;
 
 export default editFormDataSlice.reducer;

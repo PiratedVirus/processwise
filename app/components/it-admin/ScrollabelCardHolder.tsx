@@ -1,120 +1,80 @@
-import React, {useState, useRef} from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { MailOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import CustomCard from '@/app/ui/CustomCard';
-const cardData = [
-    {
-        id: "1",
-      headerText: "mailBoxOne@processwise.ai",
-      subText: "13 users",
-      headerTextSize: "text-lg",
-      height: "24",
-      width: "55",
-      link: "/user/it-admin",
-      icon: <MailOutlined style={{ fontSize: '1.5rem', marginRight: '1rem' }} />,
-    },
-    {
-        id: "2",
-      headerText: "mailBoxTwo@processwise.ai",
-      subText: "3 users",
-      headerTextSize: "text-lg",
-      height: "24",
-      width: "96",
-      link: "/user/it-admin",
-      icon: <MailOutlined style={{ fontSize: '1.5rem', marginRight: '1rem' }} />,
-    },
-    // Add 3 more entries as per your requirement
-    {
-        id: "3",
-      headerText: "mailBoxThree@processwise.ai",
-      subText: "8 users",
-      headerTextSize: "text-lg",
-      height: "24",
-      width: "96",
-      link: "/user/it-admin",
-      icon: <MailOutlined style={{ fontSize: '1.5rem', marginRight: '1rem' }} />,
-    },
-    {
-        id: "4",
-      headerText: "mailBoxFour@processwise.ai",
-      subText: "5 users",
-      headerTextSize: "text-lg",
-      height: "24",
-      width: "96",
-      link: "/user/it-admin",
-      icon: <MailOutlined style={{ fontSize: '1.5rem', marginRight: '1rem' }} />,
-    },
-    {
-        id: "5",
-      headerText: "mailBoxFive@processwise.ai",
-      subText: "2 users",
-      headerTextSize: "text-lg",
-      height: "44",
-      width: "96",
-      link: "/user/it-admin",
-      icon: <MailOutlined style={{ fontSize: '1.5rem', marginRight: '1rem' }} />,
-    }
-  ];
+import useFetchApi from '@/app/hooks/useFetchApi';
+import getLoggedInUser from '@/app/hooks/getLoggedInUser';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateClientConfiguredMailboxes, updateDashboardSelectedMailbox } from '@/redux/reducers/editFormDataReducer';
 
-const ScrollabelCardHolder: React.FC = () => {
+const ScrollableCardHolder: React.FC = () => {
+    getLoggedInUser();
+    const loggedInUserData = useSelector((state: any) => state.loggedInUser);
+    const { fetchApi } = useFetchApi();
+    const dispatch = useDispatch();
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const [selectedCard, setSelectedCard] = useState<string | null>(null);
+    const [clientMailboxData, setClientMailboxData] = useState<any>(null);
   
-    const handleCardClick = (id: string) => {
-      setSelectedCard(id);
+
+    useEffect(() => {
+      if(loggedInUserData) {
+        console.log('loggedInUserData ****', JSON.stringify(loggedInUserData.user[0]))
+        const fetchData = async () => {
+          try {
+            const whereCondition = [
+                { columnName: 'companyName', columnValue: loggedInUserData.user[0].userCompany }
+            ];
+            console.log('whereCondition', JSON.stringify(whereCondition))
+
+            const mailboxResponseData = await fetchApi('http://localhost:7071/api/fetchData', 'POST', { modelName: 'ClientDetail', conditions: whereCondition});
+            setClientMailboxData(mailboxResponseData[0].configuredMailboxes);
+            dispatch(updateClientConfiguredMailboxes(mailboxResponseData[0].configuredMailboxes));
+            console.log('mailboxResponseData', JSON.stringify(mailboxResponseData[0]))
+          } catch (fetchError) {
+            console.error('Fetch error:', fetchError);
+          }
+        };
+  
+        fetchData();
+      }
+    }, [loggedInUserData, fetchApi, dispatch]);
+  
+    const handleCardClick = (headerText: string) => {
+      setSelectedCard(headerText);
+      dispatch(updateDashboardSelectedMailbox(headerText)); // Dispatch action with the selected card's headerText
     };
+
     const scroll = (scrollOffset: number) => {
       if (scrollContainerRef.current) {
         scrollContainerRef.current.scrollLeft += scrollOffset;
       }
     };
+
     return (
-        <div className="flex flex-col items-center relative w-full bg-neutral-100 "> {/* Adjusted for relative positioning */}
-        {/* Container for cards and buttons */}
-        <div className="flex items-center justify-center w-full">
-          {/* Left Scroll Button */}
-          <button
-            onClick={() => scroll(-200)}
-            className="relative z-10 m-2" // Adjusted for better alignment
-          >
-            <LeftOutlined style={{ fontSize: '1.5rem', color: 'rgba(0, 0, 0, 0.5)' }} />
-          </button>
-          
-          {/* Scrollable Container for Cards */}
-          <div
-            ref={scrollContainerRef}
-            className="flex overflow-auto scrollbar-hide my-5 px-10 pt-3" // Added padding for buttons
-            style={{ 
-              scrollBehavior: "smooth",
-              overflowY: 'hidden',
-              scrollbarWidth: 'none', // For Firefox
-              msOverflowStyle: 'none' // For Internet Explorer and Edge
-            }}
-          >
-            {cardData.map((card, index) => (
-              <CustomCard
-                key={index}
-                headerText={card.headerText}
-                // subText={card.subText}
-                customHeight={card.height}
-                customWidth={card.width}
-                link={card.link}
-                icon={card.icon}
-                selected={selectedCard === card.id}
-                onSelect={() => handleCardClick(card.id)}
-              />
-            ))}
-          </div>
+        <div className="flex flex-col items-center relative w-full bg-neutral-100">
+          <div className="flex items-center justify-center w-full">
+            <button onClick={() => scroll(-200)} className="relative z-10 m-2">
+              <LeftOutlined style={{ fontSize: '1.5rem', color: 'rgba(0, 0, 0, 0.5)' }} />
+            </button>
+            
+            <div ref={scrollContainerRef} className="flex overflow-auto scrollbar-hide my-5 px-10 pt-3" style={{ scrollBehavior: "smooth", overflowY: 'hidden' }}>
+              {JSON.parse(clientMailboxData)?.map((card: any, index: number) => (
+                <CustomCard
+                  key={index}
+                  headerText={card} // Make sure this matches your data structure
+                  icon={<MailOutlined style={{ fontSize: '1.5rem', marginRight: '1rem' }} />}
+                  selected={selectedCard === card}
+                  onSelect={() => handleCardClick(card)} // Pass the headerText to handleCardClick
+                />
+              ))}
+            </div>
   
-          {/* Right Scroll Button */}
-          <button
-            onClick={() => scroll(200)}
-            className="relative z-10 m-2" // Adjusted for better alignment
-          >
-            <RightOutlined style={{ fontSize: '1.5rem', color: 'rgba(0, 0, 0, 0.5)' }} />
-          </button>
+            <button onClick={() => scroll(200)} className="relative z-10 m-2">
+              <RightOutlined style={{ fontSize: '1.5rem', color: 'rgba(0, 0, 0, 0.5)' }} />
+            </button>
+          </div>
         </div>
-      </div>
     );
 }
 
-export default ScrollabelCardHolder;
+export default ScrollableCardHolder;
