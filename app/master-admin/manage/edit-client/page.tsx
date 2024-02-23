@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Button, Result } from 'antd';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateCombinedFormData } from '@/redux/reducers/editFormDataReducer';
+import { updateCombinedFormData, updateSelectedClientInMasterAdmin } from '@/redux/reducers/editFormDataReducer';
 import useUpdateApi from '@/app/hooks/useUpdateApi';
 import EditClientForm from '@/app/components/master-admin/Edit/EditClientForm';
 import ResponseModal from '@/app/ui/ResponseModal';
@@ -12,7 +12,6 @@ import HeaderTitle from '@/app/ui/HeaderTitle';
 import CustomTabsPane from '@/app/ui/CustomTabsPane';
 import ItConfigForm from '@/app/components/master-admin/ITConfig/ITConfigForm';
 import withAuth from '@/app/auth/withAuth'
-import {updateSelectedClientInMasterAdmin } from '@/redux/reducers/editFormDataReducer';
 
 
 const EditClient: React.FC = () => {

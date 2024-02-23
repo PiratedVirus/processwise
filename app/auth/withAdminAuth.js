@@ -7,7 +7,7 @@ const { Title, Text } = Typography;
 
 const withAdminAuth = (WrappedComponent) => {
     return function WithAdminAuth(props) {
-        const { status, data: sessionData } = useSession();
+        const { status } = useSession();
         const loggedInUserHook = useLoggedInUser();
         const loggedInUserData = useSelector((state) => state.loggedInUser);
         const [userPosition, setUserPosition] = useState(null);
