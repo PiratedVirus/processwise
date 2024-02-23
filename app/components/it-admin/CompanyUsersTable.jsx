@@ -7,6 +7,7 @@ import CreateUserModal from '@/app/ui/CreateUserModal';
 import DeleteUserModal from '@/app/ui/DeleteUserModal';
 import {createCompanyUser} from '@/app/lib/form-defination/createCompanyUser'
 import { useSelector } from 'react-redux';
+import useLoggedInUser from '@/app/hooks/useLoggedInUser';
 const { Text } = Typography;
 
 export const MemberTable = () => {
@@ -17,13 +18,15 @@ export const MemberTable = () => {
   const dashboardSelectedMailbox = useSelector((state) => state.editFormData.dashboardSelectedMailbox);
   console.log('azureUserData', JSON.stringify(azureUserData));
   console.log('dashboardSelectedMailbox', JSON.stringify(dashboardSelectedMailbox));
+  useLoggedInUser();
+  const loggedInUserData = useSelector((state) => state.loggedInUser);
 
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const whereConditions = [
-          { columnName: 'userCompany', columnValue: 'OYO'},
+          { columnName: 'userCompany', columnValue: loggedInUserData.user[0].userCompany},
           { columnName: 'userMailboxesAccess', columnValue: dashboardSelectedMailbox, contains: true}
         ];
         const responseData = await fetchApi('http://localhost:7071/api/fetchData', 'POST', { modelName: 'UserDetails', conditions: whereConditions});

@@ -2,6 +2,7 @@
 import React from "react";
 import ScrollableCardHolder from "@/app/components/it-admin/ScrollabelCardHolder";
 import { MemberTable } from "@/app/components/it-admin/CompanyUsersTable";
+import withAuth from "@/app/auth/withAuth";
 
 const AdminPage: React.FC = () => {
   return (
@@ -12,4 +13,4 @@ const AdminPage: React.FC = () => {
   );
 }
 
-export default AdminPage;
+export default withAuth(AdminPage);

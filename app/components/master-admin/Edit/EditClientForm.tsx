@@ -25,7 +25,7 @@ const EditClientForm: React.FC<EditClientFormProps> = ({ clientName, hideSaveBtn
         dispatch(showHeaderBtn());
     });
 
-    let selectedClientName = clientName.split("=")[1].replace(/\+/g, ' ');
+    let selectedClientName = clientName?.split("=")[1]?.replace(/\+/g, ' ');
 
     useEffect(() => {
         fetchApi('http://localhost:7071/api/fetchData', 'POST', { modelName: 'ClientDetail' })

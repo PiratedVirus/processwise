@@ -12,17 +12,21 @@ import HeaderTitle from '@/app/ui/HeaderTitle';
 import CustomTabsPane from '@/app/ui/CustomTabsPane';
 import ItConfigForm from '@/app/components/master-admin/ITConfig/ITConfigForm';
 import withAuth from '@/app/auth/withAuth'
+import {updateSelectedClientInMasterAdmin } from '@/redux/reducers/editFormDataReducer';
 
 
 const EditClient: React.FC = () => {
   const clientName  = useSearchParams().toString();
   console.log(` search param is ${clientName}`);
 
+
+
   const dispatch = useDispatch();
   const router = useRouter();
   const { updateResponse, handleUpdate } = useUpdateApi();
   const [activeTabKey, setActiveTabKey] = useState('1');
   const [hideSaveBtn, setHideSaveBtn] = useState(true);
+  dispatch(updateSelectedClientInMasterAdmin(clientName.split('=')[1]));
   const tabs = ['Client Info', 'IT configurations', 'Reports'];
   const headerButtons = [
     {

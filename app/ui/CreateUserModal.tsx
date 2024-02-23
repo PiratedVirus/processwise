@@ -14,8 +14,8 @@ import useLoggedInUser from '@/app/hooks/useLoggedInUser';
 interface CreateUserModalProps {
   modalOpenText: string;
   modalOpenType: 'button' | 'text' | 'icon';
-  modalFormFields: any; // Ideally, define a more specific type
-  selectedUserData?: any; // Ideally, define a more specific type
+  modalFormFields: any; 
+  selectedUserData?: any; 
   formType: 'create' | 'edit';
   formName: string;
 }
@@ -25,11 +25,12 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
   modalOpenType,
   modalFormFields,
   selectedUserData,
-  formType
+  formType,
 }) => {
   const dispatch = useDispatch();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const selectedMailBoxes = useSelector((state: any) => state.editFormData.selectedMailBoxes);
+  const selectedClientInMasterAdmin = useSelector((state: any) => state.editFormData.selectedClientInMasterAdmin);
   const { response, handleSubmit } = usePostApi();
   const { connecting, azureResponse, connectAzure } = useAzureApi();
   const { updating, updateResponse, handleUpdate } = useUpdateApi();
@@ -49,23 +50,28 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
       invitedUserEmailAddress: values.userEmail,
       invitedUserDisplayName: values.userName,
       invitedUserType: "Member",
-      inviteRedirectUrl: "https://www.example.com/welcome",
+      inviteRedirectUrl: "http://localhost:3000/user/it-admin",
       sendInvitationMessage: true,
       invitedUserMessageInfo: {
         customizedMessageBody: "Hello, we're excited to welcome you to our team! Please accept this invitation to join our organization's platform.",
         messageLanguage: "en-US"
       }
     };
+    const isMasterAdmin = loggedInUserData.user[0].userPosition === 'Master Admin';
+    const userCompany = isMasterAdmin ? selectedClientInMasterAdmin : loggedInUserData.user[0].userCompany;
+    const userPosition = isMasterAdmin ? 'IT Admin' : 'End User';
+    
     const userData = {
       userName: values.userName,
       userEmail: values.userEmail,
-      userCompany: loggedInUserData.user[0].userCompany || 'DefaultCompany', // Fallback to a default value if not found
+      userCompany: userCompany, 
       userStatus: "Pending",
-      userPosition: "End User",
+      userPosition: userPosition,
       userVerified: false,
       userMailboxesAccess: arrayToString(selectedMailBoxes),
-      userRole: parseRoleToBinary(values.userRole)
+      userRole: (values.userRole) ? parseRoleToBinary(values.userRole) : '1111'
     };
+
     if(formType === 'create') {
       connectAzure('createUsers', inviteData);
       handleSubmit('UserDetails', userData);

@@ -2,7 +2,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Button, Result } from 'antd'; 
-import withAuth from '@/app/auth/withAuth'
+import withAdminAuth from '@/app/auth/withAdminAuth'
 
 const Page: React.FC = () => {
 
@@ -21,4 +21,4 @@ const Page: React.FC = () => {
   );
 };
 
-export default withAuth(Page);
+export default withAdminAuth(Page);

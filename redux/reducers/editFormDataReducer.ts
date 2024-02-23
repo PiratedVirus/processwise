@@ -13,7 +13,8 @@ export const editFormDataSlice = createSlice({
     azureUserData: {},
     selectedMailBoxes: [],
     clientConfiguredMailboxes: [],
-    dashboardSelectedMailbox: ''
+    dashboardSelectedMailbox: '',
+    selectedClientInMasterAdmin: '',
   },
   reducers: {
     updateGeneralInfo: (state, action) => {
@@ -37,7 +38,10 @@ export const editFormDataSlice = createSlice({
     },
     updateDashboardSelectedMailbox: (state, action) => {
       state.dashboardSelectedMailbox = action.payload;
-    }
+    },
+    updateSelectedClientInMasterAdmin: (state, action) => {
+      state.selectedClientInMasterAdmin = action.payload;
+    } 
   },
 });
 
@@ -48,7 +52,8 @@ export const {
   updateCombinedFormData, 
   updateSelectedMailBoxes, 
   updateClientConfiguredMailboxes,
-  updateDashboardSelectedMailbox
+  updateDashboardSelectedMailbox,
+  updateSelectedClientInMasterAdmin
  } = editFormDataSlice.actions;
 
 export default editFormDataSlice.reducer;

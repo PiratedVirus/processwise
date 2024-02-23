@@ -12,7 +12,7 @@ const SigninButton = () => {
   return (
     <div>
       <div className="flex gap-4 ml-auto items-center">
-        {loggedInUserData.length >= 1 ? (
+        {loggedInUserData.user && Object.keys(loggedInUserData.user).length != 0 ? (
           <>
             {loadingUser ? (<Spin className="mt-5 ml-10"> </Spin>) : (<Dropdown overlay={<Button type="primary" ghost onClick={() => signOut()} >Sign Out</Button>}>
               <a onClick={(e) => e.preventDefault()}>
