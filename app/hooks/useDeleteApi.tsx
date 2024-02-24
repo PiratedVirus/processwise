@@ -10,7 +10,7 @@ const useDeleteApi = () => {
     setDeleteResponse(null);
     console.log(" !! 1.Deleteing ", deleting, " deleteResponse ", JSON.stringify(deleteResponse))
     try {
-      await axios.post(`http://localhost:7071/api/delete`, { modelName, idKey, idValue }); // Note: Axios DELETE requests must send data in the `data` field
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/delete`, { modelName, idKey, idValue }); // Note: Axios DELETE requests must send data in the `data` field
 
       setDeleteResponse({ status: 'success', message: `${modelName} deleted successfully!` });
       console.log(" !! 2.Deleteing ", deleting, " deleteResponse ", JSON.stringify(deleteResponse))

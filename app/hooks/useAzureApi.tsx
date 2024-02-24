@@ -11,7 +11,7 @@ const useAzureApi = () => {
     console.log('userData: ', JSON.stringify(userData) + " ####");
 
     try {
-      await axios.post(`http://localhost:7071/api/${endpoint}`, userData );
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URLxp}/${endpoint}`, userData );
       setAzureResponse({ status: 'success', message: `${userData} registered successfully!` });
     } catch (error) {
       console.error(`Error registering ${userData}:`, error);

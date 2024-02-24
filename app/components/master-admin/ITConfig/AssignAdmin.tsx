@@ -35,7 +35,7 @@ const AssignAdmin: React.FC<AssignAdminProps> = ({ clientName }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await fetchApi('http://localhost:7071/api/fetchData', 'POST', { modelName: 'ClientDetail' });
+        const data = await fetchApi(`${process.env.NEXT_PUBLIC_API_URL}/fetchData`, 'POST', { modelName: 'ClientDetail' });
         const selectedClientData = data.find((client: ClientDetail) => client.companyName === selectedClientName);
         setClientsData(selectedClientData);
         if (selectedClientData?.itAdminEmail) {

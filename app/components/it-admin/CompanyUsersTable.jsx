@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { Table, Input, Button, Space, Typography, Spin, Row, Col } from 'antd';
-import { SearchOutlined, FilterOutlined, DeleteOutlined } from '@ant-design/icons';
+import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
 import useFetchApi from '@/app/hooks/useFetchApi'; 
 import { parseRoleToCheckedStates } from '@/app/lib/utils';
 import CreateUserModal from '@/app/ui/CreateUserModal';
@@ -29,7 +29,7 @@ export const MemberTable = () => {
           { columnName: 'userCompany', columnValue: loggedInUserData.user[0].userCompany},
           { columnName: 'userMailboxesAccess', columnValue: dashboardSelectedMailbox, contains: true}
         ];
-        const responseData = await fetchApi('http://localhost:7071/api/fetchData', 'POST', { modelName: 'UserDetails', conditions: whereConditions});
+        const responseData = await fetchApi(`${process.env.NEXT_PUBLIC_API_URL}/fetchData`, 'POST', { modelName: 'UserDetails', conditions: whereConditions});
         setMailboxAssignedUsers(responseData);
       } catch (fetchError) {
         console.error('Fetch error:', fetchError);

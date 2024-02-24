@@ -16,7 +16,7 @@ const usePostApi = () => {
         ...formData,
       };
 
-      await axios.post('http://localhost:7071/api/post', { modelName, userData });
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/post`, { modelName, userData });
 
       setResponse({ status: 'success', message: `${modelName} registered successfully!` });
     } catch (error) {
