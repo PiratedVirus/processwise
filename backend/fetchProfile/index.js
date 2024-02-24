@@ -7,7 +7,7 @@ const msalConfig = {
       authority: `https://login.microsoftonline.com/${process.env.AZURE_AD_TENANT_ID}`,
       clientSecret: process.env.AZURE_AD_CLIENT_SECRET,
     }
-  };
+};
   
 
 const cca = new msal.ConfidentialClientApplication(msalConfig);

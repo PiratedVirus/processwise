@@ -1,6 +1,12 @@
 const axios = require('axios');
 const msal = require('@azure/msal-node');
-const msalConfig = require('../configs/msalConfig');
+const msalConfig = {
+    auth: {
+      clientId: process.env.AZURE_AD_CLIENT_ID,
+      authority: `https://login.microsoftonline.com/${process.env.AZURE_AD_TENANT_ID}`,
+      clientSecret: process.env.AZURE_AD_CLIENT_SECRET,
+    }
+};
 
 const cca = new msal.ConfidentialClientApplication(msalConfig);
 
