@@ -58,6 +58,7 @@ async function fetchUserProfile(userEmail: string): Promise<UserProfile> {
 export async function POST(req: NextRequest) {
   try {
     const { userEmail } = await req.json();
+    console.log('userEmail', userEmail);
     if (!userEmail) {
       return new NextResponse(JSON.stringify({ error: 'User email is required in the request body.' }), {
         status: 400,
