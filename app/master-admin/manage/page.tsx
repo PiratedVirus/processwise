@@ -15,10 +15,10 @@ const ManageClients: React.FC = () => {
   const dispatch = useDispatch();
   const { clientsData, isLoading } = useSelector((state: RootState) => state.clientData); // Correct based on your store configuration
   const { fetchApi } = useFetchApi();
-
+  console.log('clientsData:', JSON.stringify(clientsData));
   useEffect(() => {
     dispatch(fetchClientsBegin());
-    fetchApi(`${process.env.NEXT_PUBLIC_API_URL}/fetchData`, 'POST', { modelName: 'ClientDetail' })
+    fetchApi(`${process.env.NEXT_PUBLIC_API_URL}/fetch`, 'POST', { modelName: 'ClientDetail' })
       .then(data => {
         dispatch(fetchClientsSuccess(data));
       })

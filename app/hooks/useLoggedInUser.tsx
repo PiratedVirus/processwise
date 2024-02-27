@@ -16,7 +16,7 @@ const useLoggedInUser = () => {
       const fetchData = async () => {
         setLoadingUser(true);
         try {
-          const responseData = await fetchApi(`${process.env.NEXT_PUBLIC_API_URL}/fetchData`, 'POST', {
+          const responseData = await fetchApi(`${process.env.NEXT_PUBLIC_API_URL}/fetch`, 'POST', {
             modelName: 'UserDetails',
             conditions: [{ columnName: 'userEmail', columnValue: session.user.email }],
           });

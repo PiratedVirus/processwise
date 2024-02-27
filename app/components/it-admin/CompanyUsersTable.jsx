@@ -29,7 +29,7 @@ export const MemberTable = () => {
           { columnName: 'userCompany', columnValue: loggedInUserData.user[0].userCompany},
           { columnName: 'userMailboxesAccess', columnValue: dashboardSelectedMailbox, contains: true}
         ];
-        const responseData = await fetchApi(`${process.env.NEXT_PUBLIC_API_URL}/fetchData`, 'POST', { modelName: 'UserDetails', conditions: whereConditions});
+        const responseData = await fetchApi(`${process.env.NEXT_PUBLIC_API_URL}/fetch`, 'POST', { modelName: 'UserDetails', conditions: whereConditions});
         setMailboxAssignedUsers(responseData);
       } catch (fetchError) {
         console.error('Fetch error:', fetchError);

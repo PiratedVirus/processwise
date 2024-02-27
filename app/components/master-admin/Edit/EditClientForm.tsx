@@ -28,7 +28,7 @@ const EditClientForm: React.FC<EditClientFormProps> = ({ clientName, hideSaveBtn
     let selectedClientName = clientName?.split("=")[1]?.replace(/\+/g, ' ');
 
     useEffect(() => {
-        fetchApi(`${process.env.NEXT_PUBLIC_API_URL}/fetchData`, 'POST', { modelName: 'ClientDetail' })
+        fetchApi(`${process.env.NEXT_PUBLIC_API_URL}/fetch`, 'POST', { modelName: 'ClientDetail' })
             .then(data => {
                 const selectClientData = data.find((client: any) => client.companyName === selectedClientName);
                 setClientsData(selectClientData);

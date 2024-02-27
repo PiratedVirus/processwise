@@ -15,7 +15,7 @@ interface ClientGridProps {
 
 const ClientGrid: React.FC<ClientGridProps> = ({ clients }) => (
   <Row gutter={16}>
-    {clients.map(client => (
+    {clients?.map(client => (
       <Col key={client.id} xs={24} sm={12} md={8} lg={6}>
         <ClientCard name={client.companyName} location={client.city} />
       </Col>
