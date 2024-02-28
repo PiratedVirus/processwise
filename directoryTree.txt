@@ -1,117 +1,126 @@
 .
-├── .DS_Store
-├── .env
-├── .gitignore
-├── .nvmrc
-├── .vscode
-│   ├── extensions.json
-│   ├── launch.json
-│   ├── settings.json
-│   └── tasks.json
 ├── README.md
 ├── app
-│   ├── api
-│   │   └── auth
-│   │       └── [...nextauth]
-│   │           └── route.ts
-│   ├── assets
-│   │   └── svg
-│   │       └── logo.svg
-│   ├── auth
-│   │   └── withAuth.js
-│   ├── components
-│   │   ├── AlertComponent.tsx
-│   │   ├── Button.tsx
-│   │   ├── CardComponent.tsx
-│   │   ├── EmailInputComponent.tsx
-│   │   ├── MasterAdmin
-│   │   │   └── Clients
-│   │   │       ├── Edit
-│   │   │       │   └── EditClientPage.tsx
-│   │   │       ├── Manage
-│   │   │       │   ├── ClientCard.tsx
-│   │   │       │   ├── ClientGrid.tsx
-│   │   │       │   ├── CreateClientCard.tsx
-│   │   │       │   └── ManageClientsPage.tsx
-│   │   │       └── Register
-│   │   │           ├── RegisterClientForm.tsx
-│   │   │           └── RegisterClientsPage.tsx
-│   │   ├── SubmitButtonComponent.tsx
-│   │   ├── Table
-│   │   │   └── PaginationComponent.tsx
-│   │   ├── TopNavBar.tsx
-│   │   ├── UserInputComponent.tsx
-│   │   └── UserSelectComponent.tsx
-│   ├── dashboard
-│   │   ├── layout.tsx
-│   │   ├── mailboxes
-│   │   │   ├── EmailInput.tsx
-│   │   │   ├── EmailList.tsx
-│   │   │   └── page.tsx
-│   │   ├── manage
-│   │   │   ├── edit-client
-│   │   │   │   └── page.tsx
-│   │   │   ├── page.tsx
-│   │   │   └── register-client
-│   │   │       └── page.tsx
-│   │   ├── page.tsx
-│   │   └── users
-│   │       ├── MemberTable.jsx
-│   │       └── page.tsx
-│   ├── hooks
-│   │   ├── useFetchApi.tsx
-│   │   └── usePostApi.tsx
-│   ├── layout.tsx
-│   ├── lib
-│   │   ├── Providers.tsx
-│   │   ├── data.ts
-│   │   ├── definitions.ts
-│   │   ├── placeholder-data.js
-│   │   ├── prisma.ts
-│   │   ├── scss
-│   │   │   └── CustomAGGridStyles.css
-│   │   ├── types.d.ts
-│   │   └── utils.ts
-│   ├── page.tsx
-│   └── ui
-│       ├── Appbar.tsx
-│       ├── EmailList.jsx
-│       ├── SigninButton.tsx
-│       ├── acme-logo.tsx
-│       ├── button.tsx
-│       ├── dashboard
-│       │   ├── nav-links.tsx
-│       │   └── sidenav.tsx
-│       ├── fonts.ts
-│       ├── global.css
-│       ├── login-form.tsx
-│       ├── search.tsx
-│       └── skeletons.tsx
+│   ├── admin
+│   │   ├── layout.tsx
+│   │   ├── manage
+│   │   │   ├── edit-client
+│   │   │   │   └── page.tsx
+│   │   │   ├── page.tsx
+│   │   │   └── register-client
+│   │   │       └── page.tsx
+│   │   └── page.tsx
+│   ├── api
+│   │   ├── (azure)
+│   │   │   ├── createUsers
+│   │   │   │   └── route.ts
+│   │   │   └── fetchProfile
+│   │   │       └── route.ts
+│   │   ├── (crud)
+│   │   │   ├── delete
+│   │   │   │   └── route.ts
+│   │   │   ├── fetch
+│   │   │   │   └── route.ts
+│   │   │   ├── post
+│   │   │   │   └── route.ts
+│   │   │   └── update
+│   │   │       └── route.ts
+│   │   └── auth
+│   │       └── [...nextauth]
+│   │           └── route.ts
+│   ├── auth
+│   │   ├── withAdminAuth.js
+│   │   └── withAuth.js
+│   ├── components
+│   │   ├── it-admin
+│   │   │   ├── CompanyUsersTable.jsx
+│   │   │   └── ScrollabelCardHolder.tsx
+│   │   └── master-admin
+│   │       ├── Edit
+│   │       │   ├── EditClientForm.tsx
+│   │       │   └── FormCard.tsx
+│   │       ├── ITConfig
+│   │       │   ├── AssignAdmin.tsx
+│   │       │   ├── ITConfigForm.tsx
+│   │       │   └── MailboxConfig.tsx
+│   │       ├── Manage
+│   │       │   ├── ClientCard.tsx
+│   │       │   ├── ClientGrid.tsx
+│   │       │   └── CreateClientCard.tsx
+│   │       └── Register
+│   │           └── RegisterClientForm.tsx
+│   ├── hooks
+│   │   ├── useAzureApi.tsx
+│   │   ├── useDeleteApi.tsx
+│   │   ├── useFetchApi.tsx
+│   │   ├── useLoggedInUser.tsx
+│   │   ├── usePostApi.tsx
+│   │   └── useUpdateApi.tsx
+│   ├── layout.tsx
+│   ├── lib
+│   │   ├── Providers.tsx
+│   │   ├── form-defination
+│   │   │   ├── createCompanyUser.ts
+│   │   │   ├── createITAdminAzure.ts
+│   │   │   ├── registerClientDocProcessing.ts
+│   │   │   └── registerClientGeneralInfo.ts
+│   │   ├── msalUtils.ts
+│   │   ├── prisma.ts
+│   │   ├── prismaUtils.ts
+│   │   ├── scss
+│   │   │   └── CustomAGGridStyles.css
+│   │   ├── table-defination
+│   │   ├── types.d.ts
+│   │   └── utils.ts
+│   ├── page.tsx
+│   └── ui
+│       ├── CenterSpin.tsx
+│       ├── CreateUserForm.tsx
+│       ├── CreateUserModal.tsx
+│       ├── CustomCard.tsx
+│       ├── CustomTabsPane.tsx
+│       ├── DashboardLayout.tsx
+│       ├── DeleteUserForm.tsx
+│       ├── DeleteUserModal.tsx
+│       ├── HeaderTitle.tsx
+│       ├── ResponseModal.tsx
+│       ├── SigninButton.tsx
+│       ├── TopNavBar.tsx
+│       └── styles
+│           ├── fonts.ts
+│           └── global.css
 ├── backend
-│   ├── .funcignore
-│   ├── .gitignore
-│   ├── configs
-│   │   └── msalConfig.js
-│   ├── createUsers
-│   │   ├── function.json
-│   │   └── index.js
-│   ├── fetch
-│   │   ├── function.json
-│   │   └── index.js
-│   ├── fetchMails
-│   │   ├── function.json
-│   │   ├── index.js
-│   │   └── sample.dat
-│   ├── fetchProfile
-│   │   ├── function.json
-│   │   └── index.js
-│   ├── host.json
-│   ├── local.settings.json
-│   ├── package-lock.json
-│   ├── package.json
-│   └── post
-│       ├── function.json
-│       └── index.js
+│   ├── configs
+│   │   └── msalConfig.js
+│   ├── createUsers
+│   │   ├── function.json
+│   │   └── index.js
+│   ├── delete
+│   │   ├── function.json
+│   │   └── index.js
+│   ├── fetch
+│   │   ├── function.json
+│   │   └── index.js
+│   ├── fetchMails
+│   │   ├── function.json
+│   │   ├── index.js
+│   │   └── sample.dat
+│   ├── fetchProfile
+│   │   ├── function.json
+│   │   └── index.js
+│   ├── host.json
+│   ├── local.settings.json
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── post
+│   │   ├── function.json
+│   │   └── index.js
+│   ├── testAzure
+│   │   ├── function.json
+│   │   └── index.js
+│   └── update
+│       ├── function.json
+│       └── index.js
 ├── directoryTree.txt
 ├── middleware.ts
 ├── next-env.d.ts
@@ -120,51 +129,57 @@
 ├── package.json
 ├── postcss.config.js
 ├── prisma
-│   ├── deleteAllRows.js
-│   ├── dev.db
-│   ├── insertUserDetails.js
-│   ├── migrations
-│   │   ├── 20231124141332_restart
-│   │   │   └── migration.sql
-│   │   ├── 20231124142121_user_id_uuid
-│   │   │   └── migration.sql
-│   │   ├── 20231124142720_updated_to_user_details
-│   │   │   └── migration.sql
-│   │   ├── 20240202140227_updated_client_details
-│   │   │   └── migration.sql
-│   │   ├── 20240202142047_string_int
-│   │   │   └── migration.sql
-│   │   ├── 20240202162026_no_null
-│   │   │   └── migration.sql
-│   │   ├── 20240202162456_added_single_null
-│   │   │   └── migration.sql
-│   │   └── migration_lock.toml
-│   └── schema.prisma
+│   ├── deleteAllRows.js
+│   ├── dev.db
+│   ├── insertUserDetails.js
+│   ├── migrations
+│   │   ├── 20231124141332_restart
+│   │   │   └── migration.sql
+│   │   ├── 20231124142121_user_id_uuid
+│   │   │   └── migration.sql
+│   │   ├── 20231124142720_updated_to_user_details
+│   │   │   └── migration.sql
+│   │   ├── 20240202140227_updated_client_details
+│   │   │   └── migration.sql
+│   │   ├── 20240202142047_string_int
+│   │   │   └── migration.sql
+│   │   ├── 20240202162026_no_null
+│   │   │   └── migration.sql
+│   │   ├── 20240202162456_added_single_null
+│   │   │   └── migration.sql
+│   │   ├── 20240209063800_added_mailbox
+│   │   │   └── migration.sql
+│   │   ├── 20240209072724_mailbox_string
+│   │   │   └── migration.sql
+│   │   ├── 20240209072947_reverted_to_strings
+│   │   │   └── migration.sql
+│   │   ├── 20240209091034_added_it_admin
+│   │   │   └── migration.sql
+│   │   ├── 20240213180129_updated_user_db
+│   │   │   └── migration.sql
+│   │   ├── 20240222165513_local_to_remote
+│   │   │   └── migration.sql
+│   │   ├── 20240222170820_removed_extra_tables
+│   │   │   └── migration.sql
+│   │   ├── 20240222200851_removed_mailboxes
+│   │   │   └── migration.sql
+│   │   ├── 20240222215421_added_back_deleted_auth_tables
+│   │   │   └── migration.sql
+│   │   └── migration_lock.toml
+│   └── schema.prisma
 ├── public
-│   ├── customers
-│   │   ├── amy-burns.png
-│   │   ├── balazs-orban.png
-│   │   ├── delba-de-oliveira.png
-│   │   ├── emil-kowalski.png
-│   │   ├── evil-rabbit.png
-│   │   ├── guillermo-rauch.png
-│   │   ├── hector-simpson.png
-│   │   ├── jared-palmer.png
-│   │   ├── lee-robinson.png
-│   │   ├── michael-novotny.png
-│   │   ├── steph-dietz.png
-│   │   └── steven-tey.png
-│   ├── hero-desktop.png
-│   └── hero-mobile.png
+│   └── logo.svg
 ├── redux
-│   └── reducers
-│       ├── createUserReducer.ts
-│       ├── emailsReducer.ts
-│       ├── formDataReducer.ts
-│       └── store.ts
-├── scripts
-│   └── seed.js
+│   └── reducers
+│       ├── clientReducer.ts
+│       ├── createUserReducer.ts
+│       ├── editFormDataReducer.ts
+│       ├── emailsReducer.ts
+│       ├── formDataReducer.ts
+│       ├── loggedInUserReducer.ts
+│       ├── store.ts
+│       └── uiInteractionReducer.ts
 ├── tailwind.config.ts
 └── tsconfig.json
 
-48 directories, 120 files
+63 directories, 120 files
