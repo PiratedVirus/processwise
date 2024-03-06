@@ -1,16 +1,14 @@
 'use client';
 import React from "react";
-import ScrollableCardHolder from "@/app/components/UserAdmin/ScrollabelCardHolder";
-import { MemberTable } from "@/app/components/UserAdmin/CompanyUsersTable";
+import {MailboxDocumentTable} from "@/app/components/Users/MailboxDocumentsTable";
 import withAuth from "@/app/auth/withAuth";
 
-const AdminPage: React.FC = () => {
+const DocumentProcessing: React.FC = () => {
   return (
     <>
-      <ScrollableCardHolder />
-      <MemberTable/>
+      <MailboxDocumentTable/>
     </>  
   );
 }
 
-export default withAuth(AdminPage);
+export default withAuth(DocumentProcessing, ['admin']);

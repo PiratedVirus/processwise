@@ -10,15 +10,9 @@ import TopNav from '@/app/ui/TopNavBar';
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/react"
 
-
 const { Header, Content, Sider } = Layout;
 
 
-const links = [
-  { name: 'Document Processing', href: '/', icon: HomeOutlined },
-  { name: 'Reporting', href: '/', icon: TeamOutlined },
-  { name: 'Admin Center', href: '/user/it-admin', icon: TeamOutlined },
-];
 
 const sideMenuItems: MenuProps['items'] = [
   { key: '1', label: 'Manage Users', icon: React.createElement(FileOutlined) },
@@ -26,12 +20,15 @@ const sideMenuItems: MenuProps['items'] = [
   { key: '2', label: 'Resources', icon: React.createElement(FolderOpenOutlined) }
 ];
 
-
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const { token: { colorBgContainer, borderRadiusLG }, } = theme.useToken();
   const [collapsed, setCollapsed] = useState(false);
 
+  const links = [
+    { name: 'Document Processing', href: '/', icon: HomeOutlined, },
+    { name: 'Reporting', href: '/', icon: TeamOutlined },
+    { name: 'Admin Center', href: '/user/admin', icon: TeamOutlined },
+  ];
 
 
   return (

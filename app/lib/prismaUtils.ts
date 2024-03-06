@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 
 export const prisma = new PrismaClient();
 
-export const createResponse = (status: number, message: string | Record<string, unknown>) => {
+export const createResponse = (status: number, message: string | Record<string, unknown> | Record<string, unknown>[]) => {
   return new NextResponse(JSON.stringify(typeof message === 'string' ? { error: message } : message), {
     status,
     headers: { 'Content-Type': 'application/json' },

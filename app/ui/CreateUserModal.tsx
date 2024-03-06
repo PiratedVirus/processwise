@@ -50,7 +50,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
       invitedUserEmailAddress: values.userEmail,
       invitedUserDisplayName: values.userName,
       invitedUserType: "Member",
-      inviteRedirectUrl: "http://localhost:3000/user/it-admin",
+      inviteRedirectUrl: "http://localhost:3000/user/admin",
       sendInvitationMessage: true,
       invitedUserMessageInfo: {
         customizedMessageBody: "Hello, we're excited to welcome you to our team! Please accept this invitation to join our organization's platform.",

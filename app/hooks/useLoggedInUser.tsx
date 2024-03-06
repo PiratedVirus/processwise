@@ -12,7 +12,7 @@ const useLoggedInUser = () => {
 
   useEffect(() => {
     if (session?.user?.email) {
-      console.log('session.user.email:', session.user.email);
+      console.log('session.user.email:', session.user);
       const fetchData = async () => {
         setLoadingUser(true);
         try {

@@ -4,34 +4,38 @@ import { Spin, Typography } from 'antd'; // Import Spin and Typography from Ant 
 
 const { Title, Text } = Typography;
 
-const withAuth = (WrappedComponent) => {
+const withAuth = (WrappedComponent, allowedRoles = []) => {
   return function WithAuth(props) {
-    const { status } = useSession();
+    const { status, data: session } = useSession();
     const isLoading = status === "loading";
     const isAuthenticated = status === "authenticated";
+    const userHasRequiredRole = allowedRoles.includes(session?.user?.role[0]); // Check if the user's role is in the allowedRoles array
+    console.log('userHasRequiredRole in HOC', userHasRequiredRole + ' ' + allowedRoles + ' ' + session?.user?.role[0]);
 
     // Loading state
     if (isLoading) {
       return (
-        <div className="flex items-center justify-center min-h-screen"> {/* Center with Tailwind CSS */}
-          <Spin size="large" /> {/* Ant Design Spinner */}
+        <div className="flex items-center justify-center min-h-screen"> 
+          <Spin size="large" /> 
         </div>
       );
     }
 
-    // Unauthenticated state
-    if (!isAuthenticated) {
+    // Unauthenticated state or if the user doesn't have the required role
+    if (!isAuthenticated || !userHasRequiredRole) {
+      // Redirect to home or another page if you want
+      // e.g., router.replace('/path-to-redirect');
       return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100"> {/* Center with background color */}
-          <div className="space-y-4 text-center"> {/* VStack equivalent with spacing */}
+        <div className="flex items-center justify-center min-h-screen bg-gray-100"> 
+          <div className="space-y-4 text-center"> 
             <Title level={3}>Access Denied</Title> {/* Title text */}
-            <Text>Please log in to continue.</Text> {/* Regular text */}
+            <Text>Please log in with the correct account to continue.</Text> {/* Regular text */}
           </div>
         </div>
       );
     }
 
-    // Authenticated state
+    // Authenticated and authorized state
     return <WrappedComponent {...props} />;
   };
 };

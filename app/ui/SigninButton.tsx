@@ -16,7 +16,7 @@ const SigninButton = () => {
           <>
             {loadingUser ? (<Spin className="mt-5 ml-10"> </Spin>) : (<Dropdown overlay={<Button type="primary" ghost onClick={() => signOut()} >Sign Out</Button>}>
               <a onClick={(e) => e.preventDefault()}>
-                <Space className="font-bold text-blue-500">{loggedInUserData?.user[0].userName}<PoweroffOutlined /></Space>
+                <Space className="font-bold text-blue-500">{loggedInUserData?.user[0]?.userName}<PoweroffOutlined /></Space>
               </a>
             </Dropdown>)}
           </>
