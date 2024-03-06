@@ -1,13 +1,51 @@
-// Assuming this is in a Next.js API route file like pages/api/downloadAttachments.ts
-
 import { NextRequest, NextResponse } from 'next/server';
+const { 
+  BlobServiceClient, 
+  generateAccountSASQueryParameters, 
+  AccountSASPermissions, 
+  AccountSASServices,
+  AccountSASResourceTypes,
+  StorageSharedKeyCredential,
+  SASProtocol,
+  BlobSASPermissions 
+} = require('@azure/storage-blob');
 import axios from 'axios';
 import { getAccessToken } from '@/app/lib/msalUtils';
 import { createResponse } from '@/app/lib/prismaUtils';
-import fs from 'fs';
-import path from 'path';
+import { parseISO } from 'date-fns';
+const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING || '';
 
+const constants = {
+  accountName: process.env.AZURE_STORAGE_ACCOUNT_NAME,
+  accountKey: process.env.AZURE_STORAGE_ACCOUNT_KEY
+};
+const sharedKeyCredential = new StorageSharedKeyCredential(
+  constants.accountName,
+  constants.accountKey
+);
 
+async function createAccountSas() {
+
+  const sasOptions = {
+
+      services: AccountSASServices.parse("btqf").toString(),          // blobs, tables, queues, files
+      resourceTypes: AccountSASResourceTypes.parse("sco").toString(), // service, container, object
+      permissions: AccountSASPermissions.parse("rwdlacupi"),          // permissions
+      protocol: SASProtocol.Https,
+      startsOn: new Date(),
+      expiresOn: new Date(new Date().valueOf() + (10 * 60 * 1000)),   // 10 minutes
+  };
+
+  const sasToken = generateAccountSASQueryParameters(
+      sasOptions,
+      sharedKeyCredential 
+  ).toString();
+
+  console.log(`sasToken = '${sasToken}'\n`);
+
+  // prepend sasToken with `?`
+  return (sasToken[0] === '?') ? sasToken : `?${sasToken}`;
+}
 
 interface EmailAttachment {
   id: string;
@@ -16,7 +54,6 @@ interface EmailAttachment {
   contentBytes?: string; // This might not be needed for the initial fetch
 }
 
-// Function to fetch emails with attachments
 async function fetchEmailsWithAttachments(accessToken: string): Promise<any[]> {
   const config = {
     headers: {
@@ -35,7 +72,6 @@ async function fetchEmailsWithAttachments(accessToken: string): Promise<any[]> {
   }
 }
 
-// Function to fetch and download attachments for a given message
 async function fetchAndDownloadAttachments(accessToken: string, messageId: string): Promise<EmailAttachment[]> {
   const config = {
     headers: {
@@ -53,26 +89,36 @@ async function fetchAndDownloadAttachments(accessToken: string, messageId: strin
   }
 }
 
-async function saveAttachmentToFile(attachment: EmailAttachment) {
-    if (!attachment.contentBytes) return;
-  
-    // Convert base64 encoded content to binary
-    const contentBuffer = Buffer.from(attachment.contentBytes, 'base64');
-    
-    // Define the path where the file will be saved
-    const attachmentsDirPath = path.resolve('./app/public/attachments');
-    const filePath = path.join(attachmentsDirPath, attachment.name);
-  
-    // Ensure the attachments directory exists, create it if it doesn't
-    if (!fs.existsSync(attachmentsDirPath)) {
-      fs.mkdirSync(attachmentsDirPath, { recursive: true });
-    }
-  
-    // Save the file
-    fs.writeFileSync(filePath, contentBuffer);
-  
-    console.log(`Attachment saved to ${filePath}`);
+async function uploadAttachmentToAzureBlob(attachment: EmailAttachment): Promise<string> {
+  if (!attachment.contentBytes) {
+    throw new Error("Attachment content is missing");
   }
+
+  const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
+  const containerName = 'invoices'; // Ensure this container exists in your Azure Blob Storage
+  const containerClient = blobServiceClient.getContainerClient(containerName);
+
+  const contentBuffer = Buffer.from(attachment.contentBytes, 'base64');
+  const blobName = attachment.name;
+  const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+  console.log('blockBlobClient', blockBlobClient.url)
+
+  try {
+    await blockBlobClient.upload(contentBuffer, contentBuffer.length);
+    console.log(`Attachment ${blobName} uploaded to Blob storage successfully`);
+
+    // Generate SAS token for the blob
+    const sasToken = await createAccountSas(); // Make sure to await the async function call
+
+    // Return the blob URL with the SAS token
+    const attachmentDownloadURL = blockBlobClient.url + sasToken;
+    console.log('attachmentDownloadURL', attachmentDownloadURL)
+    return attachmentDownloadURL; // Ensure proper concatenation
+  } catch (error) {
+    console.error(`Failed to upload attachment ${blobName} to Azure Blob Storage`, error);
+    throw new Error(`Failed to upload attachment ${blobName}`);
+  }
+}
 
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
@@ -88,8 +134,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       // Here you would add logic to handle the attachment data, e.g., saving it to a database or a file system
       // Example usage within your fetchAndDownloadAttachments function or similar
       attachments.forEach(async (attachment) => {
-            await saveAttachmentToFile(attachment);
-        });
+        console.log('Downloading attachment:', attachment.name);
+        await uploadAttachmentToAzureBlob(attachment);
+      });
       console.log(`Downloaded attachments for message ${messageId}:`, attachments);
 
       return createResponse(200, { message: `Downloaded attachments for message ${messageId}` });
