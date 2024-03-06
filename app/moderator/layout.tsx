@@ -8,7 +8,7 @@ import { HomeOutlined } from '@ant-design/icons';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const links = [
-    { name: 'Home', href: '/admin', icon: HomeOutlined },
+    { name: 'Home', href: '/moderator', icon: HomeOutlined },
   ];
   
   return (

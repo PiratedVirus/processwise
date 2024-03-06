@@ -27,7 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const links = [
     { name: 'Document Processing', href: '/', icon: HomeOutlined, },
     { name: 'Reporting', href: '/', icon: TeamOutlined },
-    { name: 'Admin Center', href: '/user/admin', icon: TeamOutlined },
+    { name: 'Admin Center', href: '/admin', icon: TeamOutlined },
   ];
 
 

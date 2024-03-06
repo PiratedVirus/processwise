@@ -63,7 +63,7 @@ const RegisterClient: React.FC = () => {
       <>
           <Spin spinning={submitting} tip="Submitting...">
               {response && (
-                  <ResponseModal status={response.status} title={response.status === 'success' ? 'Success!' : 'Error!'} message={response.message} secondaryBtnText='Manage clients' secondaryBtnValue='/admin/manage' />
+                  <ResponseModal status={response.status} title={response.status === 'success' ? 'Success!' : 'Error!'} message={response.message} secondaryBtnText='Manage clients' secondaryBtnValue='/moderator/manage' />
               )}
               <HeaderTitle
                   title="Manage Clients / Register Client"

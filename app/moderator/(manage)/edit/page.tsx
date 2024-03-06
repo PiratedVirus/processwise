@@ -89,7 +89,7 @@ const EditClient: React.FC = () => {
   return (
     <>
       {updateResponse && (
-        <ResponseModal status={updateResponse.status} title={updateResponse.status === 'success' ? 'Success!' : 'Error!'} message={updateResponse.message} secondaryBtnText='Manage clients' secondaryBtnValue='/admin' />
+        <ResponseModal status={updateResponse.status} title={updateResponse.status === 'success' ? 'Success!' : 'Error!'} message={updateResponse.message} secondaryBtnText='Manage clients' secondaryBtnValue='/moderator' />
       )}
 
       <HeaderTitle

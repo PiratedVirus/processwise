@@ -64,7 +64,7 @@ const MailboxConfiguration: React.FC<MailboxProps> = ({ clientName }) => {
   return (
     <>
       {updateResponse && (
-        <ResponseModal status={updateResponse.status} title={updateResponse.status === 'success' ? 'Success!' : 'Error!'} message={updateResponse.message} secondaryBtnText='Go Back' secondaryBtnValue='/admin' />
+        <ResponseModal status={updateResponse.status} title={updateResponse.status === 'success' ? 'Success!' : 'Error!'} message={updateResponse.message} secondaryBtnText='Go Back' secondaryBtnValue='/moderator' />
       )}
       <Spin spinning={isLoading} tip="Loading...">
         <Form
