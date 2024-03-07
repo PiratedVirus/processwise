@@ -14,17 +14,16 @@ export async function DELETE(req: NextRequest) {
     return handlePrismaOperation(async () => {
         // Cast the where object to UserDetailsWhereUniqueInput
         const where = { [idKey]: idValue } as Prisma.UserDetailsWhereUniqueInput;
-
         // @ts-ignore
         return prisma[modelName].delete({ where });
     });
 }
 
 export async function POST(req: NextRequest) {
-    const { modelName, userData: data } = await req.json();
-
-    if (!modelName || !data) 
-        return createResponse(400, 'Please provide both modelName and data.');
+    const { userData: data } = await req.json();
+    const modelName = 'userDetails';
+    if (!data) 
+        return createResponse(400, 'Please provide  data.');
 
     if (!prisma[modelName]) 
         return createResponse(400, 'Model not found.');
@@ -37,16 +36,16 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
-    const { modelName, idKey, idValue, userData, columnToUpdate } = await req.json();
-  
-    if (!modelName || !idKey || !idValue || !userData) {
+    const {  idKey, idValue, userData, columnToUpdate } = await req.json();
+    const modelName = 'userDetails';
+    if (!idKey || !idValue || !userData) {
       return createResponse(400, 'Please provide both modelName and data.');
     }
   
     return handlePrismaOperation(() =>
       //   @ts-ignore 
       prisma[modelName].update({
-        where: { [idKey]: idValue },
+        where: { [idKey]: idValue } as Prisma.UserDetailsWhereUniqueInput,
         data: columnToUpdate ? { [columnToUpdate]: userData[columnToUpdate] } : userData,
       })
     );
@@ -57,7 +56,13 @@ export async function GET(req: Request, res: NextApiResponse) {
 
     // Dynamically construct the where condition based on all query parameters
     const whereCondition = Array.from(searchParams.keys()).reduce((coloumn: any, key) => {
-        coloumn[key] = searchParams.get(key);
+        const value = searchParams.get(key);
+        // If the value contains %, use the contains keyword for wildcard search
+        if (value && value.includes('%')) {
+            coloumn[key] = { contains: value.replace(/%/g, '') };
+        } else {
+            coloumn[key] = value;
+        }
         return coloumn;
     }, {});
     console.log('whereCondition', whereCondition);

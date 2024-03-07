@@ -37,8 +37,8 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
-    const { modelName, idKey, idValue, userData, columnToUpdate } = await req.json();
-  
+    const { idKey, idValue, userData, columnToUpdate } = await req.json();
+    const modelName = 'clientDetails';
     if (!modelName || !idKey || !idValue || !userData) {
       return createResponse(400, 'Please provide both modelName and data.');
     }

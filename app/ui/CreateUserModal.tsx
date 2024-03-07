@@ -30,6 +30,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
   const dispatch = useDispatch();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const selectedMailBoxes = useSelector((state: any) => state.editFormData.selectedMailBoxes);
+  console.log('[CreateUserModal ]selectedMailBoxes', selectedMailBoxes)
   const selectedClientInMasterAdmin = useSelector((state: any) => state.editFormData.selectedClientInMasterAdmin);
   const { response, handleSubmit } = usePostApi();
   const { connecting, azureResponse, connectAzure } = useAzureApi();
@@ -79,9 +80,11 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
       const updatedUserData = {
         userName: values.userName,
         userEmail: values.userEmail,
-        userMailboxesAccess: arrayToString(selectedMailBoxes),
+        userMailboxesAccess: arrayToString(values.emailAccess),
         userRole: parseRoleToBinary(values.userRole)
       }
+      console.log("array2string: ", selectedMailBoxes)
+      console.log('[CreateUserModal] updatedUserData', JSON.stringify(updatedUserData));
       handleUpdate('UserDetails', "userEmail", selectedUserData.userEmail, updatedUserData);
     }
   };

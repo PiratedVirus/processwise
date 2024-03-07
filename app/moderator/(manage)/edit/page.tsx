@@ -54,7 +54,7 @@ const EditClient: React.FC = () => {
     const combinedData = { ...generalInfo, ...processInfo };
     console.log('Combined Form Data:', combinedData);
     dispatch(updateCombinedFormData({ generalInfo, processInfo }));
-    await handleUpdate('ClientDetail', "companyName", generalInfo.companyName, combinedData);
+    await handleUpdate('clients', "companyName", generalInfo.companyName, combinedData);
   };
   const handleTabChange = (key: any) => { setActiveTabKey(key)};
   
