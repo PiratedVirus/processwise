@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { Table, Input, Button, Space, Typography, Spin, Row, Col } from 'antd';
 import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
 import useFetchApi from '@/app/hooks/useFetchApi'; 
+import useAzureApi from '@/app/hooks/useAzureApi';
 import { parseRoleToCheckedStates } from '@/app/lib/utils';
 import CreateUserModal from '@/app/ui/CreateUserModal';
 import DeleteUserModal from '@/app/ui/DeleteUserModal';
@@ -14,8 +15,11 @@ export const MailboxDocumentTable = () => {
   const [mailboxAssignedUsers, setMailboxAssignedUsers] = useState([]);
   const [searchText, setSearchText] = useState('');
   const { fetchApi, isLoading } = useFetchApi();
+  const { connecting, azureResponse, connectAzure } = useAzureApi();
+
   const azureUserData = useSelector((state) => state.editFormData.azureUserData);
   const dashboardSelectedMailbox = useSelector((state) => state.editFormData.dashboardSelectedMailbox);
+  const selectedMailboxInUserDashboard = useSelector((state) => state.editFormData.selectedUserMailboxInUserDashboard);
   console.log('azureUserData', JSON.stringify(azureUserData));
   console.log('dashboardSelectedMailbox', JSON.stringify(dashboardSelectedMailbox));
   useLoggedInUser();
@@ -25,11 +29,12 @@ export const MailboxDocumentTable = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const whereConditions = [
-          { columnName: 'userCompany', columnValue: loggedInUserData.user[0].userCompany},
-          { columnName: 'userMailboxesAccess', columnValue: dashboardSelectedMailbox, contains: true}
-        ];
-        const responseData = await fetchApi(`${process.env.NEXT_PUBLIC_API_URL}/fetch`, 'POST', { modelName: 'UserDetails', conditions: whereConditions});
+        const userEmail = {
+          "userEmail" : selectedMailboxInUserDashboard
+        }
+        const responseData = await connectAzure('mails', userEmail);
+        console.log('responseData 888', JSON.stringify(responseData));
+        console.log("=-=-=-=- " + JSON.stringify(azureResponse));
         setMailboxAssignedUsers(responseData);
       } catch (fetchError) {
         console.error('Fetch error:', fetchError);
@@ -37,7 +42,9 @@ export const MailboxDocumentTable = () => {
     };
 
     fetchData();
-  }, [fetchApi, azureUserData, dashboardSelectedMailbox]);
+    console.log('selectedMailboxInUserDashboard ****', selectedMailboxInUserDashboard);
+
+  }, [ selectedMailboxInUserDashboard]);
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();

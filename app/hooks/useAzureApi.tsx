@@ -5,14 +5,15 @@ const useAzureApi = () => {
   const [connecting, setConnecting] = useState<boolean>(false);
   const [azureResponse, setAzureResponse] = useState<{ status: 'success' | 'error'; message: string } | null>(null);
 
-  const connectAzure = async (endpoint: string, userData: Record<string, any>) => {
+  const connectAzure = async (endpoint: string, userData: Record<string, any> | string) => {
     setConnecting(true);
     setAzureResponse(null);
-    console.log('userData: ', JSON.stringify(userData) + " ####");
+    console.log('userData in useAzureApi: ', JSON.stringify(userData) + " ####");
 
     try {
-      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/${endpoint}`, userData );
-      setAzureResponse({ status: 'success', message: `${userData} registered successfully!` });
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/${endpoint}`, userData );
+      console.log('response in useAzureApi: ', response.data);
+      setAzureResponse({ status: 'success', message: response.data });
     } catch (error) {
       console.error(`Error registering ${userData}:`, error);
       setAzureResponse({ status: 'error', message: `Failed to register ${userData}. Please try again.` });

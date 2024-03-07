@@ -2,13 +2,15 @@ import React, {useState, useEffect} from 'react';
 import { Layout, Menu, MenuProps } from 'antd';
 import { MailOutlined } from '@ant-design/icons';
 import useLoggedInUser from '@/app/hooks/useLoggedInUser';
-import { useSelector } from 'react-redux';
+import { useSelector , useDispatch} from 'react-redux';
 import { RootState } from '@/redux/reducers/store';
 import useFetchApi from '@/app/hooks/useFetchApi'; 
+import { updateSelectedUserMailboxInUserDashboard } from '@/redux/reducers/editFormDataReducer';
 
 const { Sider } = Layout;
 
 const UserSider: React.FC = () => {
+        const dispatch = useDispatch();
         const [collapsed, setCollapsed] = useState(false);
         const { fetchApi } = useFetchApi();
         const [sideMenuItems, setSideMenuItems] = useState<MenuProps['items']>([]);
@@ -40,6 +42,14 @@ const UserSider: React.FC = () => {
                 fetchData();
             }, [fetchApi, loggedInUserData]);
 
+            const handleMenuClick = (e: any) => {
+                const clickedItem = sideMenuItems?.find(item => item?.key === e.key);
+                if (clickedItem && 'label' in clickedItem) {
+                    console.log('clicked item label:', clickedItem.label);
+                    dispatch(updateSelectedUserMailboxInUserDashboard(clickedItem.label));
+                }
+                
+            }
         return (
                 <Sider width={200} collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
                         <Menu
@@ -48,6 +58,7 @@ const UserSider: React.FC = () => {
                                 defaultOpenKeys={['sub1']}
                                 style={{ height: '100%', borderRight: 0 }}
                                 items={sideMenuItems}
+                                onClick={handleMenuClick}
                         />
                 </Sider>
         );
