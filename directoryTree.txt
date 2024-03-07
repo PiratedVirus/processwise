@@ -1,21 +1,33 @@
-.
 ├── README.md
+├── __azurite_db_blob__.json
+├── __azurite_db_blob_extent__.json
+├── __blobstorage__
 ├── app
-│   ├── admin
-│   │   ├── layout.tsx
-│   │   ├── manage
-│   │   │   ├── edit-client
-│   │   │   │   └── page.tsx
+│   ├── (user)
+│   │   ├── (documents)
+│   │   │   ├── layout.tsx
+│   │   │   └── page.tsx
+│   │   ├── admin
+│   │   │   ├── layout.tsx
 │   │   │   ├── page.tsx
-│   │   │   └── register-client
+│   │   │   └── test
 │   │   │       └── page.tsx
-│   │   └── page.tsx
+│   │   └── reports
+│   │       ├── layout.tsx
+│   │       └── page.tsx
 │   ├── api
 │   │   ├── (azure)
+│   │   │   ├── attachments
+│   │   │   │   └── route.ts
 │   │   │   ├── createUsers
 │   │   │   │   └── route.ts
-│   │   │   └── fetchProfile
-│   │   │       └── route.ts
+│   │   │   ├── fetchProfile
+│   │   │   │   └── route.ts
+│   │   │   ├── mailbox
+│   │   │   │   └── route.ts
+│   │   │   ├── mails
+│   │   │   │   └── route.ts
+│   │   │   └── tests
 │   │   ├── (crud)
 │   │   │   ├── delete
 │   │   │   │   └── route.ts
@@ -25,30 +37,34 @@
 │   │   │   │   └── route.ts
 │   │   │   └── update
 │   │   │       └── route.ts
+│   │   ├── (v2)
+│   │   │   └── users
+│   │   │       └── route.ts
 │   │   └── auth
 │   │       └── [...nextauth]
 │   │           └── route.ts
 │   ├── auth
-│   │   ├── withAdminAuth.js
 │   │   └── withAuth.js
 │   ├── components
-│   │   ├── it-admin
+│   │   ├── Admin
 │   │   │   ├── CompanyUsersTable.jsx
 │   │   │   └── ScrollabelCardHolder.tsx
-│   │   └── master-admin
-│   │       ├── Edit
-│   │       │   ├── EditClientForm.tsx
-│   │       │   └── FormCard.tsx
-│   │       ├── ITConfig
-│   │       │   ├── AssignAdmin.tsx
-│   │       │   ├── ITConfigForm.tsx
-│   │       │   └── MailboxConfig.tsx
-│   │       ├── Manage
-│   │       │   ├── ClientCard.tsx
-│   │       │   ├── ClientGrid.tsx
-│   │       │   └── CreateClientCard.tsx
-│   │       └── Register
-│   │           └── RegisterClientForm.tsx
+│   │   ├── Moderator
+│   │   │   ├── Edit
+│   │   │   │   ├── EditClientForm.tsx
+│   │   │   │   └── FormCard.tsx
+│   │   │   ├── ITConfig
+│   │   │   │   ├── AssignAdmin.tsx
+│   │   │   │   ├── ITConfigForm.tsx
+│   │   │   │   └── MailboxConfig.tsx
+│   │   │   ├── Manage
+│   │   │   │   ├── ClientCard.tsx
+│   │   │   │   ├── ClientGrid.tsx
+│   │   │   │   └── CreateClientCard.tsx
+│   │   │   └── Register
+│   │   │       └── RegisterClientForm.tsx
+│   │   └── Users
+│   │       └── MailboxDocumentsTable.jsx
 │   ├── hooks
 │   │   ├── useAzureApi.tsx
 │   │   ├── useDeleteApi.tsx
@@ -56,7 +72,6 @@
 │   │   ├── useLoggedInUser.tsx
 │   │   ├── usePostApi.tsx
 │   │   └── useUpdateApi.tsx
-│   ├── layout.tsx
 │   ├── lib
 │   │   ├── Providers.tsx
 │   │   ├── form-defination
@@ -72,7 +87,17 @@
 │   │   ├── table-defination
 │   │   ├── types.d.ts
 │   │   └── utils.ts
-│   ├── page.tsx
+│   ├── moderator
+│   │   ├── (manage)
+│   │   │   ├── edit
+│   │   │   │   └── page.tsx
+│   │   │   └── register
+│   │   │       └── page.tsx
+│   │   ├── layout.tsx
+│   │   └── page.tsx
+│   ├── public
+│   │   └── attachments
+│   │       └── Jan 2024 Summary.pdf
 │   └── ui
 │       ├── CenterSpin.tsx
 │       ├── CreateUserForm.tsx
@@ -86,45 +111,17 @@
 │       ├── ResponseModal.tsx
 │       ├── SigninButton.tsx
 │       ├── TopNavBar.tsx
+│       ├── UserSider.tsx
+│       ├── assests
+│       │   └── logo_small.png
 │       └── styles
 │           ├── fonts.ts
 │           └── global.css
-├── backend
-│   ├── configs
-│   │   └── msalConfig.js
-│   ├── createUsers
-│   │   ├── function.json
-│   │   └── index.js
-│   ├── delete
-│   │   ├── function.json
-│   │   └── index.js
-│   ├── fetch
-│   │   ├── function.json
-│   │   └── index.js
-│   ├── fetchMails
-│   │   ├── function.json
-│   │   ├── index.js
-│   │   └── sample.dat
-│   ├── fetchProfile
-│   │   ├── function.json
-│   │   └── index.js
-│   ├── host.json
-│   ├── local.settings.json
-│   ├── package-lock.json
-│   ├── package.json
-│   ├── post
-│   │   ├── function.json
-│   │   └── index.js
-│   ├── testAzure
-│   │   ├── function.json
-│   │   └── index.js
-│   └── update
-│       ├── function.json
-│       └── index.js
 ├── directoryTree.txt
 ├── middleware.ts
 ├── next-env.d.ts
 ├── next.config.js
+├── out.txt
 ├── package-lock.json
 ├── package.json
 ├── postcss.config.js
@@ -165,10 +162,13 @@
 │   │   │   └── migration.sql
 │   │   ├── 20240222215421_added_back_deleted_auth_tables
 │   │   │   └── migration.sql
+│   │   ├── 20240305051540_add_user_role_array_support
+│   │   │   └── migration.sql
 │   │   └── migration_lock.toml
 │   └── schema.prisma
 ├── public
-│   └── logo.svg
+│   ├── logo_large.png
+│   └── logo_small.png
 ├── redux
 │   └── reducers
 │       ├── clientReducer.ts
@@ -181,5 +181,3 @@
 │       └── uiInteractionReducer.ts
 ├── tailwind.config.ts
 └── tsconfig.json
-
-63 directories, 120 files

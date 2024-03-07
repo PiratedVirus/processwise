@@ -9,7 +9,10 @@ const withAuth = (WrappedComponent, allowedRoles = []) => {
     const { status, data: session } = useSession();
     const isLoading = status === "loading";
     const isAuthenticated = status === "authenticated";
-    const userHasRequiredRole = allowedRoles.includes(session?.user?.role[0]); // Check if the user's role is in the allowedRoles array
+    const currentUserRole = session?.user?.role[0];
+  
+
+    const userHasRequiredRole = allowedRoles.includes(currentUserRole); 
     console.log('userHasRequiredRole in HOC', userHasRequiredRole + ' ' + allowedRoles + ' ' + session?.user?.role[0]);
 
     // Loading state
