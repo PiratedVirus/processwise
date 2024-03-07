@@ -19,8 +19,8 @@ const TopNav: React.FC<TopNavProps> = () => {
   const { data:session } = useSession();
   const userRole = session?.user?.role[0];
   const links = [
-    { name: 'Document Processing', href: '/', icon: HomeOutlined, visible: (userRole === ('admin' || 'approver' || 'user'))},
-    { name: 'Reporting', href: '/reports', icon: TeamOutlined, visible: userRole === ('admin' || 'approver')},
+    { name: 'Document Processing', href: '/', icon: HomeOutlined, visible: (userRole === ('user') || userRole === ('admin') || userRole === ('approver') )},
+    { name: 'Reporting', href: '/reports', icon: TeamOutlined, visible: (userRole === ('admin') || userRole === ('approver'))},
     { name: 'Admin Center', href: '/admin', icon: TeamOutlined, visible: userRole === ('admin')  },
   ];
 

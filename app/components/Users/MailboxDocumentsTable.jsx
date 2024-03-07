@@ -158,7 +158,7 @@ export const MailboxDocumentTable = () => {
       <div className="space-y-5">
         <Row justify="space-between" align="middle" className="px-4 pt-5">
           <Col>
-            <Text strong className="text-lg">User Table</Text>
+            <Text strong className="text-lg">Documents Overview</Text>
           </Col>
           </Row>
           <Row justify="space-between" align="middle" className="px-4 py-2">

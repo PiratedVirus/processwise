@@ -11,4 +11,4 @@ const DocumentProcessing: React.FC = () => {
   );
 }
 
-export default withAuth(DocumentProcessing, ['admin']);
+export default withAuth(DocumentProcessing, ['user']);
