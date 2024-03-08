@@ -18,7 +18,7 @@ const ManageClients: React.FC = () => {
   console.log('clientsData:', JSON.stringify(clientsData));
   useEffect(() => {
     dispatch(fetchClientsBegin());
-    fetchApi(`${process.env.NEXT_PUBLIC_API_URL}/fetch`, 'POST', { modelName: 'ClientDetail' })
+    fetchApi(`${process.env.NEXT_PUBLIC_API_URL}/clients`)
       .then(data => {
         dispatch(fetchClientsSuccess(data));
       })

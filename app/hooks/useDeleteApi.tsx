@@ -5,12 +5,18 @@ const useDeleteApi = () => {
   const [deleting, setDeleting] = useState<boolean>(false);
   const [deleteResponse, setDeleteResponse] = useState<{ status: 'success' | 'error'; message: string } | null>(null);
 
-  const handleDelete = async (modelName: string, idKey: string | number, idValue: string) => {
+  const handleDelete = async (modelName: string, idKey: string, idValue: string | number) => {
     setDeleting(true);
     setDeleteResponse(null);
     try {
-      await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/delete`, { modelName, idKey, idValue }); 
-      setDeleteResponse({ status: 'success', message: `${modelName} deleted successfully!` });
+      const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/${modelName}`, {
+        data: { idKey, idValue }, 
+      });
+      if (response.status === 200) {
+        setDeleteResponse({ status: 'success', message: `${modelName} deleted successfully!` });
+      } else {
+        setDeleteResponse({ status: 'error', message: `Failed to delete ${modelName}. Please try again.` });
+      }
     } catch (error) {
       console.error(`Error deleting ${modelName}:`, error);
       setDeleteResponse({ status: 'error', message: `Failed to delete ${modelName}. Please try again.` });

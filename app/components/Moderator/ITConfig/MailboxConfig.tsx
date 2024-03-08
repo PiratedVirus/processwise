@@ -30,7 +30,7 @@ const MailboxConfiguration: React.FC<MailboxProps> = ({ clientName }) => {
     const fetchData = async () => {
       const selectedClientName = clientName.split("=")[1].replace(/\+/g, ' ');
       try {
-        const data = await fetchApi(`${process.env.NEXT_PUBLIC_API_URL}/fetch`, 'POST', { modelName: 'ClientDetail' });
+        const data = await fetchApi(`${process.env.NEXT_PUBLIC_API_URL}/clients`);
         const selectClientData = data.find((client: any) => client.companyName === selectedClientName);
         setClientsData(selectClientData);
       } catch (error) {
@@ -58,7 +58,7 @@ const MailboxConfiguration: React.FC<MailboxProps> = ({ clientName }) => {
     const configuredMailboxes = {
       "configuredMailboxes": JSON.stringify(emails),
     };
-    await handleUpdate('ClientDetail', "companyName", selectedClientName, configuredMailboxes, "configuredMailboxes");
+    await handleUpdate('clients', "companyName", selectedClientName, configuredMailboxes, "configuredMailboxes");
   };
 
   return (

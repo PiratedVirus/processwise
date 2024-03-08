@@ -24,7 +24,7 @@ const UserSider: React.FC = () => {
                         const whereConditions = [
                             { columnName: 'userEmail', columnValue: loggedInUserData.user[0].userEmail},
                         ];
-                        const responseData = await fetchApi(`${process.env.NEXT_PUBLIC_API_URL}/fetch`, 'POST', { modelName: 'UserDetails', conditions: whereConditions});
+                        const responseData = await fetchApi(`${process.env.NEXT_PUBLIC_API_URL}/users?userEmail=${loggedInUserData.user[0].userEmail}`);
                         const emailArray = responseData[0].userMailboxesAccess.split(', ');
 
                         const newSideMenuItems: MenuProps['items'] = emailArray.map((email: any, index: any) => ({

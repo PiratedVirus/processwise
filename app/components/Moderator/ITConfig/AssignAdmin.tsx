@@ -35,7 +35,7 @@ const AssignAdmin: React.FC<AssignAdminProps> = ({ clientName }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await fetchApi(`${process.env.NEXT_PUBLIC_API_URL}/fetch`, 'POST', { modelName: 'ClientDetail' });
+        const data = await fetchApi(`${process.env.NEXT_PUBLIC_API_URL}/clients`);
         const selectedClientData = data.find((client: ClientDetail) => client.companyName === selectedClientName);
         setClientsData(selectedClientData);
         if (selectedClientData?.itAdminEmail) {
@@ -49,7 +49,7 @@ const AssignAdmin: React.FC<AssignAdminProps> = ({ clientName }) => {
   }, [clientName]); // Removed fetchApi from dependencies to avoid re-fetching due to function re-creation
 
   const assignAdmin = async (values: { adminEmail: string }) => {
-    await handleUpdate('ClientDetail', "companyName", selectedClientName, { "itAdminEmail": values.adminEmail }, "itAdminEmail");
+    await handleUpdate('clients', "companyName", selectedClientName, { "itAdminEmail": values.adminEmail }, "itAdminEmail");
   };
 
   const userFormFields: FormField[] = [

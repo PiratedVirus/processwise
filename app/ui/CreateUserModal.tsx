@@ -30,7 +30,6 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
   const dispatch = useDispatch();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const selectedMailBoxes = useSelector((state: any) => state.editFormData.selectedMailBoxes);
-  const dashboardSelectedMailbox = useSelector((state: any) => state.editFormData.dashboardSelectedMailbox);
   const selectedClientInMasterAdmin = useSelector((state: any) => state.editFormData.selectedClientInMasterAdmin);
   const preSelectedUserEmailAccess = useSelector((state: any) => state.editFormData.preSelectedUserEmailAccess);
   const { response, handleSubmit } = usePostApi();
@@ -85,7 +84,6 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
         userMailboxesAccess: arrayToString(mailAccessArray),
         userRole: parseRoleToBinary(values.userRole)
       }
-
       handleUpdate('UserDetails', "userEmail", selectedUserData.userEmail, updatedUserData);
     }
   };

@@ -38,7 +38,7 @@ const DeleteUserModal: React.FC<DeleteUserModalProps> = ({
             dispatch(updateAzureUserData(values));
             setIsFinalConfirmModalVisible(false);
             // Proceed with delete
-            await handleDelete('UserDetails', 'userEmail', selectedUserData.userEmail);
+            await handleDelete('users', 'userEmail', selectedUserData.userEmail);
         } else {
               message.error('Please enter the correct user email to delete');
         }

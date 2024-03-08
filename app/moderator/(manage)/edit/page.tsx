@@ -12,6 +12,7 @@ import HeaderTitle from '@/app/ui/HeaderTitle';
 import CustomTabsPane from '@/app/ui/CustomTabsPane';
 import ItConfigForm from '@/app/components/Moderator/ITConfig/ITConfigForm';
 import withAuth from '@/app/auth/withAuth'
+import Link from 'next/link';
 
 
 const EditClient: React.FC = () => {
@@ -53,7 +54,7 @@ const EditClient: React.FC = () => {
     const combinedData = { ...generalInfo, ...processInfo };
     console.log('Combined Form Data:', combinedData);
     dispatch(updateCombinedFormData({ generalInfo, processInfo }));
-    await handleUpdate('ClientDetail', "companyName", generalInfo.companyName, combinedData);
+    await handleUpdate('clients', "companyName", generalInfo.companyName, combinedData);
   };
   const handleTabChange = (key: any) => { setActiveTabKey(key)};
   
@@ -99,7 +100,7 @@ const EditClient: React.FC = () => {
         showButtons={true}
         renderTabContent={renderTabContent()}
       />
-
+     
     </>
   );
 };

@@ -25,11 +25,22 @@ export const MemberTable = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+    
         const whereConditions = [
           { columnName: 'userCompany', columnValue: loggedInUserData.user[0].userCompany},
           { columnName: 'userMailboxesAccess', columnValue: dashboardSelectedMailbox, contains: true}
         ];
-        const responseData = await fetchApi(`${process.env.NEXT_PUBLIC_API_URL}/fetch`, 'POST', { modelName: 'UserDetails', conditions: whereConditions});
+        
+        const queryParams = whereConditions.map(condition => {
+          let { columnName, columnValue, contains } = condition;
+          if (contains) {
+            columnValue = `%25${columnValue}%25`;
+          }
+          return `${columnName}=${columnValue}`;
+        }).join('&');
+        
+        const responseData = await fetchApi(`${process.env.NEXT_PUBLIC_API_URL}/users?${queryParams}`);
+        console.log('responseData ++++', responseData);
         setMailboxAssignedUsers(responseData);
       } catch (fetchError) {
         console.error('Fetch error:', fetchError);

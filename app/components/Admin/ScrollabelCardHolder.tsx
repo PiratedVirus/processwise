@@ -21,12 +21,9 @@ const ScrollableCardHolder: React.FC = () => {
         console.log('loggedInUserData ****', JSON.stringify(loggedInUserData.user[0]))
         const fetchData = async () => {
           try {
-            const whereCondition = [
-                { columnName: 'companyName', columnValue: loggedInUserData.user[0].userCompany }
-            ];
-            console.log('whereCondition', JSON.stringify(whereCondition))
+          
 
-            const mailboxResponseData = await fetchApi(`${process.env.NEXT_PUBLIC_API_URL}/fetch`, 'POST', { modelName: 'ClientDetail', conditions: whereCondition});
+            const mailboxResponseData = await fetchApi(`${process.env.NEXT_PUBLIC_API_URL}/clients?companyName=${loggedInUserData.user[0].userCompany}`);
             setClientMailboxData(mailboxResponseData[0].configuredMailboxes);
             dispatch(updateClientConfiguredMailboxes(mailboxResponseData[0].configuredMailboxes));
             console.log('mailboxResponseData', JSON.stringify(mailboxResponseData[0]))

@@ -7,26 +7,18 @@ interface Condition {
   contains?: boolean;
 }
 
-interface FetchApiBody {
-  modelName: string;
-  conditions?: Condition[];
-}
-
 const useFetchApi = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown>(null);
 
-  const fetchApi = useCallback(async (url: string, method: 'GET' | 'POST' = 'GET', body: FetchApiBody | null = null) => {
+  const fetchApi = useCallback(async (URL: string) => {
     setIsLoading(true);
     setError(null);
-    console.log('fetchApi', url, method, body)
+
+    console.log('fetchApi', URL);
 
     try {
-      const response = await axios({
-        method,
-        url,
-        data: body,
-      });
+      const response = await axios.get(URL);
       setIsLoading(false);
       return response.data;
     } catch (err) {
