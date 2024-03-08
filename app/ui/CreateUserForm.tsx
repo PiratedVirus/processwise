@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Form, Input, Button, Checkbox, Select } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { FormInstance } from 'antd/lib/form';
-import { updateSelectedMailBoxes } from '@/redux/reducers/editFormDataReducer';
+import { updateSelectedMailBoxes, updatePreSelectedUserEmailAccess } from '@/redux/reducers/editFormDataReducer';
 import { parseBinaryToRoles } from '../lib/utils';
 
 interface FormField {
@@ -36,6 +36,8 @@ const FormItem: React.FC<FormItemProps> = React.memo(({ field, existingData, for
   let inputElement: React.ReactNode;
   const clientConfiguredMailboxes = useSelector((state: any) => state.editFormData.clientConfiguredMailboxes);
   const userMailboxesAccessArr = existingData?.userMailboxesAccess?.split(", ");
+  dispatch(updatePreSelectedUserEmailAccess(userMailboxesAccessArr))
+  console.log('[CreateUserForm] clientConfiguredMailboxes which are prefilled', JSON.stringify(userMailboxesAccessArr))
   switch (field.inputType) {
     case 'Checkbox':
       inputElement = (

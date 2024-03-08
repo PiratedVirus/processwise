@@ -15,7 +15,8 @@ export const editFormDataSlice = createSlice({
     clientConfiguredMailboxes: [],
     dashboardSelectedMailbox: '',
     selectedClientInMasterAdmin: '',
-    selectedUserMailboxInUserDashboard: ''
+    selectedUserMailboxInUserDashboard: '',
+    preSelectedUserEmailAccess: ''
   },
   reducers: {
     updateGeneralInfo: (state, action) => {
@@ -45,7 +46,10 @@ export const editFormDataSlice = createSlice({
     },
     updateSelectedUserMailboxInUserDashboard: (state, action) => {
       state.selectedUserMailboxInUserDashboard = action.payload;
-    } 
+    },
+    updatePreSelectedUserEmailAccess: (state, action) => {
+      state.preSelectedUserEmailAccess = action.payload;
+    }
   },
 });
 
@@ -58,7 +62,8 @@ export const {
   updateClientConfiguredMailboxes,
   updateDashboardSelectedMailbox,
   updateSelectedClientInMasterAdmin,
-  updateSelectedUserMailboxInUserDashboard
+  updateSelectedUserMailboxInUserDashboard,
+  updatePreSelectedUserEmailAccess
  } = editFormDataSlice.actions;
 
 export default editFormDataSlice.reducer;

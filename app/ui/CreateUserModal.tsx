@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Modal, Form, Button, Spin } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import useAzureApi from '@/app/hooks/useAzureApi';
-import { updateAzureUserData } from '@/redux/reducers/editFormDataReducer';
+import { updateAzureUserData, } from '@/redux/reducers/editFormDataReducer';
 import CreateUserForm from '@/app/ui/CreateUserForm';
 import ResponseModal from '@/app/ui/ResponseModal';
 import { EditOutlined } from '@ant-design/icons';
@@ -30,7 +30,9 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
   const dispatch = useDispatch();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const selectedMailBoxes = useSelector((state: any) => state.editFormData.selectedMailBoxes);
+  const dashboardSelectedMailbox = useSelector((state: any) => state.editFormData.dashboardSelectedMailbox);
   const selectedClientInMasterAdmin = useSelector((state: any) => state.editFormData.selectedClientInMasterAdmin);
+  const preSelectedUserEmailAccess = useSelector((state: any) => state.editFormData.preSelectedUserEmailAccess);
   const { response, handleSubmit } = usePostApi();
   const { connecting, azureResponse, connectAzure } = useAzureApi();
   const { updating, updateResponse, handleUpdate } = useUpdateApi();
@@ -59,7 +61,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
     };
     const isMasterAdmin = loggedInUserData.user[0].userPosition === 'Master Admin';
     const userCompany = isMasterAdmin ? selectedClientInMasterAdmin : loggedInUserData.user[0].userCompany;
-    const userPosition = isMasterAdmin ? 'IT Admin' : 'End User';
+    const userPosition = isMasterAdmin ? 'admin' : 'user';
     
     const userData = {
       userName: values.userName,
@@ -71,6 +73,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
       userMailboxesAccess: arrayToString(selectedMailBoxes),
       userRole: (values.userRole) ? parseRoleToBinary(values.userRole) : '1111'
     };
+    const mailAccessArray = selectedMailBoxes.length === 0 ? preSelectedUserEmailAccess : selectedMailBoxes;
 
     if(formType === 'create') {
       connectAzure('createUsers', inviteData);
@@ -79,9 +82,10 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
       const updatedUserData = {
         userName: values.userName,
         userEmail: values.userEmail,
-        userMailboxesAccess: arrayToString(selectedMailBoxes),
+        userMailboxesAccess: arrayToString(mailAccessArray),
         userRole: parseRoleToBinary(values.userRole)
       }
+
       handleUpdate('UserDetails', "userEmail", selectedUserData.userEmail, updatedUserData);
     }
   };
@@ -108,7 +112,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
         </div>
       ) : (
         azureResponse && response && (
-          <ResponseModal status={azureResponse.status} title={azureResponse.status === 'success' ? 'Success!' : 'Error!'} message={azureResponse.message} showPrimaryBtn={true} />
+          <ResponseModal status={azureResponse.status} title={azureResponse.status === 'success' ? 'Success!' : 'Error!'} message={azureResponse.status === 'success' ? 'User created Successfully!' : 'User creation failed!'} showPrimaryBtn={true} />
         ) || 
         updateResponse && (
           <ResponseModal status={updateResponse.status} title={updateResponse.status === 'success' ? 'Success!' : 'Error!'} message={updateResponse.message} showPrimaryBtn={true} />
