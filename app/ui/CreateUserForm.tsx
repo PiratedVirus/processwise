@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Form, Input, Button, Checkbox, Select } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { FormInstance } from 'antd/lib/form';
-import { updateSelectedMailBoxes } from '@/redux/reducers/editFormDataReducer';
+import { updateSelectedMailBoxes, updatePreSelectedUserEmailAccess } from '@/redux/reducers/editFormDataReducer';
 import { parseBinaryToRoles } from '../lib/utils';
 
 interface FormField {
@@ -35,7 +35,10 @@ const FormItem: React.FC<FormItemProps> = React.memo(({ field, existingData, for
   const dispatch = useDispatch();
   let inputElement: React.ReactNode;
   const clientConfiguredMailboxes = useSelector((state: any) => state.editFormData.clientConfiguredMailboxes);
+  console.log('[CreateUserForm] mailboxes 77 clientConfiguredMailboxes', JSON.stringify(clientConfiguredMailboxes))
   const userMailboxesAccessArr = existingData?.userMailboxesAccess?.split(", ");
+  dispatch(updatePreSelectedUserEmailAccess(userMailboxesAccessArr))
+  console.log('[CreateUserForm] clientConfiguredMailboxes which are prefilled', JSON.stringify(userMailboxesAccessArr))
   switch (field.inputType) {
     case 'Checkbox':
       inputElement = (
@@ -51,7 +54,7 @@ const FormItem: React.FC<FormItemProps> = React.memo(({ field, existingData, for
         <>
           <Select defaultValue={formType === 'edit' ? userMailboxesAccessArr : undefined} mode="multiple" onChange={(value: string[]) => dispatch(updateSelectedMailBoxes(value))}>
             
-            {JSON.parse(clientConfiguredMailboxes).map((option: any, index: any) => (
+            {(clientConfiguredMailboxes).map((option: any, index: any) => (
               <Select.Option key={index} value={option}>{option}</Select.Option>
             ))}
           </Select>
@@ -100,7 +103,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ form, formName, submitB
         <FormItem key={field.name} field={field} existingData={initialValues} formType={formType} />
       ))}
       <Form.Item>
-        <Button className="bg-blue-700 text-white w-full" htmlType="submit">
+        <Button className="w-full" type='primary' htmlType="submit">
           {submitBtnText}
         </Button>
         

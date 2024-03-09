@@ -1,33 +1,24 @@
 "use client";
-import '@/app/ui/styles/global.css';
+import React from 'react';
 import { inter } from '@/app/ui/styles/fonts';
 import Providers from '@/app/lib/Providers';
-import React, { useState } from 'react';
-import { FileOutlined, CustomerServiceOutlined, FolderOpenOutlined, HomeOutlined, TeamOutlined } from '@ant-design/icons';
-import type { MenuProps } from 'antd';
-import {  Layout, Menu, theme } from 'antd';
+import '@/app/ui/styles/global.css';
+import { HomeOutlined, TeamOutlined } from '@ant-design/icons';
+import {  Layout } from 'antd';
 import TopNav from '@/app/ui/TopNavBar';
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/react"
+import UseSider from '@/app/ui/UserSider';
+import { AntdRegistry } from '@ant-design/nextjs-registry';
 
-const { Header, Content, Sider } = Layout;
-
-
-
-const sideMenuItems: MenuProps['items'] = [
-  { key: '1', label: 'Manage Users', icon: React.createElement(FileOutlined) },
-  { key: '2', label: 'Services', icon: React.createElement(CustomerServiceOutlined) },
-  { key: '2', label: 'Resources', icon: React.createElement(FolderOpenOutlined) }
-];
+const { Header, Content } = Layout;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const { token: { colorBgContainer, borderRadiusLG }, } = theme.useToken();
-  const [collapsed, setCollapsed] = useState(false);
 
   const links = [
-    { name: 'Document Processing', href: '/', icon: HomeOutlined, },
+    { name: 'Document Processing 123', href: '/', icon: HomeOutlined, },
     { name: 'Reporting', href: '/', icon: TeamOutlined },
-    { name: 'Admin Center', href: '/user/admin', icon: TeamOutlined },
+    { name: 'Admin Center', href: '/admin', icon: TeamOutlined },
   ];
 
 
@@ -35,22 +26,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className={`${inter.className} antialiased`}>
         <Providers>
+          <AntdRegistry>
           <Layout style={{ minHeight: '100vh' }}>
 
-            <Header className='bg-white'>
+            <Header style={{background: 'white'} }>
                 <TopNav links={links}/>
             </Header>
 
             <Layout>
-              <Sider width={200} collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
-                <Menu
-                  mode="inline"
-                  defaultSelectedKeys={['1']}
-                  defaultOpenKeys={['sub1']}
-                  style={{ height: '100%', borderRight: 0 }}
-                  items={sideMenuItems}
-                />
-              </Sider>
+        
+              <UseSider/>
+              
               <Layout className='mt-5' style={{ padding: '0 24px 24px' }}>
 
                 <Content
@@ -58,8 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     paddingBottom: 24,
                     margin: 0,
                     minHeight: 280,
-                    background: colorBgContainer,
-                    borderRadius: borderRadiusLG,
+                    background: 'white',
                   }}
                 >
                   {children}
@@ -69,6 +54,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </Layout>
           <SpeedInsights />
           <Analytics />
+          </AntdRegistry>
         </Providers>
       </body>
     </html>

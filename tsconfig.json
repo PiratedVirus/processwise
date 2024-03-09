@@ -31,6 +31,6 @@
     ".next/types/**/*.ts",
     "app/lib/placeholder-data.js",
     "scripts/seed.js"
-, "app/ui/EmailList.tsx", "app/moderator/users/MemberTable.jsx", "app/components/Moderator/ItConfig/MailboxConfig.tsx", "app/components/Admin/CompanyUsersTable.jsx", "app/components/Admin/FilterDropdown.tsx", "app/api/(crud)/post/route.ts"  ],
+, "app/ui/EmailList.tsx", "app/moderator/users/MemberTable.jsx", "app/components/Moderator/ItConfig/MailboxConfig.tsx", "app/components/Admin/CompanyUsersTable.jsx", "app/components/Admin/FilterDropdown.tsx", "app/api/(crud)/post/route.ts", "app/api/(azure)/attachments/route.ts"  ],
   "exclude": ["node_modules"]
 }

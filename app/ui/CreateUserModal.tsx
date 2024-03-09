@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { Modal, Form, Button, Spin } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import useAzureApi from '@/app/hooks/useAzureApi';
-import { updateAzureUserData } from '@/redux/reducers/editFormDataReducer';
+import { updateAzureUserData, } from '@/redux/reducers/editFormDataReducer';
 import CreateUserForm from '@/app/ui/CreateUserForm';
 import ResponseModal from '@/app/ui/ResponseModal';
 import { EditOutlined } from '@ant-design/icons';
 import { arrayToString, parseRoleToBinary } from '@/app/lib/utils';
 import usePostApi from '@/app/hooks/usePostApi';
 import useUpdateApi from '@/app/hooks/useUpdateApi';
-import useLoggedInUser from '@/app/hooks/useLoggedInUser';
+import { useSession } from 'next-auth/react';
 
 interface CreateUserModalProps {
   modalOpenText: string;
@@ -28,16 +28,16 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
   formType,
 }) => {
   const dispatch = useDispatch();
+  const {data: session} = useSession();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const selectedMailBoxes = useSelector((state: any) => state.editFormData.selectedMailBoxes);
   const selectedClientInMasterAdmin = useSelector((state: any) => state.editFormData.selectedClientInMasterAdmin);
+  const preSelectedUserEmailAccess = useSelector((state: any) => state.editFormData.preSelectedUserEmailAccess);
   const { response, handleSubmit } = usePostApi();
   const { connecting, azureResponse, connectAzure } = useAzureApi();
   const { updating, updateResponse, handleUpdate } = useUpdateApi();
   const [form] = Form.useForm();
 
-  useLoggedInUser();
-  const loggedInUserData = useSelector((state: any) => state.loggedInUser);
 
   const openModal = () => setIsModalVisible(true);
   const handleCancel = () => setIsModalVisible(false);
@@ -50,16 +50,16 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
       invitedUserEmailAddress: values.userEmail,
       invitedUserDisplayName: values.userName,
       invitedUserType: "Member",
-      inviteRedirectUrl: "http://localhost:3000/user/admin",
+      inviteRedirectUrl: "http://localhost:3000/moderator",
       sendInvitationMessage: true,
       invitedUserMessageInfo: {
         customizedMessageBody: "Hello, we're excited to welcome you to our team! Please accept this invitation to join our organization's platform.",
         messageLanguage: "en-US"
       }
     };
-    const isMasterAdmin = loggedInUserData.user[0].userPosition === 'Master Admin';
-    const userCompany = isMasterAdmin ? selectedClientInMasterAdmin : loggedInUserData.user[0].userCompany;
-    const userPosition = isMasterAdmin ? 'IT Admin' : 'End User';
+    const isMasterAdmin = session?.user.role === 'moderator';
+    const userCompany = isMasterAdmin ? selectedClientInMasterAdmin : session?.user.userCompany;
+    const userPosition = isMasterAdmin ? 'admin' : 'user';
     
     const userData = {
       userName: values.userName,
@@ -71,25 +71,26 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
       userMailboxesAccess: arrayToString(selectedMailBoxes),
       userRole: (values.userRole) ? parseRoleToBinary(values.userRole) : '1111'
     };
+    const mailAccessArray = selectedMailBoxes.length === 0 ? preSelectedUserEmailAccess : selectedMailBoxes;
 
     if(formType === 'create') {
       connectAzure('createUsers', inviteData);
-      handleSubmit('UserDetails', userData);
+      handleSubmit('users', userData);
     } else {
       const updatedUserData = {
         userName: values.userName,
         userEmail: values.userEmail,
-        userMailboxesAccess: arrayToString(selectedMailBoxes),
+        userMailboxesAccess: arrayToString(mailAccessArray),
         userRole: parseRoleToBinary(values.userRole)
       }
-      handleUpdate('UserDetails', "userEmail", selectedUserData.userEmail, updatedUserData);
+      handleUpdate('users', "userEmail", selectedUserData.userEmail, updatedUserData);
     }
   };
 
   function isModalButtonOrIcon(modalOpenType: 'button' | 'text' | 'icon', modalOpenText: string, openModal: () => void) {
     switch (modalOpenType) {
       case 'button':
-        return <Button onClick={openModal} className="bg-blue-700 text-white">{modalOpenText}</Button>;
+        return <Button onClick={openModal} type="primary">{modalOpenText}</Button>;
       case 'icon':
         return <Button onClick={openModal} icon={<EditOutlined />} />;
       case 'text':
@@ -108,7 +109,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
         </div>
       ) : (
         azureResponse && response && (
-          <ResponseModal status={azureResponse.status} title={azureResponse.status === 'success' ? 'Success!' : 'Error!'} message={azureResponse.message} showPrimaryBtn={true} />
+          <ResponseModal status={azureResponse.status} title={azureResponse.status === 'success' ? 'Success!' : 'Error!'} message={azureResponse.status === 'success' ? 'User created Successfully!' : 'User creation failed!'} showPrimaryBtn={true} />
         ) || 
         updateResponse && (
           <ResponseModal status={updateResponse.status} title={updateResponse.status === 'success' ? 'Success!' : 'Error!'} message={updateResponse.message} showPrimaryBtn={true} />

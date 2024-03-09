@@ -1,27 +1,45 @@
 import React from "react";
-import { signIn, signOut } from "next-auth/react";
-import { Spin, Button, Dropdown, Space  } from "antd";
-import { PoweroffOutlined } from '@ant-design/icons';
-import { useSelector } from 'react-redux';
-import useLoggedInUser from '@/app/hooks/useLoggedInUser';
+import { signIn, signOut, useSession } from "next-auth/react";
+import {  Dropdown, Space } from "antd";
+import { UserOutlined } from '@ant-design/icons';
+import Link from 'next/link';
+import type { MenuProps } from 'antd';
+
 const SigninButton = () => {
-  const { loadingUser } = useLoggedInUser();
-  const loggedInUserData = useSelector((state: any) => state.loggedInUser);
-  console.log('loggedInUserData:', loggedInUserData);
+  const { data: session } = useSession();
+
+  const items: MenuProps['items'] = [
+    {
+      label: <Link href="/resources" >Resources</Link>,
+      key: '1',
+    },
+    {
+      label: 'Services',
+      key: '2',
+    },
+    {
+      label: 'Sign Out',
+      key: '3',
+      onClick: () => signOut(),
+      style: { color: 'red' },
+    }
+
+  ];
+ 
 
   return (
     <div>
       <div className="flex gap-4 ml-auto items-center">
-        {loggedInUserData.user && Object.keys(loggedInUserData.user).length != 0 ? (
-          <>
-            {loadingUser ? (<Spin className="mt-5 ml-10"> </Spin>) : (<Dropdown overlay={<Button type="primary" ghost onClick={() => signOut()} >Sign Out</Button>}>
+        {session ? (
+            <Dropdown
+              menu={{ items }}
+            >
               <a onClick={(e) => e.preventDefault()}>
-                <Space className="font-bold text-blue-500">{loggedInUserData?.user[0]?.userName}<PoweroffOutlined /></Space>
+                <Space className="font-bold text-blue-500"><UserOutlined />{session?.user?.name}</Space>
               </a>
-            </Dropdown>)}
-          </>
+            </Dropdown>
         ) : (
-          <p onClick={() => signIn()} className="ml-auto text-blue-500 font-bold">Sign In</p> 
+          <p onClick={() => signIn()} className="ml-auto text-blue-500 font-bold">Sign In</p>
         )}
       </div>
     </div>

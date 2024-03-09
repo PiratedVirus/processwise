@@ -2,42 +2,29 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { Table, Input, Button, Space, Typography, Spin, Row, Col } from 'antd';
 import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
 import useFetchApi from '@/app/hooks/useFetchApi'; 
+import useAzureApi from '@/app/hooks/useAzureApi';
 import { parseRoleToCheckedStates } from '@/app/lib/utils';
 import CreateUserModal from '@/app/ui/CreateUserModal';
 import DeleteUserModal from '@/app/ui/DeleteUserModal';
 import {createCompanyUser} from '@/app/lib/form-defination/createCompanyUser'
 import { useSelector } from 'react-redux';
-import useLoggedInUser from '@/app/hooks/useLoggedInUser';
 const { Text } = Typography;
 
 export const MailboxDocumentTable = () => {
   const [mailboxAssignedUsers, setMailboxAssignedUsers] = useState([]);
   const [searchText, setSearchText] = useState('');
-  const { fetchApi, isLoading } = useFetchApi();
+  const {  isLoading } = useFetchApi();
+  const { connecting, azureResponse, connectAzure } = useAzureApi();
+
   const azureUserData = useSelector((state) => state.editFormData.azureUserData);
   const dashboardSelectedMailbox = useSelector((state) => state.editFormData.dashboardSelectedMailbox);
+  const selectedMailboxInUserDashboard = useSelector((state) => state.editFormData.selectedUserMailboxInUserDashboard);
   console.log('azureUserData', JSON.stringify(azureUserData));
   console.log('dashboardSelectedMailbox', JSON.stringify(dashboardSelectedMailbox));
-  useLoggedInUser();
-  const loggedInUserData = useSelector((state) => state.loggedInUser);
+  
 
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const whereConditions = [
-          { columnName: 'userCompany', columnValue: loggedInUserData.user[0].userCompany},
-          { columnName: 'userMailboxesAccess', columnValue: dashboardSelectedMailbox, contains: true}
-        ];
-        const responseData = await fetchApi(`${process.env.NEXT_PUBLIC_API_URL}/fetch`, 'POST', { modelName: 'UserDetails', conditions: whereConditions});
-        setMailboxAssignedUsers(responseData);
-      } catch (fetchError) {
-        console.error('Fetch error:', fetchError);
-      }
-    };
-
-    fetchData();
-  }, [fetchApi, azureUserData, dashboardSelectedMailbox]);
+ 
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -158,7 +145,7 @@ export const MailboxDocumentTable = () => {
       <div className="space-y-5">
         <Row justify="space-between" align="middle" className="px-4 pt-5">
           <Col>
-            <Text strong className="text-lg">User Table</Text>
+            <Text strong className="text-lg">Documents Overview</Text>
           </Col>
           </Row>
           <Row justify="space-between" align="middle" className="px-4 py-2">
