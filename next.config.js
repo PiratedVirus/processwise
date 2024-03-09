@@ -12,6 +12,7 @@ const nextConfig = {
     compiler: {
       styledComponents: true,
     },
+    serverMinification: false
 };
 
 module.exports = withBundleAnalyzer(nextConfig)
