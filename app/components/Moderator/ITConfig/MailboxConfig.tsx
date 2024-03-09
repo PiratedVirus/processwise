@@ -2,9 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Form, Input, Button, Spin } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import useUpdateApi from '@/app/hooks/useUpdateApi';
-import useFetchApi from '@/app/hooks/useFetchApi';
+import useFetchApiV2 from '@/app/hooks/useFetchApiV2'; // Updated import for SWR
 import ResponseModal from '@/app/ui/ResponseModal';
-
 
 interface MailboxProps {
   clientName: string;
@@ -21,50 +20,39 @@ interface FormValues {
 const MailboxConfiguration: React.FC<MailboxProps> = ({ clientName }) => {
   const [form] = Form.useForm<FormValues>();
   const { updateResponse, handleUpdate } = useUpdateApi();
-  const { isLoading, fetchApi } = useFetchApi();
-  const [clientsData, setClientsData] = useState<any>(null);
+  const selectedClientName = decodeURIComponent(clientName.split("=")[1]);
+  const { data: selectClientData, isLoading, isError } = useFetchApiV2(`${process.env.NEXT_PUBLIC_API_URL}/clients?companyName=${selectedClientName}`);
   const [initialized, setInitialized] = useState(false);
-  let selectedClientName = clientName.split("=")[1].replace(/\+/g, ' ');
 
   useEffect(() => {
-    const fetchData = async () => {
-      const selectedClientName = clientName.split("=")[1].replace(/\+/g, ' ');
-      try {
-        const data = await fetchApi(`${process.env.NEXT_PUBLIC_API_URL}/clients`);
-        const selectClientData = data.find((client: any) => client.companyName === selectedClientName);
-        setClientsData(selectClientData);
-      } catch (error) {
-        console.error('Error:', error);
+    if (selectClientData && !initialized) {
+      if (selectClientData[0]?.configuredMailboxes) {
+        const preMail: string[] = JSON.parse(selectClientData[0].configuredMailboxes);
+        form.setFieldsValue({
+          mailboxes: preMail.map((email: string) => ({ email })),
+        });
+        setInitialized(true); // Prevent re-initialization
       }
-    };
-
-    fetchData();
-  }, [fetchApi, clientName]);
-
-  useEffect(() => {
-    if (clientsData && !initialized) {
-      const preMail: string[] = JSON.parse(clientsData.configuredMailboxes || '[]');
-      form.setFieldsValue({
-        mailboxes: preMail.map((email: any) => ({ email })),
-      });
-      setInitialized(true); // Prevent re-initialization
     }
-  }, [clientsData, form, initialized]);
-
-
+  }, [selectClientData, form, initialized, selectedClientName]);
 
   const handleConfigure = async (values: FormValues) => {
     const emails = values.mailboxes.map(item => item.email);
-    const configuredMailboxes = {
-      "configuredMailboxes": JSON.stringify(emails),
-    };
-    await handleUpdate('clients', "companyName", selectedClientName, configuredMailboxes, "configuredMailboxes");
+    await handleUpdate('clients', "companyName", selectedClientName, { configuredMailboxes: JSON.stringify(emails) }, "configuredMailboxes");
   };
+
+  if (isError) return <div>Error loading client data.</div>;
 
   return (
     <>
       {updateResponse && (
-        <ResponseModal status={updateResponse.status} title={updateResponse.status === 'success' ? 'Success!' : 'Error!'} message={updateResponse.message} secondaryBtnText='Go Back' secondaryBtnValue='/moderator' />
+        <ResponseModal
+          status={updateResponse.status}
+          title={updateResponse.status === 'success' ? 'Success!' : 'Error!'}
+          message={updateResponse.message}
+          secondaryBtnText='Go Back'
+          secondaryBtnValue='/moderator'
+        />
       )}
       <Spin spinning={isLoading} tip="Loading...">
         <Form
@@ -77,17 +65,16 @@ const MailboxConfiguration: React.FC<MailboxProps> = ({ clientName }) => {
           <Form.List name="mailboxes">
             {(fields, { add, remove }) => (
               <>
-                {fields.map((field, index) => (
+                {fields.map(({ key, name }, index) => (
                   <Form.Item
-                    key={field.key}
+                    key={key}
                     label={`Mailbox ${index + 1}`}
                     labelCol={{ span: 6 }}
                     wrapperCol={{ span: 14 }}
                   >
                     <Input.Group compact>
                       <Form.Item
-                        {...field}
-                        name={[field.name, 'email']}
+                        name={[name, 'email']}
                         noStyle
                         rules={[{ required: true, message: 'Email is required', type: 'email' }]}
                       >
@@ -96,7 +83,7 @@ const MailboxConfiguration: React.FC<MailboxProps> = ({ clientName }) => {
                       {fields.length > 1 && (
                         <MinusCircleOutlined
                           className="dynamic-delete-button mt-2 ml-2"
-                          onClick={() => remove(field.name)}
+                          onClick={() => remove(name)}
                           style={{ color: 'red', fontSize: '16px', cursor: 'pointer' }}
                         />
                       )}
@@ -118,13 +105,13 @@ const MailboxConfiguration: React.FC<MailboxProps> = ({ clientName }) => {
           </Form.List>
           <Form.Item wrapperCol={{ offset: 2, span: 18 }}>
             <Button
+              className='bg-blue-700 text-white'
+              type="primary"
               htmlType="submit"
               block
-              className='bg-blue-700 text-white'
             >
               Configure & Save
             </Button>
-            <p className="text-gray-400 p-5 text-center">Make sure that you've manually created this shared mailboxes into <b>Azure Admin Center.</b></p>
           </Form.Item>
         </Form>
       </Spin>

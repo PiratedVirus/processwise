@@ -1,54 +1,39 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { Table, Input, Button, Space, Typography, Spin, Row, Col } from 'antd';
 import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
-import useFetchApi from '@/app/hooks/useFetchApi'; 
+import useFetchApiV2 from '@/app/hooks/useFetchApiV2';
 import { parseRoleToCheckedStates } from '@/app/lib/utils';
 import CreateUserModal from '@/app/ui/CreateUserModal';
 import DeleteUserModal from '@/app/ui/DeleteUserModal';
-import {createCompanyUser} from '@/app/lib/form-defination/createCompanyUser'
+import { createCompanyUser } from '@/app/lib/form-defination/createCompanyUser'
 import { useSelector } from 'react-redux';
-import useLoggedInUser from '@/app/hooks/useLoggedInUser';
+import { useSession } from 'next-auth/react';
 const { Text } = Typography;
 
 export const MemberTable = () => {
-  const [mailboxAssignedUsers, setMailboxAssignedUsers] = useState([]);
+  const {data: session} = useSession();
+  const userCompany = session?.user?.userCompany;
+
   const [searchText, setSearchText] = useState('');
-  const { fetchApi, isLoading } = useFetchApi();
-  const azureUserData = useSelector((state) => state.editFormData.azureUserData);
   const dashboardSelectedMailbox = useSelector((state) => state.editFormData.dashboardSelectedMailbox);
-  console.log('azureUserData', JSON.stringify(azureUserData));
-  console.log('dashboardSelectedMailbox', JSON.stringify(dashboardSelectedMailbox));
-  useLoggedInUser();
-  const loggedInUserData = useSelector((state) => state.loggedInUser);
 
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-    
-        const whereConditions = [
-          { columnName: 'userCompany', columnValue: loggedInUserData.user[0].userCompany},
-          { columnName: 'userMailboxesAccess', columnValue: dashboardSelectedMailbox, contains: true}
-        ];
-        
-        const queryParams = whereConditions.map(condition => {
-          let { columnName, columnValue, contains } = condition;
-          if (contains) {
-            columnValue = `%25${columnValue}%25`;
-          }
-          return `${columnName}=${columnValue}`;
-        }).join('&');
-        
-        const responseData = await fetchApi(`${process.env.NEXT_PUBLIC_API_URL}/users?${queryParams}`);
-        console.log('responseData ++++', responseData);
-        setMailboxAssignedUsers(responseData);
-      } catch (fetchError) {
-        console.error('Fetch error:', fetchError);
-      }
-    };
+  const whereConditions = [
+    { columnName: 'userCompany', columnValue: userCompany },
+    { columnName: 'userMailboxesAccess', columnValue: dashboardSelectedMailbox, contains: true },
+  ];
 
-    fetchData();
-  }, [fetchApi, azureUserData, dashboardSelectedMailbox]);
+  const queryParams = useMemo(() => whereConditions.map(condition => {
+    let { columnName, columnValue, contains } = condition;
+    if (contains && columnValue) {
+      columnValue = `%${encodeURIComponent(columnValue)}%`;
+    }
+    return `${columnName}=${columnValue}`;
+  }).join('&'), [session, dashboardSelectedMailbox]);
+
+  const { data: mailboxAssignedUsers, isLoading, isError } = useFetchApiV2(`${process.env.NEXT_PUBLIC_API_URL}/users?${queryParams}`);
+
+
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -137,17 +122,17 @@ export const MemberTable = () => {
       key: 'actions',
       render: (record) => (
         <Space size="middle">
-          <CreateUserModal 
-            formName='editUser' 
-            formType='edit' 
-            modalOpenText='Edit User' 
-            modalOpenType='icon' 
-            modalFormFields={createCompanyUser} 
+          <CreateUserModal
+            formName='editUser'
+            formType='edit'
+            modalOpenText='Edit User'
+            modalOpenType='icon'
+            modalFormFields={createCompanyUser}
             selectedUserData={record}
           />
-          <DeleteUserModal  
-            modalOpenText='Delete User' 
-            modalOpenType='icon' 
+          <DeleteUserModal
+            modalOpenText='Delete User'
+            modalOpenType='icon'
             selectedUserData={record}
           />
         </Space>
@@ -156,8 +141,8 @@ export const MemberTable = () => {
   ], []);
 
   const globalSearch = () => {
-    const filteredData = mailboxAssignedUsers.filter(entry => 
-      Object.values(entry).some(value => 
+    const filteredData = mailboxAssignedUsers.filter(entry =>
+      Object.values(entry).some(value =>
         value ? value.toString().toLowerCase().includes(searchText.toLowerCase()) : false
       )
     );
@@ -171,8 +156,8 @@ export const MemberTable = () => {
           <Col>
             <Text strong className="text-lg">User Table</Text>
           </Col>
-          </Row>
-          <Row justify="space-between" align="middle" className="px-4 py-2">
+        </Row>
+        <Row justify="space-between" align="middle" className="px-4 py-2">
           <Col>
             <Input
               className='w-96'
@@ -182,7 +167,7 @@ export const MemberTable = () => {
               value={searchText}
             />
           </Col>
-          <CreateUserModal formName='createUser' formType='create' modalOpenText='Create New User' modalOpenType='button' modalFormFields={createCompanyUser}/>
+          <CreateUserModal formName='createUser' formType='create' modalOpenText='Create New User' modalOpenType='button' modalFormFields={createCompanyUser} />
 
         </Row>
         <Table

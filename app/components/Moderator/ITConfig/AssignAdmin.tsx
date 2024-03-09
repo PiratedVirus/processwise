@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Form, Spin } from 'antd';
 import useUpdateApi from '@/app/hooks/useUpdateApi';
-import useFetchApi from '@/app/hooks/useFetchApi';
+import useFetchApiV2 from '@/app/hooks/useFetchApiV2'; // Updated import
 import ResponseModal from '@/app/ui/ResponseModal';
 import CreateUserForm from '@/app/ui/CreateUserForm';
 import CreateUserModal from '@/app/ui/CreateUserModal';
-import  {createITAdminOnAzure}  from '@/app/lib/form-defination/createITAdminAzure';
+import { createITAdminOnAzure } from '@/app/lib/form-defination/createITAdminAzure';
 
 interface ClientDetail {
   companyName: string;
@@ -19,7 +19,7 @@ interface AssignAdminProps {
 interface FormField {
   name: string;
   label: string;
-  rules: any[];
+  rules: Record<string, unknown>[];
   inputType: 'Checkbox' | 'Dropdown' | 'Input';
   options?: string[];
   optionalText?: string;
@@ -28,28 +28,16 @@ interface FormField {
 const AssignAdmin: React.FC<AssignAdminProps> = ({ clientName }) => {
   const [form] = Form.useForm();
   const { updateResponse, handleUpdate } = useUpdateApi();
-  const { isLoading, fetchApi } = useFetchApi();
-  const [clientsData, setClientsData] = useState<ClientDetail | null>(null);
-  const selectedClientName = decodeURIComponent(clientName.split("=")[1]);
-
+  const selectedClientName = decodeURIComponent(clientName.split('=')[1]);
+  const { data: selectedClientData, isLoading, isError } = useFetchApiV2(`${process.env.NEXT_PUBLIC_API_URL}/clients?companyName=${selectedClientName}`);
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await fetchApi(`${process.env.NEXT_PUBLIC_API_URL}/clients`);
-        const selectedClientData = data.find((client: ClientDetail) => client.companyName === selectedClientName);
-        setClientsData(selectedClientData);
-        if (selectedClientData?.itAdminEmail) {
-          form.setFieldsValue({ adminEmail: selectedClientData.itAdminEmail });
-        }
-      } catch (error) {
-        console.error('Error:', error);
+      if (selectedClientData && selectedClientData[0]?.itAdminEmail) {
+        form.setFieldsValue({ adminEmail: selectedClientData[0].itAdminEmail });
       }
-    };
-    fetchData();
-  }, [clientName]); // Removed fetchApi from dependencies to avoid re-fetching due to function re-creation
+  }, [selectedClientData, selectedClientName, form]);
 
   const assignAdmin = async (values: { adminEmail: string }) => {
-    await handleUpdate('clients', "companyName", selectedClientName, { "itAdminEmail": values.adminEmail }, "itAdminEmail");
+    await handleUpdate('clients', 'companyName', selectedClientName, { itAdminEmail: values.adminEmail }, 'itAdminEmail');
   };
 
   const userFormFields: FormField[] = [
@@ -60,6 +48,8 @@ const AssignAdmin: React.FC<AssignAdminProps> = ({ clientName }) => {
       inputType: 'Input',
     },
   ];
+
+  if (isError) return <div>Error loading client data.</div>;
 
   return (
     <>
@@ -72,8 +62,6 @@ const AssignAdmin: React.FC<AssignAdminProps> = ({ clientName }) => {
         />
       )}
       <Spin spinning={isLoading} tip="Loading...">
-   
-
         <CreateUserForm
           form={form}
           formType="create"

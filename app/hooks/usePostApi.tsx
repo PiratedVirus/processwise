@@ -7,6 +7,7 @@ const usePostApi = () => {
   const [response, setResponse] = useState<{ status: 'success' | 'error'; message: string } | null>(null);
 
   const handleSubmit = async (modelName: string, formData: Record<string, any>) => {
+    console.log('Submitting:', modelName, formData); // Log the model name and form data
     setSubmitting(true);
     setResponse(null);
     try {
@@ -15,10 +16,12 @@ const usePostApi = () => {
         clientId,
         ...formData,
       };
+      console.log('User data:', userData); // Log the user data
 
-      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/post`, { modelName, userData });
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/${modelName}`, { userData });
 
       setResponse({ status: 'success', message: `${modelName} registered successfully!` });
+      console.log('Response:', response); // Log the response
     } catch (error) {
       console.error(`Error registering ${modelName}:`, error);
       setResponse({ status: 'error', message: `Failed to register ${modelName}. Please try again.` });
@@ -32,4 +35,4 @@ const usePostApi = () => {
   return { submitting, response, handleSubmit, resetResponse };
 };
 
-export default usePostApi;
+export default usePostApi; 

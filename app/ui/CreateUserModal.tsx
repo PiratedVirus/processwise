@@ -9,7 +9,7 @@ import { EditOutlined } from '@ant-design/icons';
 import { arrayToString, parseRoleToBinary } from '@/app/lib/utils';
 import usePostApi from '@/app/hooks/usePostApi';
 import useUpdateApi from '@/app/hooks/useUpdateApi';
-import useLoggedInUser from '@/app/hooks/useLoggedInUser';
+import { useSession } from 'next-auth/react';
 
 interface CreateUserModalProps {
   modalOpenText: string;
@@ -28,6 +28,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
   formType,
 }) => {
   const dispatch = useDispatch();
+  const {data: session} = useSession();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const selectedMailBoxes = useSelector((state: any) => state.editFormData.selectedMailBoxes);
   const selectedClientInMasterAdmin = useSelector((state: any) => state.editFormData.selectedClientInMasterAdmin);
@@ -37,8 +38,6 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
   const { updating, updateResponse, handleUpdate } = useUpdateApi();
   const [form] = Form.useForm();
 
-  useLoggedInUser();
-  const loggedInUserData = useSelector((state: any) => state.loggedInUser);
 
   const openModal = () => setIsModalVisible(true);
   const handleCancel = () => setIsModalVisible(false);
@@ -58,8 +57,8 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
         messageLanguage: "en-US"
       }
     };
-    const isMasterAdmin = loggedInUserData.user[0].userPosition === 'Master Admin';
-    const userCompany = isMasterAdmin ? selectedClientInMasterAdmin : loggedInUserData.user[0].userCompany;
+    const isMasterAdmin = session?.user.role === 'moderator';
+    const userCompany = isMasterAdmin ? selectedClientInMasterAdmin : session?.user.userCompany;
     const userPosition = isMasterAdmin ? 'admin' : 'user';
     
     const userData = {
@@ -76,7 +75,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
 
     if(formType === 'create') {
       connectAzure('createUsers', inviteData);
-      handleSubmit('UserDetails', userData);
+      handleSubmit('users', userData);
     } else {
       const updatedUserData = {
         userName: values.userName,
@@ -84,7 +83,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
         userMailboxesAccess: arrayToString(mailAccessArray),
         userRole: parseRoleToBinary(values.userRole)
       }
-      handleUpdate('UserDetails', "userEmail", selectedUserData.userEmail, updatedUserData);
+      handleUpdate('users', "userEmail", selectedUserData.userEmail, updatedUserData);
     }
   };
 

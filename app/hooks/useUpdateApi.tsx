@@ -15,7 +15,7 @@ const useUpdateApi = () => {
       };
       console.log('User Data: ', userData);
   
-      await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/update`, { modelName, idKey, idValue, userData, coloumToUpdate });
+      await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/${modelName}`, { idKey, idValue, userData, coloumToUpdate });
   
       setUpdateResponse({ status: 'success', message: `${modelName} updated successfully!` });
     } catch (error) {

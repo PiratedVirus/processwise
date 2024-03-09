@@ -35,6 +35,7 @@ const FormItem: React.FC<FormItemProps> = React.memo(({ field, existingData, for
   const dispatch = useDispatch();
   let inputElement: React.ReactNode;
   const clientConfiguredMailboxes = useSelector((state: any) => state.editFormData.clientConfiguredMailboxes);
+  console.log('[CreateUserForm] mailboxes 77 clientConfiguredMailboxes', JSON.stringify(clientConfiguredMailboxes))
   const userMailboxesAccessArr = existingData?.userMailboxesAccess?.split(", ");
   dispatch(updatePreSelectedUserEmailAccess(userMailboxesAccessArr))
   console.log('[CreateUserForm] clientConfiguredMailboxes which are prefilled', JSON.stringify(userMailboxesAccessArr))
@@ -53,7 +54,7 @@ const FormItem: React.FC<FormItemProps> = React.memo(({ field, existingData, for
         <>
           <Select defaultValue={formType === 'edit' ? userMailboxesAccessArr : undefined} mode="multiple" onChange={(value: string[]) => dispatch(updateSelectedMailBoxes(value))}>
             
-            {JSON.parse(clientConfiguredMailboxes).map((option: any, index: any) => (
+            {(clientConfiguredMailboxes).map((option: any, index: any) => (
               <Select.Option key={index} value={option}>{option}</Select.Option>
             ))}
           </Select>

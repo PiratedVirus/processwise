@@ -8,13 +8,12 @@ import CreateUserModal from '@/app/ui/CreateUserModal';
 import DeleteUserModal from '@/app/ui/DeleteUserModal';
 import {createCompanyUser} from '@/app/lib/form-defination/createCompanyUser'
 import { useSelector } from 'react-redux';
-import useLoggedInUser from '@/app/hooks/useLoggedInUser';
 const { Text } = Typography;
 
 export const MailboxDocumentTable = () => {
   const [mailboxAssignedUsers, setMailboxAssignedUsers] = useState([]);
   const [searchText, setSearchText] = useState('');
-  const { fetchApi, isLoading } = useFetchApi();
+  const {  isLoading } = useFetchApi();
   const { connecting, azureResponse, connectAzure } = useAzureApi();
 
   const azureUserData = useSelector((state) => state.editFormData.azureUserData);
@@ -22,29 +21,10 @@ export const MailboxDocumentTable = () => {
   const selectedMailboxInUserDashboard = useSelector((state) => state.editFormData.selectedUserMailboxInUserDashboard);
   console.log('azureUserData', JSON.stringify(azureUserData));
   console.log('dashboardSelectedMailbox', JSON.stringify(dashboardSelectedMailbox));
-  useLoggedInUser();
-  const loggedInUserData = useSelector((state) => state.loggedInUser);
+  
 
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const userEmail = {
-          "userEmail" : selectedMailboxInUserDashboard
-        }
-        const responseData = await connectAzure('mails', userEmail);
-        console.log('responseData 888', JSON.stringify(responseData));
-        console.log("=-=-=-=- " + JSON.stringify(azureResponse));
-        setMailboxAssignedUsers(responseData);
-      } catch (fetchError) {
-        console.error('Fetch error:', fetchError);
-      }
-    };
-
-    fetchData();
-    console.log('selectedMailboxInUserDashboard ****', selectedMailboxInUserDashboard);
-
-  }, [ selectedMailboxInUserDashboard]);
+ 
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
