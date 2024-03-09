@@ -8,7 +8,10 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   })
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    pageExtensions: ['ts', 'tsx']
+    pageExtensions: ['ts', 'tsx'],
+    compiler: {
+      styledComponents: true,
+    },
 };
 
 module.exports = withBundleAnalyzer(nextConfig)

@@ -5,7 +5,7 @@ import { MailOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import CustomCard from '@/app/ui/CustomCard';
 import useFetchApiV2 from '@/app/hooks/useFetchApiV2';
 import { updateClientConfiguredMailboxes, updateDashboardSelectedMailbox } from '@/redux/reducers/editFormDataReducer';
-import { Skeleton } from 'antd';
+import  CustomCardSkeleton  from '@/app/ui/CustomCardSkeleton';
 const ScrollableCardHolder: React.FC = () => {
 
   const { data: session } = useSession();
@@ -35,7 +35,7 @@ const ScrollableCardHolder: React.FC = () => {
     }
   };
 
-  if (isLoading) return <Skeleton active />;
+  if (isLoading) return <CustomCardSkeleton  />;
   if (isError) return <div>Failed to load</div>;
 
   const clientMailboxData = mailboxData && mailboxData[0]?.configuredMailboxes ? JSON.parse(mailboxData[0].configuredMailboxes) : [];

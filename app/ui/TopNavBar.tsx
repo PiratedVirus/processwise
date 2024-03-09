@@ -19,7 +19,7 @@ const TopNav: React.FC<TopNavProps> = () => {
   // Define your links including a visible property based on user role
   const links = [
     { name: 'Document Processing', href: '/', icon: HomeOutlined, visible: (userRole === 'user' || userRole === 'admin' || userRole === 'approver') },
-    { name: 'Reporting', href: '/reports', icon: TeamOutlined, visible: (userRole === 'admin' || userRole === 'approver') },
+    // { name: 'Reporting', href: '/reports', icon: TeamOutlined, visible: (userRole === 'admin' || userRole === 'approver') },
     { name: 'Admin Center', href: '/admin', icon: TeamOutlined, visible: userRole === 'admin' },
   ];
 
@@ -31,7 +31,7 @@ const TopNav: React.FC<TopNavProps> = () => {
     <div className="flex items-center justify-between w-full">
       {/* Left-aligned logo */}
       <div className="flex items-center">
-        <Image src="/logo_small.png" width={300} height={60} alt="Logo" />
+        <Image src="/logo_large.png" width={300} height={50} alt="Logo" />
       </div>
 
       {/* Center-aligned menu items */}

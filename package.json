@@ -8,6 +8,7 @@
     "dev:debug": "NODE_OPTIONS='--inspect' next dev"
   },
   "dependencies": {
+    "@ant-design/nextjs-registry": "^1.0.0",
     "@auth/prisma-adapter": "^1.0.5",
     "@azure/msal-node": "^2.5.0",
     "@azure/storage-blob": "^12.17.0",
