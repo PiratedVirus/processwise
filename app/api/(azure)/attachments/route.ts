@@ -1,26 +1,29 @@
 // @ts-nocheck
-const { NextRequest, NextResponse } = require('next/server');
-const {
-  BlobServiceClient,
-  generateAccountSASQueryParameters,
-  AccountSASPermissions,
+import { NextRequest, NextResponse } from 'next/server';
+const { 
+  BlobServiceClient, 
+  generateAccountSASQueryParameters, 
+  AccountSASPermissions, 
   AccountSASServices,
   AccountSASResourceTypes,
   StorageSharedKeyCredential,
   SASProtocol,
+  BlobSASPermissions 
 } = require('@azure/storage-blob');
-const axios = require('axios');
-const { getAccessToken } = require('@/app/lib/msalUtils');
-const { createResponse } = require('@/app/lib/prismaUtils');
-
+import axios from 'axios';
+import { getAccessToken } from '@/app/lib/msalUtils';
+import { createResponse } from '@/app/lib/prismaUtils';
+import { parseISO } from 'date-fns';
 const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING || '';
 
 const constants = {
   accountName: process.env.AZURE_STORAGE_ACCOUNT_NAME,
-  accountKey: process.env.AZURE_STORAGE_ACCOUNT_KEY,
+  accountKey: process.env.AZURE_STORAGE_ACCOUNT_KEY
 };
-const sharedKeyCredential = new StorageSharedKeyCredential(constants.accountName, constants.accountKey);
-
+const sharedKeyCredential = new StorageSharedKeyCredential(
+  constants.accountName,
+  constants.accountKey
+);
 async function createAccountSas() {
   const sasOptions = {
     services: AccountSASServices.parse("btqf").toString(),          // blobs, tables, queues, files
@@ -38,7 +41,14 @@ async function createAccountSas() {
   return sasToken.startsWith('?') ? sasToken : `?${sasToken}`;
 }
 
-async function fetchEmailsWithAttachments(accessToken) {
+interface EmailAttachment {
+  id: string;
+  name: string;
+  contentType: string;
+  contentBytes?: string;
+}
+
+async function fetchEmailsWithAttachments(accessToken: string): Promise<any[]> {
   const config = {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -56,7 +66,7 @@ async function fetchEmailsWithAttachments(accessToken) {
   }
 }
 
-async function fetchAndDownloadAttachments(accessToken, messageId) {
+async function fetchAndDownloadAttachments(accessToken: string, messageId: string): Promise<EmailAttachment[]> {
   const config = {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -73,7 +83,7 @@ async function fetchAndDownloadAttachments(accessToken, messageId) {
   }
 }
 
-async function uploadAttachmentToAzureBlob(attachment) {
+async function uploadAttachmentToAzureBlob(attachment: EmailAttachment): Promise<string> {
   if (!attachment.contentBytes) {
     throw new Error(`Attachment content for ${attachment.name} is missing or undefined`);
   }
@@ -81,7 +91,7 @@ async function uploadAttachmentToAzureBlob(attachment) {
   const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
   const containerName = 'invoices'; // Ensure this container exists in Azure Blob Storage
   const containerClient = blobServiceClient.getContainerClient(containerName);
-  const contentBuffer = Buffer.from(attachment.contentBytes, 'base64');
+  const contentBuffer = Buffer.from(JSON.stringify(attachment?.contentBytes), 'base64');
 
   const blobName = attachment.name;
   const blockBlobClient = containerClient.getBlockBlobClient(blobName);
@@ -90,7 +100,7 @@ async function uploadAttachmentToAzureBlob(attachment) {
     await blockBlobClient.upload(contentBuffer, contentBuffer.length);
     console.log(`Attachment ${blobName} uploaded to Blob storage successfully`);
 
-    const sasToken = await createAccountSas();
+    const sasToken = await createAccountSas(); // Ensure this is awaited properly
 
     const attachmentDownloadURL = blockBlobClient.url + sasToken;
     console.log('attachmentDownloadURL', attachmentDownloadURL);
@@ -101,7 +111,7 @@ async function uploadAttachmentToAzureBlob(attachment) {
   }
 }
 
-async function POST(req) {
+export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     const accessToken = await getAccessToken();
     const emails = await fetchEmailsWithAttachments(accessToken);
@@ -126,5 +136,3 @@ async function POST(req) {
     return createResponse(500, `An error occurred: ${error}`);
   }
 }
-
-exports.POST = POST;
