@@ -14,6 +14,7 @@ import axios from 'axios';
 import { getAccessToken } from '@/app/lib/msalUtils';
 import { createResponse } from '@/app/lib/prismaUtils';
 import { parseISO } from 'date-fns';
+import { create } from 'domain';
 const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING || '';
 
 const constants = {
@@ -62,7 +63,7 @@ async function fetchEmailsWithAttachments(accessToken: string): Promise<any[]> {
     return response.data.value;
   } catch (error) {
     console.error('Error fetching emails with attachments:', error);
-    throw new Error('Failed to fetch emails with attachments');
+    return createResponse(500, `Failed to fetch emails with attachments: ${error}`);
   }
 }
 
@@ -79,13 +80,13 @@ async function fetchAndDownloadAttachments(accessToken: string, messageId: strin
     return response.data.value;
   } catch (error) {
     console.error(`Error fetching attachments for message ${messageId}:`, error);
-    throw new Error(`Failed to fetch attachments for message ${messageId}`);
+    return createResponse(500, `Failed to fetch attachments for message ${messageId}: ${error}`);
   }
 }
 
 async function uploadAttachmentToAzureBlob(attachment: EmailAttachment): Promise<string> {
   if (!attachment.contentBytes) {
-    throw new Error(`Attachment content for ${attachment.name} is missing or undefined`);
+    return createResponse(400, `Attachment content for ${attachment.name} is missing or undefined`);
   }
 
   const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
@@ -108,7 +109,7 @@ async function uploadAttachmentToAzureBlob(attachment: EmailAttachment): Promise
     return attachmentDownloadURL;
   } catch (error) {
     console.error(`Failed to upload attachment ${blobName} to Azure Blob Storage`, error);
-    throw new Error(`Failed to upload attachment ${blobName}`);
+    return createResponse(500, `Failed to upload attachment ${blobName}`);
   }
 }
 
