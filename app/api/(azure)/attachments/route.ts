@@ -91,7 +91,8 @@ async function uploadAttachmentToAzureBlob(attachment: EmailAttachment): Promise
   const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
   const containerName = 'invoices'; // Ensure this container exists in Azure Blob Storage
   const containerClient = blobServiceClient.getContainerClient(containerName);
-  const contentBuffer = Buffer.from(JSON.stringify(attachment?.contentBytes), 'base64');
+  const attachmentContentString = (attachment.contentBytes).toString() || '';
+  const contentBuffer = Buffer.from(attachmentContentString, 'base64');
 
   const blobName = attachment.name;
   const blockBlobClient = containerClient.getBlockBlobClient(blobName);
