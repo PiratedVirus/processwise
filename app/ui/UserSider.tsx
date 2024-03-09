@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Layout, Menu } from 'antd';
+import { Layout, Menu, Button } from 'antd';
 import { MailOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
 import { updateSelectedUserMailboxInUserDashboard } from '@/redux/reducers/editFormDataReducer';
-import { FileOutlined, CustomerServiceOutlined, FolderOpenOutlined, HomeOutlined, TeamOutlined } from '@ant-design/icons';
+import { FileOutlined, CustomerServiceOutlined, FolderOpenOutlined,MenuUnfoldOutlined, MenuFoldOutlined, HomeOutlined, TeamOutlined } from '@ant-design/icons';
 import { useSession } from 'next-auth/react';
 import type { MenuProps } from 'antd';
 import { usePathname } from 'next/navigation';
@@ -44,14 +44,26 @@ const UserSider: React.FC = () => {
 
   return (
 
-    <Sider width={200} collapsible collapsed={collapsed} onCollapse={setCollapsed}>
+    <Sider width={200} trigger={null} collapsible collapsed={collapsed} onCollapse={setCollapsed} style={{background: 'white'}}>
       <Menu
+        theme='light'
         mode="inline"
         defaultSelectedKeys={['1']}
-        style={{ height: '100%', borderRight: 0 }}
+        style={{ height: '90%', borderRight: 0 }}
         items={sideMenuItems}
         {...(pathname === '/' ? { onClick: handleMenuClick } : {})}
       />
+          <Button
+            type="text"
+            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            onClick={() => setCollapsed(!collapsed)}
+            style={{
+              height: '10%',
+              fontSize: '32px',
+              width: '100%',
+            }}
+      />
+     
     </Sider>
   );
 };
