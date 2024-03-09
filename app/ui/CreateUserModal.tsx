@@ -90,7 +90,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
   function isModalButtonOrIcon(modalOpenType: 'button' | 'text' | 'icon', modalOpenText: string, openModal: () => void) {
     switch (modalOpenType) {
       case 'button':
-        return <Button onClick={openModal} className="bg-blue-700 text-white">{modalOpenText}</Button>;
+        return <Button onClick={openModal} type="primary">{modalOpenText}</Button>;
       case 'icon':
         return <Button onClick={openModal} icon={<EditOutlined />} />;
       case 'text':

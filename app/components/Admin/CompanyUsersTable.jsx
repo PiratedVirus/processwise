@@ -62,6 +62,7 @@ export const MemberTable = () => {
             icon={<FilterOutlined />}
             size="small"
             style={{ width: 90 }}
+            type='primary'
           >
             Search
           </Button>

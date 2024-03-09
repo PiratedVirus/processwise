@@ -105,7 +105,6 @@ const MailboxConfiguration: React.FC<MailboxProps> = ({ clientName }) => {
           </Form.List>
           <Form.Item wrapperCol={{ offset: 2, span: 18 }}>
             <Button
-              className='bg-blue-700 text-white'
               type="primary"
               htmlType="submit"
               block

@@ -103,7 +103,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({ form, formName, submitB
         <FormItem key={field.name} field={field} existingData={initialValues} formType={formType} />
       ))}
       <Form.Item>
-        <Button className="bg-blue-700 text-white w-full" htmlType="submit">
+        <Button className="w-full" type='primary' htmlType="submit">
           {submitBtnText}
         </Button>
         

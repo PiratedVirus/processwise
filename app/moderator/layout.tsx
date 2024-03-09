@@ -4,6 +4,8 @@ import { inter } from '@/app/ui/styles/fonts';
 import TopNav from '@/app/ui/TopNavBar';
 import Providers from '@/app/lib/Providers';
 import { HomeOutlined } from '@ant-design/icons';
+import { AntdRegistry } from '@ant-design/nextjs-registry';
+
 
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

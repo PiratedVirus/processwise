@@ -56,7 +56,7 @@ const DeleteUserModal: React.FC<DeleteUserModalProps> = ({
                     <Button key="back" onClick={closeConfirmModal}>
                         Cancel
                     </Button>,
-                    <Button key="submit" className='bg-red-600 text-white' onClick={() => {
+                    <Button key="submit" type='primary' danger onClick={() => {
                         closeConfirmModal();
                         openFinalConfirmModal();
                     }}>
@@ -85,7 +85,8 @@ const DeleteUserModal: React.FC<DeleteUserModalProps> = ({
                     layout="vertical"
                     size="middle"
                     onFinish={onFinish}
-                    className="mt-8"
+                    // className="mt-8"
+                    style={{ marginTop: '2rem' }}
                 >
                     <Form.Item
                         name='userEmail'
@@ -95,7 +96,7 @@ const DeleteUserModal: React.FC<DeleteUserModalProps> = ({
                         <Input placeholder='Enter user email to delete' />
                     </Form.Item>
                     <Form.Item>
-                        <Button className="bg-red-600 text-white w-full" htmlType="submit">
+                        <Button className="w-full" type='primary' danger htmlType="submit">
                             I understand, confirm delete
                         </Button>
                     </Form.Item>
