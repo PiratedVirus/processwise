@@ -99,6 +99,13 @@ async function uploadAttachmentToAzureBlob(attachment: EmailAttachment): Promise
   const containerClient = blobServiceClient.getContainerClient(containerName);
 
   const contentBuffer = Buffer.from(attachment.contentBytes, 'base64');
+  if (!attachment.contentBytes) {
+    console.error(`Attachment ${attachment.name} contentBytes is undefined`);
+    // return; // Skip this attachment or throw an error
+    throw new Error("Attachment content is undefined");
+
+  }
+  
   const blobName = attachment.name;
   const blockBlobClient = containerClient.getBlockBlobClient(blobName);
   console.log('blockBlobClient', blockBlobClient.url)

@@ -36,6 +36,7 @@ const UserSider: React.FC = () => {
   const handleMenuClick = (e: any) => {
     const clickedItem = sideMenuItems.find((item: any) => item.key === e.key);
     if (clickedItem ) {
+      // @ts-ignore
       dispatch(updateSelectedUserMailboxInUserDashboard(clickedItem.label));
     }
   };
