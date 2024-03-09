@@ -23,35 +23,28 @@ const sharedKeyCredential = new StorageSharedKeyCredential(
   constants.accountName,
   constants.accountKey
 );
-
 async function createAccountSas() {
-
   const sasOptions = {
-
-      services: AccountSASServices.parse("btqf").toString(),          // blobs, tables, queues, files
-      resourceTypes: AccountSASResourceTypes.parse("sco").toString(), // service, container, object
-      permissions: AccountSASPermissions.parse("rwdlacupi"),          // permissions
-      protocol: SASProtocol.Https,
-      startsOn: new Date(),
-      expiresOn: new Date(new Date().valueOf() + (10 * 60 * 1000)),   // 10 minutes
+    services: AccountSASServices.parse("btqf").toString(),          // blobs, tables, queues, files
+    resourceTypes: AccountSASResourceTypes.parse("sco").toString(), // service, container, object
+    permissions: AccountSASPermissions.parse("rwdlacupi"),          // permissions
+    protocol: SASProtocol.Https,
+    startsOn: new Date(),
+    expiresOn: new Date(new Date().valueOf() + (10 * 60 * 1000)),   // 10 minutes
   };
 
-  const sasToken = generateAccountSASQueryParameters(
-      sasOptions,
-      sharedKeyCredential 
-  ).toString();
+  const sasToken = generateAccountSASQueryParameters(sasOptions, sharedKeyCredential).toString();
 
   console.log(`sasToken = '${sasToken}'\n`);
 
-  // prepend sasToken with `?`
-  return (sasToken[0] === '?') ? sasToken : `?${sasToken}`;
+  return sasToken.startsWith('?') ? sasToken : `?${sasToken}`;
 }
 
 interface EmailAttachment {
   id: string;
   name: string;
   contentType: string;
-  contentBytes?: string; // This might not be needed for the initial fetch
+  contentBytes?: string;
 }
 
 async function fetchEmailsWithAttachments(accessToken: string): Promise<any[]> {
@@ -60,7 +53,7 @@ async function fetchEmailsWithAttachments(accessToken: string): Promise<any[]> {
       Authorization: `Bearer ${accessToken}`,
     },
   };
-  const userEmail = 'tech@63qz7w.onmicrosoft.com'; // Replace with the actual user email
+  const userEmail = 'tech@63qz7w.onmicrosoft.com'; // Replace with actual user email
   const url = `https://graph.microsoft.com/v1.0/users/${encodeURIComponent(userEmail)}/messages?$filter=hasAttachments eq true&$select=id`;
 
   try {
@@ -91,59 +84,46 @@ async function fetchAndDownloadAttachments(accessToken: string, messageId: strin
 
 async function uploadAttachmentToAzureBlob(attachment: EmailAttachment): Promise<string> {
   if (!attachment.contentBytes) {
-    throw new Error("Attachment content is missing");
+    throw new Error(`Attachment content for ${attachment.name} is missing or undefined`);
   }
 
   const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
-  const containerName = 'invoices'; // Ensure this container exists in your Azure Blob Storage
+  const containerName = 'invoices'; // Ensure this container exists in Azure Blob Storage
   const containerClient = blobServiceClient.getContainerClient(containerName);
+  const contentBuffer = Buffer.from(attachment?.contentBytes, 'base64');
 
-  const contentBuffer = Buffer.from(attachment.contentBytes, 'base64');
-  if (!attachment.contentBytes) {
-    console.error(`Attachment ${attachment.name} contentBytes is undefined`);
-    // return; // Skip this attachment or throw an error
-    throw new Error("Attachment content is undefined");
-
-  }
-  
   const blobName = attachment.name;
   const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-  console.log('blockBlobClient', blockBlobClient.url)
 
   try {
     await blockBlobClient.upload(contentBuffer, contentBuffer.length);
     console.log(`Attachment ${blobName} uploaded to Blob storage successfully`);
 
-    // Generate SAS token for the blob
-    const sasToken = await createAccountSas(); // Make sure to await the async function call
+    const sasToken = await createAccountSas(); // Ensure this is awaited properly
 
-    // Return the blob URL with the SAS token
     const attachmentDownloadURL = blockBlobClient.url + sasToken;
-    console.log('attachmentDownloadURL', attachmentDownloadURL)
-    return attachmentDownloadURL; // Ensure proper concatenation
+    console.log('attachmentDownloadURL', attachmentDownloadURL);
+    return attachmentDownloadURL;
   } catch (error) {
     console.error(`Failed to upload attachment ${blobName} to Azure Blob Storage`, error);
     throw new Error(`Failed to upload attachment ${blobName}`);
   }
 }
 
-
 export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     const accessToken = await getAccessToken();
     const emails = await fetchEmailsWithAttachments(accessToken);
 
-    // Assuming you want to download attachments for the first email found
     if (emails.length > 0) {
       const messageId = emails[0].id;
       const attachments = await fetchAndDownloadAttachments(accessToken, messageId);
 
-      // Here you would add logic to handle the attachment data, e.g., saving it to a database or a file system
-      // Example usage within your fetchAndDownloadAttachments function or similar
-      attachments.forEach(async (attachment) => {
+      for (const attachment of attachments) {
         console.log('Downloading attachment:', attachment.name);
         await uploadAttachmentToAzureBlob(attachment);
-      });
+      }
+
       console.log(`Downloaded attachments for message ${messageId}:`, attachments);
 
       return createResponse(200, { message: `Downloaded attachments for message ${messageId}` });
