@@ -110,3 +110,6 @@ __azurite_db*__.json
 directoryTree.txt
 .vercel
 .next
+.nvmrc
+next-env.d.ts
+out.txt
