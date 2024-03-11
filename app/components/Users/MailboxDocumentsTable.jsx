@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { Table, Input, Button, Space, Typography, Spin, Row, Col } from 'antd';
+import { Table, Input, Button, Space, Typography, Spin, Row, Col, Tag } from 'antd';
 import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
 import useFetchApi from '@/app/hooks/useFetchApi'; 
 import useAzureApi from '@/app/hooks/useAzureApi';
@@ -8,24 +8,30 @@ import CreateUserModal from '@/app/ui/CreateUserModal';
 import DeleteUserModal from '@/app/ui/DeleteUserModal';
 import {createCompanyUser} from '@/app/lib/form-defination/createCompanyUser'
 import { useSelector } from 'react-redux';
+import useFetchApiV2 from '@/app/hooks/useFetchApiV2';
+import usePostApi from '@/app/hooks/usePostApi';
 const { Text } = Typography;
 
 export const MailboxDocumentTable = () => {
-  const [mailboxAssignedUsers, setMailboxAssignedUsers] = useState([]);
   const [searchText, setSearchText] = useState('');
   const {  isLoading } = useFetchApi();
-  const { connecting, azureResponse, connectAzure } = useAzureApi();
 
   const azureUserData = useSelector((state) => state.editFormData.azureUserData);
-  const dashboardSelectedMailbox = useSelector((state) => state.editFormData.dashboardSelectedMailbox);
-  const selectedMailboxInUserDashboard = useSelector((state) => state.editFormData.selectedUserMailboxInUserDashboard);
+  const selectedMailboxInUserDashboard = useSelector((state) => state.userDashboardStore.selectedUserMailboxInUserDashboard);
+
+
   console.log('azureUserData', JSON.stringify(azureUserData));
-  console.log('dashboardSelectedMailbox', JSON.stringify(dashboardSelectedMailbox));
+  console.log('[email-fetching] selectedMailboxInUserDashboard', JSON.stringify(selectedMailboxInUserDashboard));
+
+
   
-
-
- 
-
+  
+  const userMails = useSelector((state) => state.userDashboardStore.selectedUserMailboxContent);
+  const isUserMailsLoading = useSelector((state) => state.userDashboardStore.isUserMailsLoading);
+  if(!isUserMailsLoading){
+    console.log('[email-fetching] Mail Feilds are ', userMails[2].extractedData.fields);
+  }
+  // console.log('[email-fetching] mailData from store var', JSON.stringify(userMails));
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
   };
@@ -76,72 +82,103 @@ export const MailboxDocumentTable = () => {
       return a[dataIndex].localeCompare(b[dataIndex]);
     },
   });
-  const roleColumns = ['Processing', 'Approving', 'Reporting', 'Admin'];
   const columns = useMemo(() => [
     {
-      title: 'Name',
+      title: 'Source',
       dataIndex: 'userName',
       key: 'userName',
       ...getColumnSearchProps('userName'),
       render: (text, record) => (
         <div>
-          <div>{record.userName}</div>
-          <div className='text-gray-500'>{record.userEmail}</div> {/* Display email in a smaller or different style */}
+          <div>{record.senderName}</div>
+          <div className='text-gray-500'>{record.senderEmail}</div> {/* Display email in a smaller or different style */}
         </div>
       ),
     },
-    ...roleColumns.map((role, index) => ({
-      title: role,
-      dataIndex: 'userRole',
-      key: role,
-      render: (userRole) => {
-        const checkedStates = parseRoleToCheckedStates(userRole);
-        return (
-          <input type="checkbox" checked={checkedStates[index]} disabled />
-        );
-      },
-    })),
-
     {
-      title: 'Position',
-      dataIndex: 'userPosition',
-      key: 'userPosition',
-      ...getColumnSearchProps('userPosition'),
-    },
-    {
-      title: 'Actions',
-      key: 'actions',
-      render: (record) => (
-        <Space size="middle">
-          <CreateUserModal 
-            formName='editUser' 
-            formType='edit' 
-            modalOpenText='Edit User' 
-            modalOpenType='icon' 
-            modalFormFields={createCompanyUser} 
-            selectedUserData={record}
-          />
-          <DeleteUserModal  
-            modalOpenText='Delete User' 
-            modalOpenType='icon' 
-            selectedUserData={record}
-          />
-        </Space>
+      title: 'Date',
+      dataIndex: 'dateTime',
+      key: 'dateTime',
+      ...getColumnSearchProps('dateTime'),
+      render: (text, record) => (
+        <div>
+          <div>{record.dateTime}</div>
+        </div>
       ),
     },
+    {
+      title: 'Entity name',
+      dataIndex: 'entity',
+      key: 'entity',
+      ...getColumnSearchProps('entity'),
+      render: (text, record) => (
+        <div>
+          <div>{record.extractedData.fields.CustomerName.content ? record.extractedData.fields.CustomerName.content : "Not found" }</div>
+        </div>
+      ),
+    },
+    {
+      title: 'Doc Name',
+      dataIndex: 'docName',
+      key: 'docName',
+      ...getColumnSearchProps('docName'),
+      render: (text, record) => (
+        <div>
+          <div>{record.attachmentNames ? record.attachmentNames : "Not found" }</div>
+          <a href={record.downloadURLs[0]} target="_blank" rel="noreferrer"> Open </a>
+        </div>
+      ),
+    },
+
+    {
+      title: 'Doc number',
+      dataIndex: 'docNumber',
+      key: 'docNumber',
+      ...getColumnSearchProps('docNumber'),
+      render: (text, record) => (
+        <div>
+          <div>{record.extractedData.fields.PurchaseOrder.content ? record.extractedData.fields.PurchaseOrder.content : "Not found" }</div>
+        </div>
+      ),
+    },
+    {
+      title: 'Amount',
+      dataIndex: 'amount',
+      key: 'amount',
+      ...getColumnSearchProps('amount'),
+      render: (text, record) => (
+        <div>
+          <div>{record.extractedData.fields.POTotal.content ? record.extractedData.fields.POTotal.content : "Not found" }</div>
+        </div>
+      ),
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+      ...getColumnSearchProps('status'),
+      render: (text, record) => (
+        <div>
+          <Tag color="geekblue">Unprocessed</Tag>
+        </div>
+      ),
+    },
+ 
+
   ], []);
 
   const globalSearch = () => {
-    const filteredData = mailboxAssignedUsers.filter(entry => 
+    const filteredData = userMails.filter(entry => 
       Object.values(entry).some(value => 
         value ? value.toString().toLowerCase().includes(searchText.toLowerCase()) : false
       )
     );
-    return filteredData.length > 0 ? filteredData : mailboxAssignedUsers;
+    return filteredData.length > 0 ? filteredData : userMails;
   };
 
   return (
-    <Spin spinning={isLoading} size="large">
+    (userMails) ? (
+    <Spin spinning={isUserMailsLoading} size="large">
       <div className="space-y-5">
         <Row justify="space-between" align="middle" className="px-4 pt-5">
           <Col>
@@ -158,15 +195,14 @@ export const MailboxDocumentTable = () => {
               value={searchText}
             />
           </Col>
-          <CreateUserModal formName='createUser' formType='create' modalOpenText='Create New User' modalOpenType='button' modalFormFields={createCompanyUser}/>
 
         </Row>
         <Table
           columns={columns}
-          dataSource={searchText ? globalSearch() : mailboxAssignedUsers}
+          dataSource={searchText ? globalSearch() : userMails}
           rowKey={record => record.userId}
         />
       </div>
-    </Spin>
+    </Spin> ) : null
   );
 };

@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { Layout, Menu, Button } from 'antd';
 import { MailOutlined } from '@ant-design/icons';
-import { useDispatch } from 'react-redux';
-import { updateSelectedUserMailboxInUserDashboard } from '@/redux/reducers/editFormDataReducer';
-import { FileOutlined, CustomerServiceOutlined, FolderOpenOutlined,MenuUnfoldOutlined, MenuFoldOutlined, HomeOutlined, TeamOutlined } from '@ant-design/icons';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateSelectedUserMailboxInUserDashboard, updateSelectedUserMailboxContent } from '@/redux/reducers/userReducer';
+import { FileOutlined, CustomerServiceOutlined, FolderOpenOutlined,MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
 import { useSession } from 'next-auth/react';
 import type { MenuProps } from 'antd';
 import { usePathname } from 'next/navigation';
+import useFetchApiV2 from '@/app/hooks/useFetchApiV2';
+import useSWR from 'swr';
 
 
 const { Sider } = Layout;
@@ -18,7 +20,11 @@ const UserSider: React.FC = () => {
   const pathname = usePathname();
   const { data: session } = useSession();
   const [collapsed, setCollapsed] = useState(false);
-  console.log("sideMenuItems user" + session?.user.userMailboxesAccess)
+
+  const selectedMailbox = useSelector((state: any) => state.userDashboardStore.selectedUserMailboxInUserDashboard) || 'tech@63qz7w.onmicrosoft.com';
+  const {data: mailData, isLoading: isUserMailsLoading, isError} = useFetchApiV2(`${process.env.NEXT_PUBLIC_API_URL}/mailbox?user=${selectedMailbox}`);
+  console.log("[email-fetching] The extracted mail box data is ", mailData, isUserMailsLoading, isError)
+  dispatch(updateSelectedUserMailboxContent({mailData, isUserMailsLoading}));
   const userSideMenuItems = session?.user.userMailboxesAccess?.split(', ').map((email: string, index: number) => ({
     key: (index + 1).toString(),
     label: email,
@@ -30,12 +36,15 @@ const UserSider: React.FC = () => {
     { key: '2', label: 'Services', icon: React.createElement(CustomerServiceOutlined) },
     { key: '2', label: 'Resources', icon: React.createElement(FolderOpenOutlined) }
   ];
+
   const sideMenuItems = pathname === '/admin' ? adminSideMenuItems : userSideMenuItems;
-  console.log('sideMenuItems:', sideMenuItems);
 
   const handleMenuClick = (e: any) => {
     const clickedItem = sideMenuItems.find((item: any) => item.key === e.key);
     if (clickedItem ) {
+      // @ts-ignore
+      console.log("[email-fetching] mailData", mailData, isUserMailsLoading, isError)
+      dispatch(updateSelectedUserMailboxContent({mailData, isUserMailsLoading}));
       // @ts-ignore
       dispatch(updateSelectedUserMailboxInUserDashboard(clickedItem.label));
     }

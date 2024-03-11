@@ -5,6 +5,7 @@ import editFormDataReducer, {EditFormDataState} from './editFormDataReducer';
 import clientReducer, {ClientState} from './clientReducer';
 import uiInteractionReducer, {UIInteractionState} from './uiInteractionReducer';
 import loggedInUserReducer, {LoggedInUserState} from './loggedInUserReducer';
+import userReducer, {IUserState} from './userReducer';
 
 export interface RootState {
   emails: EmailsState; 
@@ -13,6 +14,7 @@ export interface RootState {
   clientData: ClientState; 
   uiInteraction: UIInteractionState; 
   loggedInUser: LoggedInUserState;
+  userDashboard: IUserState;
 }
 
 const store = configureStore({
@@ -22,7 +24,8 @@ const store = configureStore({
     editFormData: editFormDataReducer,
     clientData: clientReducer,
     uiInteraction: uiInteractionReducer,
-    loggedInUser: loggedInUserReducer
+    loggedInUser: loggedInUserReducer,
+    userDashboardStore: userReducer,
   },
 });
 

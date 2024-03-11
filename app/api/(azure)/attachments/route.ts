@@ -37,7 +37,7 @@ async function createAccountSas() {
 
   const sasToken = generateAccountSASQueryParameters(sasOptions, sharedKeyCredential).toString();
 
-  console.log(`sasToken = '${sasToken}'\n`);
+  // console.log(`sasToken = '${sasToken}'\n`);
 
   return sasToken.startsWith('?') ? sasToken : `?${sasToken}`;
 }
@@ -100,12 +100,12 @@ async function uploadAttachmentToAzureBlob(attachment: EmailAttachment): Promise
 
   try {
     await blockBlobClient.upload(contentBuffer, contentBuffer.length);
-    console.log(`Attachment ${blobName} uploaded to Blob storage successfully`);
+    // console.log(`Attachment ${blobName} uploaded to Blob storage successfully`);
 
     const sasToken = await createAccountSas(); // Ensure this is awaited properly
 
     const attachmentDownloadURL = blockBlobClient.url + sasToken;
-    console.log('attachmentDownloadURL', attachmentDownloadURL);
+    // console.log('attachmentDownloadURL', attachmentDownloadURL);
     return attachmentDownloadURL;
   } catch (error) {
     console.error(`Failed to upload attachment ${blobName} to Azure Blob Storage`, error);
@@ -123,7 +123,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       const attachments = await fetchAndDownloadAttachments(accessToken, messageId);
 
       for (const attachment of attachments) {
-        console.log('Downloading attachment:', attachment.name);
+        // console.log('Downloading attachment:', attachment.name);
         await uploadAttachmentToAzureBlob(attachment);
       }
 

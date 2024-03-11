@@ -41,7 +41,7 @@ async function createAccountSas() {
       sharedKeyCredential 
   ).toString();
 
-  console.log(`sasToken = '${sasToken}'\n`);
+//   console.log(`sasToken = '${sasToken}'\n`);
 
   // prepend sasToken with `?`
   return (sasToken[0] === '?') ? sasToken : `?${sasToken}`;
@@ -123,18 +123,18 @@ const containerClient = blobServiceClient.getContainerClient(containerName);
 const contentBuffer = Buffer.from(attachment.contentBytes, 'base64');
 const blobName = attachment.name;
 const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-console.log('blockBlobClient', blockBlobClient.url)
+// console.log('blockBlobClient', blockBlobClient.url)
 
 try {
     await blockBlobClient.upload(contentBuffer, contentBuffer.length);
-    console.log(`Attachment ${blobName} uploaded to Blob storage successfully`);
+    // console.log(`Attachment ${blobName} uploaded to Blob storage successfully`);
 
     // Generate SAS token for the blob
     const sasToken = await createAccountSas(); // Make sure to await the async function call
 
     // Return the blob URL with the SAS token
     const attachmentDownloadURL = blockBlobClient.url + sasToken;
-    console.log('attachmentDownloadURL', attachmentDownloadURL)
+    // console.log('attachmentDownloadURL', attachmentDownloadURL)
     return attachmentDownloadURL; // Ensure proper concatenation
 } catch (error) {
     console.error(`Failed to upload attachment ${blobName} to Azure Blob Storage`, error);
@@ -142,9 +142,10 @@ try {
 }
 }
 
-export async function POST(req: NextRequest): Promise<NextResponse> {
+export async function GET(req: NextRequest): Promise<NextResponse> {
     try {
-        const { userEmail } = await req.json();
+        const { searchParams } = new URL(req.url);
+        const userEmail = searchParams.get('user');
         if (!userEmail) {
             return createResponse(400, 'User email is required in the request body.');
         }
@@ -169,8 +170,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             
             // Wait for all download URL promises to resolve
             const downloadURLs = await Promise.all(downloadURLPromises);
-            console.log('downloadURLs', downloadURLs);
-        
+            // console.log('downloadURLs', downloadURLs);
+
+            const extractedData = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/extract?model-id=newtekapimodel&api-version=2023-10-31-preview`, {documentURL: downloadURLs[0]});
+            console.log('extractedData', extractedData.data[0]);
             return {
                 senderName: email.sender?.emailAddress?.name,
                 senderEmail: email.sender?.emailAddress?.address,
@@ -178,7 +181,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
                 subject: email.subject,
                 bodyPreview: email.bodyPreview,
                 attachmentNames,
-                downloadURLs // This will now contain all resolved download URLs
+                downloadURLs, // This will now contain all resolved download URLs
+                extractedData: extractedData.data[0]
             };
         }));
         

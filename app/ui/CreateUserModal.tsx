@@ -74,7 +74,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
     const mailAccessArray = selectedMailBoxes.length === 0 ? preSelectedUserEmailAccess : selectedMailBoxes;
 
     if(formType === 'create') {
-      connectAzure('createUsers', inviteData);
+      connectAzure('azure-new-user', inviteData);
       handleSubmit('users', userData);
     } else {
       const updatedUserData = {
