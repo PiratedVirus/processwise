@@ -105,7 +105,7 @@ async function uploadAttachmentToAzureBlob(attachment: EmailAttachment): Promise
   console.log('blockBlobClient ->', blockBlobClient);
 
   try {
-    await blockBlobClient.upload(contentBuffer, contentBuffer.length);
+    await blockBlobClient.uploadData(contentBuffer, contentBuffer.length);
     console.log(`Attachment ${blobName} uploaded to Blob storage successfully`);
 
     const sasToken = await createAccountSas(); // Ensure this is awaited properly
