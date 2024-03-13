@@ -10,6 +10,7 @@ import {createCompanyUser} from '@/app/lib/form-defination/createCompanyUser'
 import { useSelector } from 'react-redux';
 import useFetchApiV2 from '@/app/hooks/useFetchApiV2';
 import usePostApi from '@/app/hooks/usePostApi';
+import  MailboxTabs  from '@/app/ui/MailboxTabs';
 const { Text } = Typography;
 
 export const MailboxDocumentTable = () => {
@@ -29,7 +30,7 @@ export const MailboxDocumentTable = () => {
   const userMails = useSelector((state) => state.userDashboardStore.selectedUserMailboxContent);
   const isUserMailsLoading = useSelector((state) => state.userDashboardStore.isUserMailsLoading);
   if(!isUserMailsLoading){
-    console.log('[email-fetching] Mail Feilds are ', userMails[2].extractedData.fields);
+    // console.log('[email-fetching] Mail Feilds are ', userMails[2].extractedData.fields);
   }
   // console.log('[email-fetching] mailData from store var', JSON.stringify(userMails));
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
@@ -184,8 +185,8 @@ export const MailboxDocumentTable = () => {
           <Col>
             <Text strong className="text-lg">Documents Overview</Text>
           </Col>
-          </Row>
-          <Row justify="space-between" align="middle" className="px-4 py-2">
+          {/* </Row>
+          <Row justify="space-between" align="middle" className="px-4 py-2"> */}
           <Col>
             <Input
               className='w-96'
@@ -197,6 +198,8 @@ export const MailboxDocumentTable = () => {
           </Col>
 
         </Row>
+        <MailboxTabs />
+
         <Table
           columns={columns}
           dataSource={searchText ? globalSearch() : userMails}

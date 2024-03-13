@@ -55,27 +55,26 @@ interface EmailAttachment {
 }
 
 // Function to fetch emails (including those without attachments)
-async function fetchEmails(accessToken: string, userEmail: string): Promise<any[]> {
-    const config = {
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-        },
-    };
-    // Fetch all emails with necessary fields, not just those with attachments
-    const url = `https://graph.microsoft.com/v1.0/users/${encodeURIComponent(userEmail)}/messages?$filter=hasAttachments eq true&$select=id,sender,receivedDateTime,bodyPreview,subject,hasAttachments`;
+async function fetchEmails(accessToken: string, userEmail: string): Promise<{data: any[], error?: string}> {
+  const config = {
+      headers: {
+          Authorization: `Bearer ${accessToken}`,
+      },
+  };
+  const url = `https://graph.microsoft.com/v1.0/users/${encodeURIComponent(userEmail)}/messages?$filter=hasAttachments eq true&$select=id,sender,receivedDateTime,bodyPreview,subject,hasAttachments`;
 
-    try {
-        const response = await axios.get(url, config);
-        return response.data.value;
-    } catch (error) {
-        console.error('Error fetching emails:', error);
-        throw new Error('Failed to fetch emails');
-    }
+  try {
+      const response = await axios.get(url, config);
+      return { data: response.data.value || [] }; // Ensure data is never undefined
+  } catch (error) {
+      console.error('Error fetching emails:', error);
+      return { data: [], error: "Failed to fetch emails" };
+  }
 }
 
-async function fetchAttachmentNamesIfPresent(accessToken: string, messageId: string, hasAttachments: boolean): Promise<string[]> {
+async function fetchAttachmentNamesIfPresent(accessToken: string, messageId: string, hasAttachments: boolean): Promise<{data?: any[], error?: string}> {
     if (!hasAttachments) {
-        return []; // Return an empty array if the email has no attachments
+      return { error: "Attachment content is missing" };
     }
 
     const config = {
@@ -90,11 +89,12 @@ async function fetchAttachmentNamesIfPresent(accessToken: string, messageId: str
         return response.data.value.map((attachment: { name: string }) => attachment.name);
     } catch (error) {
         console.error(`Error fetching attachments for message ${messageId}:`, error);
-        throw new Error(`Failed to fetch attachments for message ${messageId}`);
+        return { error: `Failed to fetch attachments for message ${messageId}` };
+
     }
 }
 
-async function fetchAndDownloadAttachments(accessToken: string, messageId: string): Promise<EmailAttachment[]> {
+async function fetchAndDownloadAttachments(accessToken: string, messageId: string): Promise<{data?: EmailAttachment[], error?: string}> {
     const config = {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -107,13 +107,14 @@ async function fetchAndDownloadAttachments(accessToken: string, messageId: strin
       return response.data.value;
     } catch (error) {
       console.error(`Error fetching attachments for message ${messageId}:`, error);
-      throw new Error(`Failed to fetch attachments for message ${messageId}`);
+      return { error: `Failed to fetch attachments for message ${messageId}` };
+
     }
   }
   
-async function uploadAttachmentToAzureBlob(attachment: EmailAttachment): Promise<string> {
+async function uploadAttachmentToAzureBlob(attachment: EmailAttachment): Promise<{ downloadURL?: string; error?: string }> {
 if (!attachment.contentBytes) {
-    throw new Error("Attachment content is missing");
+    return {error: "Attachment content is missing"};
 }
 
 const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
@@ -138,7 +139,7 @@ try {
     return attachmentDownloadURL; // Ensure proper concatenation
 } catch (error) {
     console.error(`Failed to upload attachment ${blobName} to Azure Blob Storage`, error);
-    throw new Error(`Failed to upload attachment ${blobName}`);
+    return {error: `Failed to upload attachment ${blobName}`};
 }
 }
 
@@ -155,7 +156,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
 
         // Process each email to fetch attachment names if present
-        const emailsData = await Promise.all(emails.map(async (email: any) => {
+        const emailsData = await Promise.all(emails?.data.map(async (email: any) => {
             const attachmentNames = await fetchAttachmentNamesIfPresent(accessToken, email.id, email.hasAttachments);
             
             // Ensure attachments are fetched only if present
