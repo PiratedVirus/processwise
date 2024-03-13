@@ -49,13 +49,13 @@ interface EmailAttachment {
   contentBytes?: string;
 }
 
-async function fetchEmailsWithAttachments(accessToken: string): Promise<any[]> {
+async function fetchEmailsWithAttachments(userEmail: string, accessToken: string): Promise<any[]> {
   const config = {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
   };
-  const userEmail = 'tech@63qz7w.onmicrosoft.com'; // Replace with actual user email
+   // Replace with actual user email
   const url = `https://graph.microsoft.com/v1.0/users/${encodeURIComponent(userEmail)}/messages?$filter=hasAttachments eq true&$select=id`;
 
   try {
@@ -100,12 +100,12 @@ async function uploadAttachmentToAzureBlob(attachment: EmailAttachment): Promise
 
   try {
     await blockBlobClient.upload(contentBuffer, contentBuffer.length);
-    // console.log(`Attachment ${blobName} uploaded to Blob storage successfully`);
+    console.log(`Attachment ${blobName} uploaded to Blob storage successfully`);
 
     const sasToken = await createAccountSas(); // Ensure this is awaited properly
 
     const attachmentDownloadURL = blockBlobClient.url + sasToken;
-    // console.log('attachmentDownloadURL', attachmentDownloadURL);
+    console.log('attachmentDownloadURL', attachmentDownloadURL);
     return attachmentDownloadURL;
   } catch (error) {
     console.error(`Failed to upload attachment ${blobName} to Azure Blob Storage`, error);
@@ -113,23 +113,29 @@ async function uploadAttachmentToAzureBlob(attachment: EmailAttachment): Promise
   }
 }
 
-export async function POST(req: NextRequest): Promise<NextResponse> {
+export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
+    const { searchParams } = new URL(req.url);
+    const userEmail = searchParams.get('user');
+    if (!userEmail) {
+        return createResponse(400, 'User email is required in the request body.');
+    }
     const accessToken = await getAccessToken();
-    const emails = await fetchEmailsWithAttachments(accessToken);
-
+    const emails = await fetchEmailsWithAttachments(userEmail, accessToken);
     if (emails.length > 0) {
-      const messageId = emails[0].id;
-      const attachments = await fetchAndDownloadAttachments(accessToken, messageId);
-
-      for (const attachment of attachments) {
-        // console.log('Downloading attachment:', attachment.name);
-        await uploadAttachmentToAzureBlob(attachment);
+      for (const email of emails) {
+        const messageId = email.id;
+        const attachments = await fetchAndDownloadAttachments(accessToken, messageId);
+    
+        for (const attachment of attachments) {
+          console.log('Downloading attachment:', attachment.name);
+          await uploadAttachmentToAzureBlob(attachment);
+        }
+    
+        console.log(`Downloaded attachments for message ${messageId}:`);
       }
-
-      console.log(`Downloaded attachments for message ${messageId}:`, attachments);
-
-      return createResponse(200, { message: `Downloaded attachments for message ${messageId}` });
+    
+      return createResponse(200, { message: `Downloaded attachments for all messages` });
     } else {
       return createResponse(404, { message: 'No emails with attachments found.' });
     }
