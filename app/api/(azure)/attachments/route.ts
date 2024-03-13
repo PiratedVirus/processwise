@@ -86,17 +86,23 @@ async function fetchAndDownloadAttachments(accessToken: string, messageId: strin
 
 async function uploadAttachmentToAzureBlob(attachment: EmailAttachment): Promise<string> {
   if (!attachment.contentBytes) {
+    console.log(`Attachment content for ${attachment.name} is missing or undefined`)
     return createResponse(400, `Attachment content for ${attachment.name} is missing or undefined`);
   }
 
   const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
+  console.log('blobServiceClient ->', blobServiceClient);
   const containerName = 'invoices'; // Ensure this container exists in Azure Blob Storage
   const containerClient = blobServiceClient.getContainerClient(containerName);
+  console.log('containerClient ->', containerClient);
   const attachmentContentString = (attachment.contentBytes).toString() || '';
   const contentBuffer = Buffer.from(attachmentContentString, 'base64');
+  console.log('contentBuffer ->', contentBuffer);
 
   const blobName = attachment.name;
+
   const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+  console.log('blockBlobClient ->', blockBlobClient);
 
   try {
     await blockBlobClient.upload(contentBuffer, contentBuffer.length);
