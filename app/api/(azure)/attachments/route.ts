@@ -137,7 +137,6 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
           console.log('Downloading attachment:', attachment.name);
           await uploadAttachmentToAzureBlob(attachment);
         }
-    
         console.log(`Downloaded attachments for message ${messageId}:`);
       }
     

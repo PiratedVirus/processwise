@@ -127,7 +127,7 @@ const blockBlobClient = containerClient.getBlockBlobClient(blobName);
 // console.log('blockBlobClient', blockBlobClient.url)
 
 try {
-    await blockBlobClient.upload(contentBuffer, contentBuffer.length);
+    await blockBlobClient.uploadData(contentBuffer, contentBuffer.length);
     // console.log(`Attachment ${blobName} uploaded to Blob storage successfully`);
 
     // Generate SAS token for the blob
@@ -171,7 +171,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
             
             // Wait for all download URL promises to resolve
             const downloadURLs = await Promise.all(downloadURLPromises);
-            // console.log('downloadURLs', downloadURLs);
+            console.log('downloadURLs', downloadURLs);
 
             const extractedData = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/extract?model-id=newtekapimodel&api-version=2023-10-31-preview`, {documentURL: downloadURLs[0]});
             console.log('extractedData', extractedData.data[0]);
