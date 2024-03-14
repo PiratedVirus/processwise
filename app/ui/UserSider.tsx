@@ -8,7 +8,6 @@ import { useSession } from 'next-auth/react';
 import type { MenuProps } from 'antd';
 import { usePathname } from 'next/navigation';
 import useFetchApiV2 from '@/app/hooks/useFetchApiV2';
-import useSWR from 'swr';
 
 
 const { Sider } = Layout;
