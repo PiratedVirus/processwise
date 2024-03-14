@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
 import { getAccessToken } from '@/app/lib/msalUtils';
 import { createResponse } from '@/app/lib/prismaUtils';
-export const runtime = 'nodejs';
 const { 
     BlobServiceClient, 
     generateAccountSASQueryParameters, 
