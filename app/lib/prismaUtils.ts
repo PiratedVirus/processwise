@@ -7,13 +7,7 @@ export const prisma = new PrismaClient();
 export const createResponse = (status: number, message: string | Record<string, unknown> | Record<string, unknown>[]) => {
   return new NextResponse(JSON.stringify(typeof message === 'string' ? { error: message } : message), {
     status,
-    headers: { 
-      'Content-Type': 'application/json',
-      'Cache-Control': 'public, s-maxage=1',
-      'CDN-Cache-Control': 'public, s-maxage=60',
-      'Vercel-CDN-Cache-Control': 'public, s-maxage=3600', 
-    },
-    
+    headers: { 'Content-Type': 'application/json' },
   });
 };
 
