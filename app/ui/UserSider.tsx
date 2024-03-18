@@ -21,7 +21,7 @@ const UserSider: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
 
   const selectedMailbox = useSelector((state: any) => state.userDashboardStore.selectedUserMailboxInUserDashboard) || 'tech@63qz7w.onmicrosoft.com';
-  const {data: mailData, isLoading: isUserMailsLoading, isError} = useFetchApiV2(`${process.env.NEXT_PUBLIC_API_URL}/mailbox?user=${selectedMailbox}`);
+  const {data: mailData, isLoading: isUserMailsLoading, isError} = useFetchApiV2(`${process.env.NEXT_PUBLIC_API_URL}/mailbox-content?user=${selectedMailbox}`);
   console.log("[email-fetching] The extracted mail box data is ", mailData, isUserMailsLoading, isError)
   dispatch(updateSelectedUserMailboxContent({mailData, isUserMailsLoading}));
   const userSideMenuItems = session?.user.userMailboxesAccess?.split(', ').map((email: string, index: number) => ({

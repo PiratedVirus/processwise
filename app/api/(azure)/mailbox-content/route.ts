@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
 import { getAccessToken } from '@/app/lib/msalUtils';
 import { createResponse } from '@/app/lib/prismaUtils';
+import withExponentialBackoff from '@/app/lib/withExponentialBackoff';
 
 const {
     BlobServiceClient, 
@@ -45,6 +46,7 @@ interface EmailAttachment {
 }
 
 async function fetchEmails(accessToken: string, userEmail: string): Promise<{ data: any[]; error?: string }> {
+    console.time('Fetching emails');
     const config = {
         headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -54,25 +56,37 @@ async function fetchEmails(accessToken: string, userEmail: string): Promise<{ da
 
     try {
         const response = await axios.get(url, config);
+        console.timeEnd('Fetching emails');
         return { data: response.data.value || [] };
     } catch (error) {
+        console.timeEnd('Fetching emails');
         console.error('Error fetching emails:', error);
         return { data: [], error: "Failed to fetch emails" };
     }
 }
 
-async function fetchAndDownloadAttachments(accessToken: string, messageId: string, mailCount: number): Promise<{ data?: EmailAttachment[]; error?: string }> {
+async function fetchAndDownloadAttachments(accessToken: string, userEmail: string, messageId: string, mailCount: number): Promise<{ data?: EmailAttachment[]; error?: string }> {
+    console.time(`Fetching attachments`);
     const config = {
         headers: {
             Authorization: `Bearer ${accessToken}`,
         },
     };
-    const url = `https://graph.microsoft.com/v1.0/users/tech@63qz7w.onmicrosoft.com/messages/${messageId}/attachments`;
+    const url = `https://graph.microsoft.com/v1.0/users/${userEmail}/messages/${messageId}/attachments`;
 
     try {
-        const response = await axios.get(url, config);
-        console.log('Fetched successfully for Mail #', mailCount);
-        return { data: Array.isArray(response.data.value) ? response.data.value : [response.data.value] }; // Ensure data is always an array
+      const response = await axios.get(url, config);
+      const attachments: any[] = response.data.value;
+
+      // Filter to keep only PDF attachments
+      const pdfAttachments = attachments.filter((attachment) => attachment.contentType === 'application/pdf');
+
+      console.log(`Fetched successfully ${pdfAttachments.length} PDF attachments for Mail #`, mailCount);
+      console.timeEnd(`Fetching attachments`);
+      return { data: Array.isArray(pdfAttachments) ? pdfAttachments : [pdfAttachments] }; // Ensure data is always an array
+
+
+
     } catch (error) {
         console.error(`Error fetching attachments for message ${mailCount}:`, error);
         return { error: `Failed to fetch attachments for message ${messageId}` };
@@ -80,6 +94,7 @@ async function fetchAndDownloadAttachments(accessToken: string, messageId: strin
 }
 
 async function uploadAttachmentToAzureBlob(attachment: EmailAttachment): Promise<{ downloadURL?: string; error?: string }> {
+    console.time(`Uploading attachment`);
     if (!attachment.contentBytes) {
         return { error: "Attachment content is missing" };
     }
@@ -96,6 +111,7 @@ async function uploadAttachmentToAzureBlob(attachment: EmailAttachment): Promise
         const sasToken = await createAccountSas();
         const attachmentDownloadURL = blockBlobClient.url + sasToken;
         console.log('attachmentDownloadURL', attachmentDownloadURL);
+        console.timeEnd(`Uploading attachment`);
         return { downloadURL: attachmentDownloadURL };
     } catch (error) {
         console.error(`Failed to upload attachment ${blobName} to Azure Blob Storage`, error);
@@ -104,57 +120,60 @@ async function uploadAttachmentToAzureBlob(attachment: EmailAttachment): Promise
 }
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
-    try {
-        const { searchParams } = new URL(req.url);
-        const userEmail = searchParams.get('user');
-        if (!userEmail) {
-            return createResponse(400, 'User email is required in the request body.');
-        }
+    console.time('Total API Processing Time');
+  try {
+      const { searchParams } = new URL(req.url);
+      const userEmail = searchParams.get('user');
+      if (!userEmail) {
+          return createResponse(400, 'User email is required in the request body.');
+      }
 
-        const accessToken = await getAccessToken();
-        const emails = await fetchEmails(accessToken, userEmail);
+      const accessToken = await getAccessToken();
+      const emails = await fetchEmails(accessToken, userEmail);
 
-        const emailsData = await Promise.all(emails.data.map(async (email: any, index: number) => {
-            const mailCount = index + 1;
-            const { data: attachments, error: attachmentsError } = await fetchAndDownloadAttachments(accessToken, email.id, mailCount);
+      const emailsData = await Promise.all(emails.data.map(async (email: any, index: number) => {
+          const mailCount = index + 1;
+          const { data: attachments, error: attachmentsError } = await fetchAndDownloadAttachments(accessToken, userEmail, email.id, mailCount);
 
-            if (attachmentsError) {
-                console.error(`Error with mail #${mailCount}: ${attachmentsError}`);
-                return null; // Skip this email or handle the error as needed
+          if (attachmentsError) {
+              console.error(`Error with mail #${mailCount}: ${attachmentsError}`);
+              return []; // Skip this email or handle the error as needed
+          }
+
+          const downloadURLPromises = attachments?.map(async (attachment: EmailAttachment) => {
+            const { downloadURL, error } = await uploadAttachmentToAzureBlob(attachment);
+            if (error) {
+              console.error(`Error uploading attachment for mail #${mailCount}: ${error}`);
+              return null; // Handle as needed
             }
+            return downloadURL;
+          }) ?? [];
 
-            const downloadURLPromises = attachments?.map(async (attachment: EmailAttachment) => {
-              const { downloadURL, error } = await uploadAttachmentToAzureBlob(attachment);
-              if (error) {
-                console.error(`Error uploading attachment for mail #${mailCount}: ${error}`);
-                return null; // Handle as needed
-              }
-              return downloadURL;
-            }) ?? [];
+          const downloadURLs = (await Promise.all(downloadURLPromises)).filter(url => url != null);
+          console.log(`downloadURLs for mail# ${mailCount}:`, downloadURLs.join(','));
 
-            const downloadURLs = (await Promise.all(downloadURLPromises)).filter(url => url != null);
-            console.log(`downloadURLs for mail# ${mailCount}:`, downloadURLs.join(','));
-
-            // Example of proceeding with extractedData, adjust as needed
-            // const extractedData = await someExtractionFunction(downloadURLs);
-            // console.log('extractedData', extractedData);
+          return await Promise.all(downloadURLs.map(async (url, index) => {
+                   
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/extract?model-id=newtekpomodel&api-version=2024-02-29-preview`, {documentURL: url});
 
             return {
-                senderName: email.sender?.emailAddress?.name,
-                senderEmail: email.sender?.emailAddress?.address,
-                dateTime: email.receivedDateTime,
-                subject: email.subject,
-                bodyPreview: email.bodyPreview,
-                attachmentNames: attachments?.map(a => a.name),
-                downloadURLs, // This will now contain all resolved download URLs
-                // extractedData: extractedData
+              senderName: email.sender?.emailAddress?.name,
+              senderEmail: email.sender?.emailAddress?.address,
+              dateTime: email.receivedDateTime,
+              subject: email.subject,
+              bodyPreview: email.bodyPreview,
+              attachmentNames: attachments?.map(a => a.name),
+              downloadURL: url,
+              extractedData: response.data[0]
             };
-        }));
-
-        const filteredEmailsData = emailsData.filter(data => data != null) as Record<string, unknown>[];
-        return createResponse(200, filteredEmailsData);
-    } catch (error) {
-        console.error('Error in POST handler:', error);
-        return createResponse(500, `An error occurred while processing the request: ${error}`);
-    }
+          }));
+      }));
+      // console.log('emailsData:', emailsData)
+      const filteredEmailsData = emailsData.flat().filter(data => data != null) as Record<string, unknown>[];
+      console.timeEnd('Total API Processing Time');
+      return createResponse(200, filteredEmailsData);
+  } catch (error) {
+      // console.error('Error in POST handler:', error);
+      return createResponse(500, `An error occurred while processing the request: ${error}`);
+  }
 }
