@@ -3,12 +3,12 @@ import { NextApiResponse } from "next";
 import { createResponse } from "@/app/lib/utils/prismaUtils";
 
 
-export async function POST(req: NextRequest, res: NextApiResponse) {
+export async function POST(req: NextRequest, res: NextResponse) {
     const { searchParams } = new URL(req.url);
     const validationToken = searchParams.get('validationToken');
 
     if (validationToken) {
-        return res.send(validationToken);
+        return new Response(null, {status: 200})
       }
     
       // Handle the actual notifications here
@@ -16,5 +16,7 @@ export async function POST(req: NextRequest, res: NextApiResponse) {
     
       // Your logic to handle notifications, e.g., read the resource data
       
-      createResponse(200, 'Notification received');
+      // createResponse(200, 'Notification received');
+      return new Response('Notification received', {status: 200})
+
 }
