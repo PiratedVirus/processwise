@@ -44,7 +44,7 @@ export async function POST(req: Request, res: NextResponse): Promise<NextRespons
 
     const endpoint = "https://testdupw.cognitiveservices.azure.com";
     const analyzeURL = `${endpoint}/documentintelligence/documentModels/${modelId}:analyze?api-version=${apiVersion}`;
-
+    console.log('analyzeURL:', analyzeURL, "documentURL:", documentURL);
     try {
         const analyzeResponse = await axios.post(analyzeURL, {urlSource: documentURL}, {
             headers: { 
