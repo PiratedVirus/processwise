@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { createResponse } from '@/app/lib/prismaUtils';
+import { createResponse } from '@/app/lib/utils/prismaUtils';
 import { NextResponse } from 'next/server';
 
 async function checkAnalysisStatus(endpoint: string, modelId: string, requestId: string, apiVersion: string, subscriptionKey: string) {

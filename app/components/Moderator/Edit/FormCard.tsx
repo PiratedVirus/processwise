@@ -3,7 +3,7 @@ import { Form, Card, Input } from 'antd';
 
 import { useDispatch } from 'react-redux';
 import { updateProcessInfo, updateGeneralInfo } from '@/redux/reducers/editFormDataReducer';
-import { camelToKebab } from '@/app/lib/utils';
+import { camelToKebab } from '@/app/lib/utils/utils';
 
 interface FormCardProps {
     formHeader: string

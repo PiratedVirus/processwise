@@ -3,7 +3,7 @@ import { Table, Input, Button, Space, Typography, Spin, Row, Col, Tag } from 'an
 import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
 import useFetchApi from '@/app/hooks/useFetchApi'; 
 import useAzureApi from '@/app/hooks/useAzureApi';
-import { parseRoleToCheckedStates } from '@/app/lib/utils';
+import { parseRoleToCheckedStates } from '@/app/lib/utils/utils';
 import CreateUserModal from '@/app/ui/CreateUserModal';
 import DeleteUserModal from '@/app/ui/DeleteUserModal';
 import {createCompanyUser} from '@/app/lib/form-defination/createCompanyUser'
@@ -114,7 +114,8 @@ export const MailboxDocumentTable = () => {
       ...getColumnSearchProps('entity'),
       render: (text, record) => (
         <div>
-          <div>{record.extractedData.fields.CustomerName.content ? record.extractedData.fields.CustomerName.content : "Not found" }</div>
+          <div>{record.extractedData.fields.BillingAddressRecipient?.content ? record.extractedData.fields.BillingAddressRecipient.content : "Not found" }</div>
+          {/* <div>{JSON.stringify(record.extractedData.fields)}</div> */}
         </div>
       ),
     },
@@ -126,7 +127,7 @@ export const MailboxDocumentTable = () => {
       render: (text, record) => (
         <div>
           <div>{record.attachmentNames ? record.attachmentNames : "Not found" }</div>
-          <a href={record.downloadURLs[0]} target="_blank" rel="noreferrer"> Open </a>
+          <a href={record?.downloadURL} target="_blank" rel="noreferrer"> Open </a>
         </div>
       ),
     },
@@ -138,7 +139,7 @@ export const MailboxDocumentTable = () => {
       ...getColumnSearchProps('docNumber'),
       render: (text, record) => (
         <div>
-          <div>{record.extractedData.fields.PurchaseOrder.content ? record.extractedData.fields.PurchaseOrder.content : "Not found" }</div>
+          <div>{record.extractedData.fields.PurchaseOrder?.content ? record.extractedData.fields.PurchaseOrder.content : "Not found" }</div>
         </div>
       ),
     },
@@ -149,7 +150,7 @@ export const MailboxDocumentTable = () => {
       ...getColumnSearchProps('amount'),
       render: (text, record) => (
         <div>
-          <div>{record.extractedData.fields.POTotal.content ? record.extractedData.fields.POTotal.content : "Not found" }</div>
+          <div>{record.extractedData.fields.InvoiceTotal?.content ? record.extractedData.fields.InvoiceTotal.content : "Not found" }</div>
         </div>
       ),
     },

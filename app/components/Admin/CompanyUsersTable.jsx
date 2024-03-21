@@ -2,7 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { Table, Input, Button, Space, Typography, Spin, Row, Col } from 'antd';
 import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
 import useFetchApiV2 from '@/app/hooks/useFetchApiV2';
-import { parseRoleToCheckedStates } from '@/app/lib/utils';
+import { parseRoleToCheckedStates } from '@/app/lib/utils/utils';
 import CreateUserModal from '@/app/ui/CreateUserModal';
 import DeleteUserModal from '@/app/ui/DeleteUserModal';
 import { createCompanyUser } from '@/app/lib/form-defination/createCompanyUser'

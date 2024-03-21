@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { Layout, Menu, Button } from 'antd';
-import { MailOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateSelectedUserMailboxInUserDashboard, updateSelectedUserMailboxContent } from '@/redux/reducers/userReducer';
-import { FileOutlined, CustomerServiceOutlined, FolderOpenOutlined,MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
+import { FileOutlined, CustomerServiceOutlined, FolderOpenOutlined,MenuUnfoldOutlined, MenuFoldOutlined, MailOutlined } from '@ant-design/icons';
 import { useSession } from 'next-auth/react';
 import type { MenuProps } from 'antd';
 import { usePathname } from 'next/navigation';
@@ -19,9 +18,10 @@ const UserSider: React.FC = () => {
   const pathname = usePathname();
   const { data: session } = useSession();
   const [collapsed, setCollapsed] = useState(false);
-
-  const selectedMailbox = useSelector((state: any) => state.userDashboardStore.selectedUserMailboxInUserDashboard) || 'tech@63qz7w.onmicrosoft.com';
-  const {data: mailData, isLoading: isUserMailsLoading, isError} = useFetchApiV2(`${process.env.NEXT_PUBLIC_API_URL}/mailbox-content?user=${selectedMailbox}`);
+  const envVar = process.env.NEXT_PUBLIC_MOCK_AI_MODEL_URL;
+  console.log("[email-fetching] The envVar is ", envVar)
+  const selectedMailbox = useSelector((state: any) => state.userDashboardStore.selectedUserMailboxInUserDashboard) || 'invoice@63qz7w.onmicrosoft.com';
+  const {data: mailData, isLoading: isUserMailsLoading, isError} = useFetchApiV2(`${process.env.NEXT_PUBLIC_MOCK_AI_MODEL_URL}/mailbox-content?user=${selectedMailbox}`);
   console.log("[email-fetching] The extracted mail box data is ", mailData, isUserMailsLoading, isError)
   dispatch(updateSelectedUserMailboxContent({mailData, isUserMailsLoading}));
   const userSideMenuItems = session?.user.userMailboxesAccess?.split(', ').map((email: string, index: number) => ({

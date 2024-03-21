@@ -6,7 +6,7 @@ import { updateAzureUserData, } from '@/redux/reducers/editFormDataReducer';
 import CreateUserForm from '@/app/ui/CreateUserForm';
 import ResponseModal from '@/app/ui/ResponseModal';
 import { EditOutlined } from '@ant-design/icons';
-import { arrayToString, parseRoleToBinary } from '@/app/lib/utils';
+import { arrayToString, parseRoleToBinary } from '@/app/lib/utils/utils';
 import usePostApi from '@/app/hooks/usePostApi';
 import useUpdateApi from '@/app/hooks/useUpdateApi';
 import { useSession } from 'next-auth/react';

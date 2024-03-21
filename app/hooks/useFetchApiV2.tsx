@@ -4,6 +4,7 @@ import useSWR from 'swr';
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const useFetchApiV2 = (url: string) => {
+  console.log('useFetchApiV2', url);
   const { data, error } = useSWR(url, fetcher);
 
   return {
