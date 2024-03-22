@@ -1,33 +1,53 @@
-import { NextRequest } from "next/server";
-import { NextApiResponse } from "next";
+import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/app/lib/database/connectMongo";
-import { Customers } from "@/app/lib/database/models/Customers"
-
+import { Customers } from "@/app/lib/database/models/Customers";
 import { createResponse } from "@/app/lib/utils/prismaUtils";
+import axios from "axios";
 
-export async function POST(req: NextRequest) {
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+export async function POST(req: NextRequest): Promise<NextResponse> {
     await dbConnect();
-    const {mailData} = await req.json();
-    try {
-        let customer = await Customers.findOne({ customerName: 'customer 1' });
-        if (!customer) {
-          // If customer not found, create a new one
-          customer = new Customers({ customerName: 'customer 1', mails: [] });
-        }
+    const { searchParams } = new URL(req.url);
+    const customerName = searchParams.get('customer');
+    const mailboxName = searchParams.get('mailbox');
 
-        mailData.map((element: any, index: number) => {
-            try {
-                customer.mails.push(element);
-                console.log('Mail added:', index)
-            } catch (error) {
-                console.error('Error in adding mail:', error);
-            }
-        });
-
-        await customer.save();
-        return createResponse(200, 'Mails saved');
-    } catch (error) {
-        console.error('Error in POST handler:', error);
-        return createResponse(500, 'Mail server error');
+    if (!customerName || !mailboxName || !API_URL) {
+        return createResponse(400, 'Missing required parameters or environment variables');
     }
+
+    let mailData;
+    try {
+        const { data } = await axios.get(`${API_URL}/mailbox-content?mailbox=${mailboxName}&customer=${customerName}`);
+        mailData = data;
+    } catch (error) {
+        console.error('Error fetching mailbox content:', error);
+        return createResponse(500, 'Failed to fetch mailbox content');
+    }
+
+    // Ensure the customer exists, or create a new one if not
+    let customer = await Customers.findOneAndUpdate(
+        { customerName: customerName },
+        { $setOnInsert: { customerName: customerName, mailboxes: [{ mailboxName: mailboxName, mails: [] }] } },
+        { upsert: true, new: true }
+    );
+
+    // Prepare mails for insertion
+    const preparedMails = mailData.map((element: any) => ({
+        ...element,
+        customerName: customerName,
+        mailboxName: mailboxName,
+        mailStatus: 'Unprocessed',
+    }));
+
+    // Directly update the customer to add mails to the specific mailbox
+    await Customers.updateOne(
+        { _id: customer._id, "mailboxes.mailboxName": mailboxName },
+        { $push: { "mailboxes.$.mails": { $each: preparedMails } } }
+    );
+
+    console.log(`Mails added successfully to mailbox: ${mailboxName} for customer: ${customerName}`);
+    return createResponse(200, `Mails added successfully to mailbox: ${mailboxName} for customer: ${customerName}`);
 }
+

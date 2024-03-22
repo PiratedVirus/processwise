@@ -3,7 +3,6 @@ import axios from 'axios';
 import { getAccessToken } from '@/app/lib/utils/msalUtils';
 import { createResponse } from '@/app/lib/utils/prismaUtils';
 import { put } from '@vercel/blob'
-import ResponseCache from 'next/dist/server/response-cache';
 
 interface EmailAttachment {
     id: string;
@@ -13,40 +12,43 @@ interface EmailAttachment {
 }
 
 
-async function fetchEmails(accessToken: string, userEmail: string): Promise<{ data: any[]; error?: string }> {
+async function fetchEmails(accessToken: string, mailboxName: string): Promise<{ data: any[]; error?: string }> {
     const config = {
         headers: {
             Authorization: `Bearer ${accessToken}`,
         },
     };
-    const url = `https://graph.microsoft.com/v1.0/users/${encodeURIComponent(userEmail)}/messages?$filter=hasAttachments eq true&$select=id,sender,receivedDateTime,bodyPreview,subject,hasAttachments`;
+    const url = `https://graph.microsoft.com/v1.0/users/${encodeURIComponent(mailboxName)}/messages?$orderby=receivedDateTime desc&$top=1&$select=id,sender,receivedDateTime,bodyPreview,subject,hasAttachments`;
 
     try {
         const response = await axios.get(url, config);
-        return { data: response.data.value || [] };
+        const emailsWithAttachments = { data: response.data.value.filter((email: any) => email.hasAttachments) || []};
+        return emailsWithAttachments;
+
+
     } catch (error) {
         console.error('Error fetching emails:', error);
         return { data: [], error: "Failed to fetch emails" };
     }
 }
 
-async function fetchAndDownloadAttachments(accessToken: string, userEmail: string, messageId: string, mailCount: number): Promise<{ data?: EmailAttachment[]; error?: string }> {
+async function fetchAndDownloadPdfAttachments(accessToken: string, mailboxName: string, messageId: string, mailCount: number): Promise<{ data?: EmailAttachment[]; error?: string }> {
     const config = {
         headers: {
             Authorization: `Bearer ${accessToken}`,
         },
     };
-    const url = `https://graph.microsoft.com/v1.0/users/${userEmail}/messages/${messageId}/attachments`;
+    const url = `https://graph.microsoft.com/v1.0/users/${mailboxName}/messages/${messageId}/attachments`;
 
     try {
-      const response = await axios.get(url, config);
-      const attachments: any[] = response.data.value;
+        const response = await axios.get(url, config);
+        const attachments: any[] = response.data.value;
 
-      // Filter to keep only PDF attachments
-      const pdfAttachments = attachments.filter((attachment) => attachment.contentType === 'application/pdf');
+        // Filter to keep only PDF attachments
+        const pdfAttachments = attachments.filter((attachment) => attachment.contentType === 'application/pdf');
 
-      console.log(`Fetched successfully ${pdfAttachments.length} PDF attachments for Mail #`, mailCount);
-      return { data: Array.isArray(pdfAttachments) ? pdfAttachments : [pdfAttachments] }; // Ensure data is always an array
+        console.log(`Fetched successfully ${pdfAttachments.length} PDF attachments for Mail #`, mailCount);
+        return { data: Array.isArray(pdfAttachments) ? pdfAttachments : [pdfAttachments] }; // Ensure data is always an array
 
 
 
@@ -56,7 +58,7 @@ async function fetchAndDownloadAttachments(accessToken: string, userEmail: strin
     }
 }
 
-async function uploadAttachmentToVercelBlob(attachment: EmailAttachment): Promise<{ downloadURL?: string; error?: string }> {
+async function uploadAttachmentToVercelBlob(attachment: EmailAttachment, customerName: string, mailboxName: string,): Promise<{ downloadURL?: string; error?: string }> {
     if (!attachment.contentBytes) {
         return { error: "Attachment content is missing" };
     }
@@ -65,7 +67,8 @@ async function uploadAttachmentToVercelBlob(attachment: EmailAttachment): Promis
     const blobName = attachment.name;
 
     try {
-        const blob = await put(blobName, contentBuffer, {
+        const pathName = `${customerName}-${mailboxName}-${blobName}`;
+        const blob = await put(pathName, contentBuffer, {
             contentType: 'application/pdf',
             access: 'public'
         })
@@ -81,51 +84,52 @@ async function uploadAttachmentToVercelBlob(attachment: EmailAttachment): Promis
 export async function GET(req: NextRequest): Promise<NextResponse> {
     try {
         const { searchParams } = new URL(req.url);
-        const userEmail = searchParams.get('user');
-        if (!userEmail) {
+        const mailboxName = searchParams.get('mailbox');
+        const customerName = searchParams.get('customer');
+        if (!mailboxName) {
             return createResponse(400, 'User email is required in the request body.');
         }
-  
+
         const accessToken = await getAccessToken();
-        const emails = await fetchEmails(accessToken, userEmail);
+        const emails = await fetchEmails(accessToken, mailboxName);
         const modelId = 'newtekpotricolite2';
         const apiVersion = '2024-02-29-preview';
-  
+
         const emailsData = await Promise.all(emails.data.map(async (email: any, index: number) => {
             const mailCount = index + 1;
-            const { data: attachments, error: attachmentsError } = await fetchAndDownloadAttachments(accessToken, userEmail, email.id, mailCount);
-  
+            const { data: attachments, error: attachmentsError } = await fetchAndDownloadPdfAttachments(accessToken, mailboxName, email.id, mailCount);
+
             if (attachmentsError) {
                 console.error(`Error with mail #${mailCount}: ${attachmentsError}`);
                 return []; // Skip this email or handle the error as needed
             }
-  
+
             const downloadURLPromises = attachments?.map(async (attachment: EmailAttachment) => {
-              const { downloadURL, error } = await uploadAttachmentToVercelBlob(attachment);
-              if (error) {
-                console.error(`Error uploading attachment for mail #${mailCount}: ${error}`);
-                return null; // Handle as needed
-              }
-              return downloadURL;
+                const { downloadURL, error } = await uploadAttachmentToVercelBlob(attachment, customerName || '', mailboxName || '');
+                if (error) {
+                    console.error(`Error uploading attachment for mail #${mailCount}: ${error}`);
+                    return null; // Handle as needed
+                }
+                return downloadURL;
             }) ?? [];
-  
+
             const downloadURLs = (await Promise.all(downloadURLPromises)).filter(url => url != null);
             console.log(`downloadURLs for mail# ${mailCount}:`, downloadURLs.join(','));
-  
+
             return await Promise.all(downloadURLs.map(async (url, index) => {
-                     
-              const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/extract?model-id=${modelId}&api-version=${apiVersion}`, {documentURL: url});
-              console.log('response:', response)
-              return {
-                senderName: email.sender?.emailAddress?.name,
-                senderEmail: email.sender?.emailAddress?.address,
-                dateTime: email.receivedDateTime,
-                subject: email.subject,
-                bodyPreview: email.bodyPreview,
-                attachmentNames: attachments?.map(a => a.name),
-                downloadURL: url,
-                extractedData: response.data[0]
-              };
+
+                const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/extract?model-id=${modelId}&api-version=${apiVersion}`, { documentURL: url });
+                console.log('response:', response)
+                return {
+                    senderName: email.sender?.emailAddress?.name,
+                    senderEmail: email.sender?.emailAddress?.address,
+                    dateTime: email.receivedDateTime,
+                    subject: email.subject,
+                    bodyPreview: email.bodyPreview,
+                    attachmentNames: attachments?.map(a => a.name),
+                    downloadURL: url,
+                    extractedData: response.data[0]
+                };
             }));
         }));
         // console.log('emailsData:', emailsData)
@@ -135,4 +139,4 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
         // console.error('Error in POST handler:', error);
         return createResponse(500, `An error occurred while processing the request: ${error}`);
     }
-  }
+}
