@@ -8,7 +8,6 @@ import type { MenuProps } from 'antd';
 import { usePathname } from 'next/navigation';
 import useFetchApiV2 from '@/app/hooks/useFetchApiV2';
 
-
 const { Sider } = Layout;
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
@@ -18,13 +17,17 @@ const UserSider: React.FC = () => {
   const pathname = usePathname();
   const { data: session } = useSession();
   const [collapsed, setCollapsed] = useState(false);
-  const envVar = process.env.NEXT_PUBLIC_MOCK_AI_MODEL_URL;
-  console.log("[email-fetching] The envVar is ", envVar)
+
   const selectedMailbox = useSelector((state: any) => state.userDashboardStore.selectedUserMailboxInUserDashboard) || 'invoice@63qz7w.onmicrosoft.com';
-  // const {data: mailData, isLoading: isUserMailsLoading, isError} = useFetchApiV2(`${process.env.NEXT_PUBLIC_MOCK_AI_MODEL_URL}/mailbox-content?user=${selectedMailbox}`);
-  const {data: mailData, isLoading: isUserMailsLoading, isError} = useFetchApiV2(`${process.env.NEXT_PUBLIC_API_URL}/mailbox-content?user=${selectedMailbox}`);
+  const userCompany = session?.user.userCompany;
+
+  const {data: mailData, isLoading: isUserMailsLoading, isError} = useFetchApiV2(`${process.env.NEXT_PUBLIC_API_URL}/mails?customer=${userCompany}&mailbox=${selectedMailbox}`);
+  // const {data: mailData, isLoading: isUserMailsLoading, isError} = useFetchApiV2(`${process.env.NEXT_PUBLIC_API_URL}/mailbox-content?user=${selectedMailbox}`);
   console.log("[email-fetching] The extracted mail box data is ", mailData, isUserMailsLoading, isError)
+ 
+ 
   dispatch(updateSelectedUserMailboxContent({mailData, isUserMailsLoading}));
+
   const userSideMenuItems = session?.user.userMailboxesAccess?.split(', ').map((email: string, index: number) => ({
     key: (index + 1).toString(),
     label: email,

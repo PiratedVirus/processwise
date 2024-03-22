@@ -108,7 +108,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
                 const { downloadURL, error } = await uploadAttachmentToVercelBlob(attachment, customerName || '', mailboxName || '');
                 if (error) {
                     console.error(`Error uploading attachment for mail #${mailCount}: ${error}`);
-                    return null; // Handle as needed
+                    return null; 
                 }
                 return downloadURL;
             }) ?? [];
@@ -132,11 +132,9 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
                 };
             }));
         }));
-        // console.log('emailsData:', emailsData)
         const filteredEmailsData = emailsData.flat().filter(data => data != null) as Record<string, unknown>[];
         return createResponse(200, filteredEmailsData);
     } catch (error) {
-        // console.error('Error in POST handler:', error);
         return createResponse(500, `An error occurred while processing the request: ${error}`);
     }
 }

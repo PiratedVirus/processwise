@@ -15,24 +15,24 @@ const { Text } = Typography;
 
 export const MailboxDocumentTable = () => {
   const [searchText, setSearchText] = useState('');
+  
   const {  isLoading } = useFetchApi();
 
   const azureUserData = useSelector((state) => state.editFormData.azureUserData);
   const selectedMailboxInUserDashboard = useSelector((state) => state.userDashboardStore.selectedUserMailboxInUserDashboard);
-
-
-  console.log('azureUserData', JSON.stringify(azureUserData));
-  console.log('[email-fetching] selectedMailboxInUserDashboard', JSON.stringify(selectedMailboxInUserDashboard));
-
-
   
-  
-  const userMails = useSelector((state) => state.userDashboardStore.selectedUserMailboxContent);
+  const documentStatus = useSelector((state) => state.userDashboardStore.selectedDocuementTab) || "All docs";
+  const userMailsUnfiltered = useSelector((state) => state.userDashboardStore.selectedUserMailboxContent);
+  const userMails = (documentStatus === "All docs" ) ? userMailsUnfiltered : userMailsUnfiltered?.filter((mail) => mail.mailStatus === documentStatus);
   const isUserMailsLoading = useSelector((state) => state.userDashboardStore.isUserMailsLoading);
-  if(!isUserMailsLoading){
-    // console.log('[email-fetching] Mail Feilds are ', userMails[2].extractedData.fields);
-  }
-  // console.log('[email-fetching] mailData from store var', JSON.stringify(userMails));
+
+  const tagColorMap = {
+    'Unprocessed': 'blue',
+    'Validated': 'geekblue',
+    'Approved': 'green',
+    'Pending approval': 'gold',
+    'Rejected': 'volcano',
+  };
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
   };
@@ -161,7 +161,7 @@ export const MailboxDocumentTable = () => {
       ...getColumnSearchProps('status'),
       render: (text, record) => (
         <div>
-          <Tag color="geekblue">Unprocessed</Tag>
+          <Tag style={{ borderRadius: '12px' }} color={tagColorMap[record.mailStatus]}>{record.mailStatus}</Tag>
         </div>
       ),
     },
@@ -186,8 +186,7 @@ export const MailboxDocumentTable = () => {
           <Col>
             <Text strong className="text-lg">Documents Overview</Text>
           </Col>
-          {/* </Row>
-          <Row justify="space-between" align="middle" className="px-4 py-2"> */}
+         
           <Col>
             <Input
               className='w-96'
@@ -199,12 +198,14 @@ export const MailboxDocumentTable = () => {
           </Col>
 
         </Row>
+
         <MailboxTabs />
 
         <Table
           columns={columns}
           dataSource={searchText ? globalSearch() : userMails}
-          rowKey={record => record.userId}
+          rowKey={record => record}
+          
         />
       </div>
     </Spin> ) : null

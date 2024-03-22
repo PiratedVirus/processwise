@@ -1,5 +1,7 @@
 import React from 'react';
 import { Tabs, Tag } from 'antd';
+import { useDispatch } from 'react-redux';
+import { updateSelectedDocuementTab } from '@/redux/reducers/userReducer';
 import {
   FileOutlined,
   ClockCircleOutlined,
@@ -10,10 +12,9 @@ import {
 } from '@ant-design/icons';
 
 const { TabPane } = Tabs;
-
 const TabIconMap: Record<string, JSX.Element> = {
-  '1': <FileOutlined style={{ color: '#1890ff' }} />,
-  '2': <ClockCircleOutlined style={{ color: '#FA8C16' }} />,
+  '1': <FileOutlined style={{ color: '#531DAB' }} />,
+  '2': <ClockCircleOutlined style={{ color: '#1890ff' }} />,
   '3': <CheckCircleOutlined  style={{ color: '#1d39c4' }} />,
   '4': <FileDoneOutlined  style={{ color: '#52c41a' }} />,
   '5': <FieldTimeOutlined   style={{ color: '#faad14' }} />,
@@ -21,8 +22,8 @@ const TabIconMap: Record<string, JSX.Element> = {
 };
 
 const TagColorMap: Record<string, string> = {
-  '1': 'blue',
-  '2': 'orange',
+  '1': 'purple',
+  '2': 'blue',
   '3': 'geekblue',
   '4': 'green',
   '5': 'gold',
@@ -30,7 +31,7 @@ const TagColorMap: Record<string, string> = {
 };
 
 const getTabTitle = (title: string, key: string, count: number) => (
-  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '10px'}}>
     {TabIconMap[key]}
     <span>{title}</span>
     <Tag color={TagColorMap[key]}>{count}</Tag>
@@ -44,6 +45,8 @@ interface TabItem {
   count: number;
 }
 
+
+
 const tabItems: TabItem[] = [
   { key: '1', title: 'All docs', content: 'Content of Tab 1', count: 123 },
   { key: '2', title: 'Unprocessed', content: 'Content of Tab 2', count: 123 },
@@ -53,20 +56,29 @@ const tabItems: TabItem[] = [
   { key: '6', title: 'Rejected', content: 'Content of Tab 5', count: 123 },
 ];
 
-const DocumentTabs: React.FC = () => (
-    <div style={{ display: 'flex', justifyContent: 'center', padding: '10px' }}>
-      <Tabs defaultActiveKey="1" style={{ minWidth: '50%' }}>
+const DocumentTabs: React.FC = () => {
+  const dispatch = useDispatch();
+
+  const handleTabChange = (key: string) => {
+    const clickedTab = tabItems.find(item => item.key === key);
+    if (clickedTab) {
+      dispatch(updateSelectedDocuementTab(clickedTab.title));
+    }
+  };
+  return (
+    <div className="flex justify-around p-2">
+      <Tabs  defaultActiveKey="1" onChange={handleTabChange}>
         {tabItems.map((item) => (
           <TabPane
             tab={getTabTitle(item.title, item.key, item.count)}
             key={item.key}
           >
-            {item.content}
           </TabPane>
         ))}
       </Tabs>
     </div>
+
   );
-  
-  export default DocumentTabs;
+};
+export default DocumentTabs;
   

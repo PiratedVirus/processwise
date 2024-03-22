@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { NextApiResponse } from "next";
-import { createResponse } from "@/app/lib/utils/prismaUtils";
 import axios from "axios";
 
 
