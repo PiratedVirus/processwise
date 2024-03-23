@@ -8,14 +8,17 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   },
 });
 
-
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   pageExtensions: ['ts', 'tsx'],
   compiler: {
     styledComponents: true,
   },
+  webpack: (config) => {
+    config.resolve.alias.canvas = false;
+    return config;
+  }
 };
 
 module.exports = withAxiom(withBundleAnalyzer(nextConfig));
+
