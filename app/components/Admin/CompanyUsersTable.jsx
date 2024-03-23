@@ -155,22 +155,23 @@ export const MemberTable = () => {
       <div className="space-y-5">
         <Row justify="space-between" align="middle" className="px-4 pt-5">
           <Col>
-            <Text strong className="text-lg">User Table</Text>
+            <p strong className="text-2xl font-medium px-4">User Table</p>
           </Col>
-        </Row>
-        <Row justify="space-between" align="middle" className="px-4 py-2">
-          <Col>
+          <div className="flex justify-between items-center px-4 py-2">
+          <CreateUserModal formName='createUser' formType='create' modalOpenText='Create New User' modalOpenType='button' modalFormFields={createCompanyUser} />
+
             <Input
-              className='w-96'
+            style={{ width: '320px' }}
+              // size='large'
+              className=' ml-6'
               prefix={<SearchOutlined className="text-gray-400" />}
               placeholder="Global search..."
               onChange={e => setSearchText(e.target.value)}
               value={searchText}
             />
-          </Col>
-          <CreateUserModal formName='createUser' formType='create' modalOpenText='Create New User' modalOpenType='button' modalFormFields={createCompanyUser} />
-
+          </div>
         </Row>
+
         <Table
           columns={columns}
           dataSource={searchText ? globalSearch() : mailboxAssignedUsers}

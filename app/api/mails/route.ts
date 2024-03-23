@@ -72,7 +72,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
         if (!mailbox) {
             return createResponse(404, 'Mailbox not found');
         }
-        console.log("mailbox.mails", mailbox.mails)
+        // console.log("mailbox.mails", mailbox.mails)
         return createResponse(200, mailbox.mails);
     } catch (error) {
         console.error('Error fetching mails:', error);

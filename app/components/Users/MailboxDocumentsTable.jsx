@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { Table, Input, Button, Space, Typography, Spin, Row, Col, Tag } from 'antd';
-import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
+import { SearchOutlined, FilterOutlined, UploadOutlined } from '@ant-design/icons';
 import useFetchApi from '@/app/hooks/useFetchApi'; 
 import useAzureApi from '@/app/hooks/useAzureApi';
 import { parseRoleToCheckedStates } from '@/app/lib/utils/utils';
@@ -11,6 +11,7 @@ import { useSelector } from 'react-redux';
 import useFetchApiV2 from '@/app/hooks/useFetchApiV2';
 import usePostApi from '@/app/hooks/usePostApi';
 import  MailboxTabs  from '@/app/ui/MailboxTabs';
+import FileUpload from '@/app/ui/Upload';
 const { Text } = Typography;
 
 export const MailboxDocumentTable = () => {
@@ -42,45 +43,42 @@ export const MailboxDocumentTable = () => {
     confirm();
   };
 
-  const getColumnSearchProps = dataIndex => ({
+  const getColumnSearchProps = (getValueFromRecord) => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
       <div style={{ padding: 8 }}>
         <Input
           autoFocus
-          placeholder={`Search ${dataIndex}`}
+          placeholder={`Search `} // Updated to use the new placeholder parameter
           value={selectedKeys[0]}
           onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          onPressEnter={() => handleSearch(selectedKeys, confirm)}
           style={{ marginBottom: 8, display: 'block' }}
         />
         <Space>
           <Button
-            className='bg-blue-600 text-white hover:text-white'
-            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-            icon={<FilterOutlined />}
+            type="primary"
+            onClick={() => handleSearch(selectedKeys, confirm)}
+            icon={<SearchOutlined />}
             size="small"
             style={{ width: 90 }}
           >
             Search
           </Button>
-          <Button
-            onClick={() => handleReset(clearFilters, confirm)}
-            size="small"
-            style={{ width: 90 }}
-          >
+          <Button onClick={() => handleReset(clearFilters, confirm)} size="small" style={{ width: 90 }}>
             Reset
           </Button>
         </Space>
       </div>
     ),
-    filterIcon: filtered => <FilterOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
-    onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
+    onFilter: (value, record) => {
+      const recordValue = getValueFromRecord(record);
+      return recordValue ? recordValue.toString().toLowerCase().includes(value.toLowerCase()) : false;
+    },
     sorter: (a, b) => {
-      if (typeof a[dataIndex] === 'number' && typeof b[dataIndex] === 'number') {
-        return a[dataIndex] - b[dataIndex];
-      }
-      return a[dataIndex].localeCompare(b[dataIndex]);
+      const valueA = getValueFromRecord(a) || ''; // Ensure we have a fallback value for comparison
+      const valueB = getValueFromRecord(b) || ''; // Ensure we have a fallback value for comparison
+      return valueA.localeCompare(valueB);
     },
   });
   const columns = useMemo(() => [
@@ -88,7 +86,7 @@ export const MailboxDocumentTable = () => {
       title: 'Source',
       dataIndex: 'userName',
       key: 'userName',
-      ...getColumnSearchProps('userName'),
+      ...getColumnSearchProps(record => record.senderName),
       render: (text, record) => (
         <div>
           <div>{record.senderName}</div>
@@ -100,7 +98,7 @@ export const MailboxDocumentTable = () => {
       title: 'Date',
       dataIndex: 'dateTime',
       key: 'dateTime',
-      ...getColumnSearchProps('dateTime'),
+      ...getColumnSearchProps(record => record.dateTime),
       render: (text, record) => (
         <div>
           <div>{record.dateTime}</div>
@@ -111,19 +109,19 @@ export const MailboxDocumentTable = () => {
       title: 'Entity name',
       dataIndex: 'entity',
       key: 'entity',
-      ...getColumnSearchProps('entity'),
+      ...getColumnSearchProps(record => record.extractedData.fields.BillingAddressRecipient?.content || ''),
       render: (text, record) => (
         <div>
           <div>{record.extractedData.fields.BillingAddressRecipient?.content ? record.extractedData.fields.BillingAddressRecipient.content : "Not found" }</div>
-          {/* <div>{JSON.stringify(record.extractedData.fields)}</div> */}
         </div>
       ),
     },
+    
     {
       title: 'Doc Name',
       dataIndex: 'docName',
       key: 'docName',
-      ...getColumnSearchProps('docName'),
+      ...getColumnSearchProps(record => record.attachmentNames || ''),
       render: (text, record) => (
         <div>
           <div>{record.attachmentNames ? record.attachmentNames : "Not found" }</div>
@@ -136,7 +134,7 @@ export const MailboxDocumentTable = () => {
       title: 'Doc number',
       dataIndex: 'docNumber',
       key: 'docNumber',
-      ...getColumnSearchProps('docNumber'),
+      ...getColumnSearchProps(record => record.extractedData.fields.PurchaseOrder?.content || ''),
       render: (text, record) => (
         <div>
           <div>{record.extractedData.fields.PurchaseOrder?.content ? record.extractedData.fields.PurchaseOrder.content : "Not found" }</div>
@@ -147,7 +145,7 @@ export const MailboxDocumentTable = () => {
       title: 'Amount',
       dataIndex: 'amount',
       key: 'amount',
-      ...getColumnSearchProps('amount'),
+      ...getColumnSearchProps(record => record.extractedData.fields.InvoiceTotal?.content || ''),
       render: (text, record) => (
         <div>
           <div>{record.extractedData.fields.InvoiceTotal?.content ? record.extractedData.fields.InvoiceTotal.content : "Not found" }</div>
@@ -158,7 +156,7 @@ export const MailboxDocumentTable = () => {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      ...getColumnSearchProps('status'),
+      ...getColumnSearchProps(record => record.mailStatus),
       render: (text, record) => (
         <div>
           <Tag style={{ borderRadius: '12px' }} color={tagColorMap[record.mailStatus]}>{record.mailStatus}</Tag>
@@ -184,18 +182,21 @@ export const MailboxDocumentTable = () => {
       <div className="space-y-5">
         <Row justify="space-between" align="middle" className="px-4 pt-5">
           <Col>
-            <Text strong className="text-lg">Documents Overview</Text>
+            <p className="text-2xl font-medium">Documents Overview</p>
           </Col>
          
-          <Col>
+          <div className="flex justify-between items-center px-4 py-2">
+            <FileUpload />
+
             <Input
-              className='w-96'
+              style={{ width: '320px' }}
+              className=' ml-6'
               prefix={<SearchOutlined className="text-gray-400" />}
               placeholder="Global search..."
               onChange={e => setSearchText(e.target.value)}
               value={searchText}
             />
-          </Col>
+          </div>
 
         </Row>
 

@@ -49,9 +49,6 @@ async function fetchAndDownloadPdfAttachments(accessToken: string, mailboxName: 
 
         console.log(`Fetched successfully ${pdfAttachments.length} PDF attachments for Mail #`, mailCount);
         return { data: Array.isArray(pdfAttachments) ? pdfAttachments : [pdfAttachments] }; // Ensure data is always an array
-
-
-
     } catch (error) {
         console.error(`Error fetching attachments for message ${mailCount}:`, error);
         return { error: `Failed to fetch attachments for message ${messageId}` };
@@ -77,7 +74,6 @@ async function uploadAttachmentToVercelBlob(attachment: EmailAttachment, custome
         console.error(`Failed to upload attachment ${blobName} to Azure Blob Storage`, error);
         return { error: `Failed to upload attachment ${blobName}` };
     }
-
 
 }
 
