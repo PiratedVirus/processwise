@@ -1,31 +1,32 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { Table, Input, Button, Space, Typography, Spin, Row, Col } from 'antd';
-import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
+import { Table, Input, Button, Space, Spin, Row, Col, Tag } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 import useFetchApi from '@/app/hooks/useFetchApi'; 
-import useAzureApi from '@/app/hooks/useAzureApi';
-import { parseRoleToCheckedStates } from '@/app/lib/utils';
-import CreateUserModal from '@/app/ui/CreateUserModal';
-import DeleteUserModal from '@/app/ui/DeleteUserModal';
-import {createCompanyUser} from '@/app/lib/form-defination/createCompanyUser'
-import { useSelector } from 'react-redux';
-const { Text } = Typography;
+import { useSelector, useDispatch } from 'react-redux';
+import {updateSelectedUserMailboxContent} from '@/redux/reducers/userReducer';
+import  MailboxTabs  from '@/app/ui/MailboxTabs';
+import FileUpload from '@/app/ui/Upload';
 
 export const MailboxDocumentTable = () => {
-  const [mailboxAssignedUsers, setMailboxAssignedUsers] = useState([]);
+  const dispatch = useDispatch();
+  const tagColorMap = {
+    'Unprocessed': 'blue',
+    'Validated': 'geekblue',
+    'Approved': 'green',
+    'Pending approval': 'gold',
+    'Rejected': 'volcano',
+  };
+
   const [searchText, setSearchText] = useState('');
-  const {  isLoading } = useFetchApi();
-  const { connecting, azureResponse, connectAzure } = useAzureApi();
-
-  const azureUserData = useSelector((state) => state.editFormData.azureUserData);
-  const dashboardSelectedMailbox = useSelector((state) => state.editFormData.dashboardSelectedMailbox);
-  const selectedMailboxInUserDashboard = useSelector((state) => state.editFormData.selectedUserMailboxInUserDashboard);
-  console.log('azureUserData', JSON.stringify(azureUserData));
-  console.log('dashboardSelectedMailbox', JSON.stringify(dashboardSelectedMailbox));
   
+  const documentStatus = useSelector((state) => state.userDashboardStore.selectedDocuementTab) || "All docs";
+  const userMailsUnfiltered = useSelector((state) => state.userDashboardStore.selectedUserMailboxContent);
+  const userMails = (documentStatus === "All docs" ) ? userMailsUnfiltered : userMailsUnfiltered?.filter((mail) => mail.mailStatus === documentStatus) || [];
+  const isUserMailsLoading = useSelector((state) => state.userDashboardStore.isUserMailsLoading);
 
 
- 
-
+  
+  
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
   };
@@ -35,138 +36,174 @@ export const MailboxDocumentTable = () => {
     confirm();
   };
 
-  const getColumnSearchProps = dataIndex => ({
+  const getColumnSearchProps = (getValueFromRecord) => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
       <div style={{ padding: 8 }}>
         <Input
           autoFocus
-          placeholder={`Search ${dataIndex}`}
+          placeholder={`Search `} // Updated to use the new placeholder parameter
           value={selectedKeys[0]}
           onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          onPressEnter={() => handleSearch(selectedKeys, confirm)}
           style={{ marginBottom: 8, display: 'block' }}
         />
         <Space>
           <Button
-            className='bg-blue-600 text-white hover:text-white'
-            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-            icon={<FilterOutlined />}
+            type="primary"
+            onClick={() => handleSearch(selectedKeys, confirm)}
+            icon={<SearchOutlined />}
             size="small"
             style={{ width: 90 }}
           >
             Search
           </Button>
-          <Button
-            onClick={() => handleReset(clearFilters, confirm)}
-            size="small"
-            style={{ width: 90 }}
-          >
+          <Button onClick={() => handleReset(clearFilters, confirm)} size="small" style={{ width: 90 }}>
             Reset
           </Button>
         </Space>
       </div>
     ),
-    filterIcon: filtered => <FilterOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
-    onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
+    onFilter: (value, record) => {
+      const recordValue = getValueFromRecord(record);
+      return recordValue ? recordValue.toString().toLowerCase().includes(value.toLowerCase()) : false;
+    },
     sorter: (a, b) => {
-      if (typeof a[dataIndex] === 'number' && typeof b[dataIndex] === 'number') {
-        return a[dataIndex] - b[dataIndex];
-      }
-      return a[dataIndex].localeCompare(b[dataIndex]);
+      const valueA = getValueFromRecord(a) || ''; // Ensure we have a fallback value for comparison
+      const valueB = getValueFromRecord(b) || ''; // Ensure we have a fallback value for comparison
+      return valueA.localeCompare(valueB);
     },
   });
-  const roleColumns = ['Processing', 'Approving', 'Reporting', 'Admin'];
   const columns = useMemo(() => [
     {
-      title: 'Name',
+      title: 'Source',
       dataIndex: 'userName',
       key: 'userName',
-      ...getColumnSearchProps('userName'),
+      ...getColumnSearchProps(record => record.senderName),
       render: (text, record) => (
         <div>
-          <div>{record.userName}</div>
-          <div className='text-gray-500'>{record.userEmail}</div> {/* Display email in a smaller or different style */}
+          <div>{record.senderName || record.uploaderName}</div>
+          <div className='text-gray-500'>{record.senderEmail || "Manual Upload"}</div> {/* Display email in a smaller or different style */}
         </div>
       ),
     },
-    ...roleColumns.map((role, index) => ({
-      title: role,
-      dataIndex: 'userRole',
-      key: role,
-      render: (userRole) => {
-        const checkedStates = parseRoleToCheckedStates(userRole);
-        return (
-          <input type="checkbox" checked={checkedStates[index]} disabled />
-        );
-      },
-    })),
-
     {
-      title: 'Position',
-      dataIndex: 'userPosition',
-      key: 'userPosition',
-      ...getColumnSearchProps('userPosition'),
-    },
-    {
-      title: 'Actions',
-      key: 'actions',
-      render: (record) => (
-        <Space size="middle">
-          <CreateUserModal 
-            formName='editUser' 
-            formType='edit' 
-            modalOpenText='Edit User' 
-            modalOpenType='icon' 
-            modalFormFields={createCompanyUser} 
-            selectedUserData={record}
-          />
-          <DeleteUserModal  
-            modalOpenText='Delete User' 
-            modalOpenType='icon' 
-            selectedUserData={record}
-          />
-        </Space>
+      title: 'Date',
+      dataIndex: 'dateTime',
+      key: 'dateTime',
+      ...getColumnSearchProps(record => record.dateTime),
+      render: (text, record) => (
+        <div>
+          <div>{record.dateTime || ''}</div>
+        </div>
       ),
     },
+    {
+      title: 'Entity name',
+      dataIndex: 'entity',
+      key: 'entity',
+      ...getColumnSearchProps(record => record.extractedData.fields.BillingAddressRecipient?.content || ''),
+      render: (text, record) => (
+        <div>
+          <div>{record.extractedData.fields.BillingAddressRecipient?.content ? record.extractedData.fields.BillingAddressRecipient.content : "Not found" }</div>
+        </div>
+      ),
+    },
+    
+    {
+      title: 'Doc Name',
+      dataIndex: 'docName',
+      key: 'docName',
+      ...getColumnSearchProps(record => record.attachmentNames || ''),
+      render: (text, record) => (
+        <div>
+          <div>{record?.attachmentNames ? record.attachmentNames : "Not found" }</div>
+          <a href={record?.downloadURL} target="_blank" rel="noreferrer"> Open </a>
+        </div>
+      ),
+    },
+
+    {
+      title: 'Doc number',
+      dataIndex: 'docNumber',
+      key: 'docNumber',
+      ...getColumnSearchProps(record => record.extractedData.fields.PurchaseOrder?.content || ''),
+      render: (text, record) => (
+        <div>
+          <div>{record.extractedData.fields.PurchaseOrder?.content ? record.extractedData.fields.PurchaseOrder.content : "Not found" }</div>
+        </div>
+      ),
+    },
+    {
+      title: 'Amount',
+      dataIndex: 'amount',
+      key: 'amount',
+      ...getColumnSearchProps(record => record.extractedData.fields.InvoiceTotal?.content || ''),
+      render: (text, record) => (
+        <div>
+          <div>{record.extractedData.fields.InvoiceTotal?.content ? record.extractedData.fields.InvoiceTotal.content : "Not found" }</div>
+        </div>
+      ),
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+      ...getColumnSearchProps(record => record.mailStatus),
+      render: (text, record) => (
+        <div>
+          <Tag style={{ borderRadius: '12px' }} color={tagColorMap[record.mailStatus]}>{record.mailStatus}</Tag>
+        </div>
+      ),
+    },
+ 
+
   ], []);
 
   const globalSearch = () => {
-    const filteredData = mailboxAssignedUsers.filter(entry => 
+    const filteredData = userMails.filter(entry => 
       Object.values(entry).some(value => 
         value ? value.toString().toLowerCase().includes(searchText.toLowerCase()) : false
       )
     );
-    return filteredData.length > 0 ? filteredData : mailboxAssignedUsers;
+    return filteredData.length > 0 ? filteredData : userMails;
   };
-
+  console.log("userMails" ,userMails?.error)
+ 
   return (
-    <Spin spinning={isLoading} size="large">
+    (userMails) ? (
+      
+    <Spin spinning={isUserMailsLoading} size="large">
       <div className="space-y-5">
         <Row justify="space-between" align="middle" className="px-4 pt-5">
           <Col>
-            <Text strong className="text-lg">Documents Overview</Text>
+            <p className="text-2xl font-medium">Documents Overview</p>
           </Col>
-          </Row>
-          <Row justify="space-between" align="middle" className="px-4 py-2">
-          <Col>
+         
+          <div className="flex justify-between items-center px-4 py-2">
+            <FileUpload />
+
             <Input
-              className='w-96'
+              style={{ width: '320px' }}
+              className=' ml-6'
               prefix={<SearchOutlined className="text-gray-400" />}
               placeholder="Global search..."
               onChange={e => setSearchText(e.target.value)}
               value={searchText}
             />
-          </Col>
-          <CreateUserModal formName='createUser' formType='create' modalOpenText='Create New User' modalOpenType='button' modalFormFields={createCompanyUser}/>
+          </div>
 
         </Row>
+
+        <MailboxTabs />
+
         <Table
           columns={columns}
-          dataSource={searchText ? globalSearch() : mailboxAssignedUsers}
-          rowKey={record => record.userId}
+          dataSource={searchText ? globalSearch() : userMails}
+          rowKey={record => record}
+          
         />
       </div>
-    </Spin>
+    </Spin> ) : null
   );
 };

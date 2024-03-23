@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import axios from 'axios';
-import { getAccessToken } from '@/app/lib/msalUtils';
-import { createResponse } from '@/app/lib/prismaUtils';
+import { getAccessToken } from '@/app/lib/utils/msalUtils';
+import { createResponse } from '@/app/lib/utils/prismaUtils';
 
 export async function POST(req: NextRequest) {
   try {

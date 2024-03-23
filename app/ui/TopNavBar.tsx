@@ -31,7 +31,7 @@ const TopNav: React.FC<TopNavProps> = () => {
     <div className="flex items-center justify-between w-full">
       {/* Left-aligned logo */}
       <div className="flex items-center">
-        <Image src="/logo_large.png" width={300} height={30} alt="Logo" />
+        <Image src="/logo_large.png" width={200} height={30} alt="Logo" />
       </div>
 
       {/* Center-aligned menu items */}

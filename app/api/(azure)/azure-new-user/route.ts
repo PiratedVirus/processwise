@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
-import { getAccessToken } from '@/app/lib/msalUtils';
-import { createResponse } from '@/app/lib/prismaUtils';
+import { getAccessToken } from '@/app/lib/utils/msalUtils';
+import { createResponse } from '@/app/lib/utils/prismaUtils';
 
 interface InvitationData {
   [key: string]: any; // Define more specific types as needed
