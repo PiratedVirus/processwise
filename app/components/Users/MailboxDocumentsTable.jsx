@@ -1,32 +1,13 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { Table, Input, Button, Space, Typography, Spin, Row, Col, Tag } from 'antd';
-import { SearchOutlined, FilterOutlined, UploadOutlined } from '@ant-design/icons';
+import { Table, Input, Button, Space, Spin, Row, Col, Tag } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 import useFetchApi from '@/app/hooks/useFetchApi'; 
-import useAzureApi from '@/app/hooks/useAzureApi';
-import { parseRoleToCheckedStates } from '@/app/lib/utils/utils';
-import CreateUserModal from '@/app/ui/CreateUserModal';
-import DeleteUserModal from '@/app/ui/DeleteUserModal';
-import {createCompanyUser} from '@/app/lib/form-defination/createCompanyUser'
 import { useSelector } from 'react-redux';
-import useFetchApiV2 from '@/app/hooks/useFetchApiV2';
-import usePostApi from '@/app/hooks/usePostApi';
+
 import  MailboxTabs  from '@/app/ui/MailboxTabs';
 import FileUpload from '@/app/ui/Upload';
-const { Text } = Typography;
 
 export const MailboxDocumentTable = () => {
-  const [searchText, setSearchText] = useState('');
-  
-  const {  isLoading } = useFetchApi();
-
-  const azureUserData = useSelector((state) => state.editFormData.azureUserData);
-  const selectedMailboxInUserDashboard = useSelector((state) => state.userDashboardStore.selectedUserMailboxInUserDashboard);
-  
-  const documentStatus = useSelector((state) => state.userDashboardStore.selectedDocuementTab) || "All docs";
-  const userMailsUnfiltered = useSelector((state) => state.userDashboardStore.selectedUserMailboxContent);
-  const userMails = (documentStatus === "All docs" ) ? userMailsUnfiltered : userMailsUnfiltered?.filter((mail) => mail.mailStatus === documentStatus);
-  const isUserMailsLoading = useSelector((state) => state.userDashboardStore.isUserMailsLoading);
-
   const tagColorMap = {
     'Unprocessed': 'blue',
     'Validated': 'geekblue',
@@ -34,6 +15,18 @@ export const MailboxDocumentTable = () => {
     'Pending approval': 'gold',
     'Rejected': 'volcano',
   };
+
+  const [searchText, setSearchText] = useState('');
+  
+  const documentStatus = useSelector((state) => state.userDashboardStore.selectedDocuementTab) || "All docs";
+  const userMailsUnfiltered = useSelector((state) => state.userDashboardStore.selectedUserMailboxContent);
+  const userMails = (documentStatus === "All docs" ) ? userMailsUnfiltered : userMailsUnfiltered?.filter((mail) => mail.mailStatus === documentStatus) || [];
+  const isUserMailsLoading = useSelector((state) => state.userDashboardStore.isUserMailsLoading);
+  const manualUploads = useSelector((state) => state.userDashboardStore.uploadedDocument);
+
+
+  
+  
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
   };
@@ -89,8 +82,8 @@ export const MailboxDocumentTable = () => {
       ...getColumnSearchProps(record => record.senderName),
       render: (text, record) => (
         <div>
-          <div>{record.senderName}</div>
-          <div className='text-gray-500'>{record.senderEmail}</div> {/* Display email in a smaller or different style */}
+          <div>{record.senderName || record.uploaderName}</div>
+          <div className='text-gray-500'>{record.senderEmail || "Manual Upload"}</div> {/* Display email in a smaller or different style */}
         </div>
       ),
     },

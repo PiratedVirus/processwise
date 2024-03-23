@@ -12,15 +12,19 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     const { searchParams } = new URL(req.url);
     const customerName = searchParams.get('customer');
     const mailboxName = searchParams.get('mailbox');
-
+    const documentURL = searchParams.get('documentURL');
     if (!customerName || !mailboxName || !API_URL) {
         return createResponse(400, 'Missing required parameters or environment variables');
     }
+    const isManualUpload = documentURL ? true : false;
+    const aiModelUrl = isManualUpload ? `${API_URL}/upload-content?mailbox=${mailboxName}&customer=${customerName}&documentURL=${documentURL}&uploader=me` 
+                        : `${API_URL}/mailbox-content?mailbox=${mailboxName}&customer=${customerName}`;
 
     let mailData;
     try {
-        const { data } = await axios.get(`${API_URL}/mailbox-content?mailbox=${mailboxName}&customer=${customerName}`);
+        const {data} = await axios.get(aiModelUrl);
         mailData = data;
+        console.log('Mail data:', mailData);
     } catch (error) {
         console.error('Error fetching mailbox content:', error);
         return createResponse(500, 'Failed to fetch mailbox content');

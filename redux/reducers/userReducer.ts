@@ -4,6 +4,7 @@ export interface IUserState {
     selectedUserMailboxContent: {};
     selectedDocuementTab: string;
     isUserMailsLoading: boolean;
+    uploadedDocument: any;
 
 }
 export const userSlice = createSlice({
@@ -12,7 +13,8 @@ export const userSlice = createSlice({
         selectedUserMailboxInUserDashboard: '',
         selectedUserMailboxContent: null,
         selectedDocuementTab: '', 
-        isUserMailsLoading: false
+        isUserMailsLoading: false,
+        uploadedDocument: null
 
     },
     reducers: {
@@ -25,13 +27,17 @@ export const userSlice = createSlice({
         },
         updateSelectedDocuementTab: (state, action) => {
             state.selectedDocuementTab = action.payload;
+        },
+        updateUploadedFile: (state, action) => {
+            state.uploadedDocument = action.payload;
         }
     },
 });
 export const { 
     updateSelectedUserMailboxInUserDashboard,
     updateSelectedUserMailboxContent,
-    updateSelectedDocuementTab 
+    updateSelectedDocuementTab,
+    updateUploadedFile 
 } = userSlice.actions;
 
 export default userSlice.reducer;

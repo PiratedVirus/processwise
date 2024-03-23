@@ -18,7 +18,7 @@ export const POST = async (req: NextRequest) => {
     const blob = await put(filename, file, {
       access: 'public',
     });
-    return createResponse(200, { Message: `Successfully uploaded ${filename}` });
+    return createResponse(200, {message: `Successfully uploaded ${filename}`, downloadURL: blob.url});
   } catch (error) {
     console.log("Error occured ", error);
     return createResponse(500, { Message: `Failed to upload ${filename}` });
