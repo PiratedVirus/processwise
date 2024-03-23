@@ -13,11 +13,11 @@ export const POST = async (req: NextRequest) => {
 
   const fileObj = file as File;
   const filename =  fileObj.name.replaceAll(" ", "_");
-  console.log(filename);
   try {
     const blob = await put(filename, file, {
       access: 'public',
     });
+    console.log("File uploaded " + filename + " at  URL: ", blob.url)
     return createResponse(200, {message: `Successfully uploaded ${filename}`, downloadURL: blob.url});
   } catch (error) {
     console.log("Error occured ", error);

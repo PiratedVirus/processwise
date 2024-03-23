@@ -2,12 +2,13 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { Table, Input, Button, Space, Spin, Row, Col, Tag } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import useFetchApi from '@/app/hooks/useFetchApi'; 
-import { useSelector } from 'react-redux';
-
+import { useSelector, useDispatch } from 'react-redux';
+import {updateSelectedUserMailboxContent} from '@/redux/reducers/userReducer';
 import  MailboxTabs  from '@/app/ui/MailboxTabs';
 import FileUpload from '@/app/ui/Upload';
 
 export const MailboxDocumentTable = () => {
+  const dispatch = useDispatch();
   const tagColorMap = {
     'Unprocessed': 'blue',
     'Validated': 'geekblue',
@@ -22,7 +23,6 @@ export const MailboxDocumentTable = () => {
   const userMailsUnfiltered = useSelector((state) => state.userDashboardStore.selectedUserMailboxContent);
   const userMails = (documentStatus === "All docs" ) ? userMailsUnfiltered : userMailsUnfiltered?.filter((mail) => mail.mailStatus === documentStatus) || [];
   const isUserMailsLoading = useSelector((state) => state.userDashboardStore.isUserMailsLoading);
-  const manualUploads = useSelector((state) => state.userDashboardStore.uploadedDocument);
 
 
   
@@ -94,7 +94,7 @@ export const MailboxDocumentTable = () => {
       ...getColumnSearchProps(record => record.dateTime),
       render: (text, record) => (
         <div>
-          <div>{record.dateTime}</div>
+          <div>{record.dateTime || ''}</div>
         </div>
       ),
     },
@@ -117,7 +117,7 @@ export const MailboxDocumentTable = () => {
       ...getColumnSearchProps(record => record.attachmentNames || ''),
       render: (text, record) => (
         <div>
-          <div>{record.attachmentNames ? record.attachmentNames : "Not found" }</div>
+          <div>{record?.attachmentNames ? record.attachmentNames : "Not found" }</div>
           <a href={record?.downloadURL} target="_blank" rel="noreferrer"> Open </a>
         </div>
       ),
@@ -168,9 +168,11 @@ export const MailboxDocumentTable = () => {
     );
     return filteredData.length > 0 ? filteredData : userMails;
   };
-
+  console.log("userMails" ,userMails?.error)
+ 
   return (
     (userMails) ? (
+      
     <Spin spinning={isUserMailsLoading} size="large">
       <div className="space-y-5">
         <Row justify="space-between" align="middle" className="px-4 pt-5">

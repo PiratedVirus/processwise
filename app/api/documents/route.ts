@@ -12,17 +12,20 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     const { searchParams } = new URL(req.url);
     const customerName = searchParams.get('customer');
     const mailboxName = searchParams.get('mailbox');
- 
+    const documentURL = searchParams.get('documentURL');
+    const uploader = searchParams.get('uploader');
+    const fileName = searchParams.get('fileName');
     if (!customerName || !mailboxName || !API_URL) {
         return createResponse(400, 'Missing required parameters or environment variables');
     }
-    const aiModelUrl = `${API_URL}/mailbox-content?mailbox=${mailboxName}&customer=${customerName}`;
+    const aiModelUrl = `${API_URL}/upload-content?mailbox=${mailboxName}&customer=${customerName}&documentURL=${documentURL}&uploader=${uploader}&fileName=${fileName}`;
 
     let mailData;
     try {
         const {data} = await axios.get(aiModelUrl);
         mailData = data;
-        console.log('Mail data:', mailData);
+        console.log('[UPLOAD] Mail data:', mailData);
+        // return createResponse(200, mailData.data)
     } catch (error) {
         console.error('Error fetching mailbox content:', error);
         return createResponse(500, 'Failed to fetch mailbox content');
@@ -49,8 +52,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         { $push: { "mailboxes.$.mails": { $each: preparedMails } } }
     );
 
-    console.log(`Mails added successfully to mailbox: ${mailboxName} for customer: ${customerName}`);
-    return createResponse(200, `Mails added successfully to mailbox: ${mailboxName} for customer: ${customerName}`);
+    console.log(`[UPLOAD] Documents added successfully to mailbox: ${mailboxName} for customer: ${customerName}`);
+    return createResponse(200, `Documents added successfully to mailbox: ${mailboxName} for customer: ${customerName}`);
 }
 
 export async function GET(req: NextRequest): Promise<NextResponse> {

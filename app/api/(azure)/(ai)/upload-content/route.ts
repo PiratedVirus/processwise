@@ -18,6 +18,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
         const customerName = searchParams.get('customer');
         const uploaderName = searchParams.get('uploader');
         const documentURL = searchParams.get('documentURL');
+        const fileName = searchParams.get('fileName');
         if (!mailboxName) {
             return createResponse(400, 'User email is required in the request body.');
         }
@@ -35,7 +36,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
             dateTime: new Date(),
             subject: 'Manual Upload',
             bodyPreview: 'Manual Upload',
-            attachmentNames: [],
+            attachmentNames: [fileName],
             downloadURL: documentURL,
             extractedData: response.data[0]
         }];
