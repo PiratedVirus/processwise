@@ -10,6 +10,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/react"
 import UseSider from '@/app/ui/UserSider';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
+import { AxiomWebVitals } from 'next-axiom';
 
 const { Header, Content } = Layout;
 
@@ -25,6 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className={`${inter.className} antialiased`}>
+      <AxiomWebVitals />
         <Providers>
           <AntdRegistry>
           <Layout style={{ minHeight: '100vh' }}>

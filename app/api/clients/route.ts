@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import {  NextApiResponse } from 'next';
-import { prisma, createResponse, handlePrismaOperation } from '@/app/lib/prismaUtils';
+import { prisma, createResponse, handlePrismaOperation } from '@/app/lib/utils/prismaUtils';
 import { Prisma } from '@prisma/client';
 
 export async function DELETE(req: NextRequest) {

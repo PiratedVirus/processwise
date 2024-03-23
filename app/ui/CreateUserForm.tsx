@@ -3,7 +3,7 @@ import { Form, Input, Button, Checkbox, Select } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { FormInstance } from 'antd/lib/form';
 import { updateSelectedMailBoxes, updatePreSelectedUserEmailAccess } from '@/redux/reducers/editFormDataReducer';
-import { parseBinaryToRoles } from '../lib/utils';
+import { parseBinaryToRoles } from '../lib/utils/utils';
 
 interface FormField {
   name: string;
