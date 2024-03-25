@@ -2,10 +2,9 @@ import { useState, useEffect } from "react";
 import { PdfLoader, PdfHighlighter, Tip, Highlight, Popup, AreaHighlight } from "react-pdf-highlighter";
 import { transformCoordinatesToHighlight } from "@/app/lib/utils/utils";
 
-const PdfHighlighterComponent = ({ url, initialHighlights, visibilityStates }) => {
+const PdfViewer = ({ url, initialHighlights, visibilityStates }) => {
+  // console.log("PdfViewer", url, initialHighlights, visibilityStates);
 
-
-  // Convert initial highlights to their transformed version
   let highlightsArray = Object.keys(initialHighlights).map(key => {
     const highlightId = key; // Using the key as ID for simplicity
     return transformCoordinatesToHighlight(initialHighlights[key], highlightId);
@@ -23,7 +22,7 @@ const PdfHighlighterComponent = ({ url, initialHighlights, visibilityStates }) =
         id: highlightId, // Ensure each highlight object has an 'id' field
       };
     });
-
+    console.log("visibleHighlights", visibleHighlights);
 
   useEffect(() => {
     const observer = new MutationObserver((mutations) => {
@@ -114,4 +113,4 @@ const PdfHighlighterComponent = ({ url, initialHighlights, visibilityStates }) =
   );
 };
 
-export default PdfHighlighterComponent;
+export default PdfViewer;
