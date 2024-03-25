@@ -1,50 +1,46 @@
-import { Collapse, Table } from 'antd'; 
-const { Panel } = Collapse;
+import React from 'react';
+import { Table, Collapse } from 'antd';
+ const { Panel } = Collapse;
 
-type TablePanelProps = {
-  data: any[]; 
-};
+interface DocumentTableProps {
+  data: { [key: string]: any };
+  toggleHighlightVisibility: (key: string) => void;
+}
 
-const TablePanel: React.FC<TablePanelProps> = ({ data }) => {
-  console.log("table data HIGH", data)
-  const extractColumns = (data: any) => {
-    const columnsSet = new Set<string>();
-    data.forEach((item: any) => {
-      Object.keys(item.valueObject).forEach((key) => {
-        columnsSet.add(key);
+const DocumentTable: React.FC<DocumentTableProps> = ({ data, toggleHighlightVisibility }) => {
+  const columns: any[] = [];
+  const dataSource: any[] = [];
+
+  // Deduce columns
+  Object.keys(data).forEach((key) => {
+    const header = key.split('-').slice(2).join('-'); // Get header from key
+    if (!columns.find((col) => col.dataIndex === header)) {
+      columns.push({
+        title: header,
+        dataIndex: header,
+        key: header,
+        render: (text: any, record: any, index: number) => (
+          <div onClick={() => toggleHighlightVisibility(`row-${record.key}-${header}`)}>
+            {text}
+          </div>
+        ),
       });
-    });
-    return Array.from(columnsSet).map((key) => ({
-      title: key,
-      dataIndex: key,
-      key: key,
-    }));
-  };
+    }
+  });
 
-  const prepareDataSource = (data: any) => {
-    return data.map((item: any) => {
-      const row: { [key: string]: any } = {};
-      Object.entries(item.valueObject).forEach(([key, value]: [string, any]) => {
-        // Assuming you want to display 'valueString' for each cell
-        row[key] = value.valueString;
-      });
-      return row;
-    });
-  };
+  // Prepare dataSource
+  Object.entries(data).forEach(([key, value]) => {
+    const rowNumber = parseInt(key.split('-')[1], 10);
+    const header = key.split('-').slice(2).join('-');
+    const rowIndex = dataSource.findIndex((item) => item.key === rowNumber);
+    
+    if (rowIndex === -1) {
+      dataSource.push({ key: rowNumber, [header]: value.valueString ?? value.valueNumber });
+    } else {
+      dataSource[rowIndex][header] = value.valueString ?? value.valueNumber;
+    }
+  });
 
-  const convertDataIntoTable = (data: any) => {
-    const tableData = data.map((item: any) => ({
-      type: item.type,
-      valueObject: item.valueObject,
-      confidence: item.confidence,
-    }));
-  
-    return tableData;
-  };
-
-  const tableData = convertDataIntoTable(data);
-  const columns = extractColumns(tableData);
-  const dataSource = prepareDataSource(tableData);
 
   return (
     <Collapse bordered={false} defaultActiveKey={['1']} style={{ marginBottom: '20px', background: 'white' }}>
@@ -57,4 +53,4 @@ const TablePanel: React.FC<TablePanelProps> = ({ data }) => {
   );
 };
 
-export default TablePanel;
+export default DocumentTable;

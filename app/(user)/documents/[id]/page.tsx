@@ -4,7 +4,6 @@ import PdfViewer from '@/app/ui/PdfViewer';
 import DocumentPanel from '@/app/components/Users/DocumentPanel'; 
 import TablePanel from '@/app/components/Users/TablePanel';
 import { sampleObject } from '@/app/lib/sampleCoordinateObject';
-import { transformCoordinatesToHighlightAlt, transformCoordinatesToHighlight } from '@/app/lib/utils/utils';
 
 const { Items, ...sampleCoordinatesObject } = sampleObject;
 interface VisibilityStates {
@@ -50,7 +49,9 @@ const CollapsibleLayoutComponent = () => {
 
     const toggleHighlightVisibility = (key: string) => {
         setVisibilityStates(prev => ({ ...prev, [key]: !prev[key] }));
+        console.log("TEST toggleHighlightVisibility", key, visibilityStates);
     };
+    console.log("TEST vStates", visibilityStates);
 
     console.log("HIGH sampleCoordinatesObject Returning ", sampleCoordinatesObject, visibilityStates);
     return (
@@ -58,12 +59,12 @@ const CollapsibleLayoutComponent = () => {
 
             <div className='pr-5' style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: '#f5f5f5' }}>
                 <div >
-                    <TablePanel data={sampleObject.Items.valueArray} />
+                    <TablePanel data={convertedItems} toggleHighlightVisibility={toggleHighlightVisibility} />
                 </div>
 
                 <div className='mt-5' >
                     <DocumentPanel
-                        sampleCoordinatesObject={extendedObj}
+                        sampleCoordinatesObject={sampleCoordinatesObject}
                         toggleHighlightVisibility={toggleHighlightVisibility}
                     />
                 </div>
