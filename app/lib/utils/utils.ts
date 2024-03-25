@@ -41,5 +41,80 @@ export const parseBinaryToRoles = (binary: string) => {
   return selectedRoles;
 };
 
+type CoOrdinatesObject = {
+  valueString: string;
+  boundingRegions: {
+    pageNumber: number;
+    polygon: number[];
+  }[];
+};
+
+type HighlightObject = {
+  position: {
+    boundingRect: {
+      x1: number;
+      y1: number;
+      x2: number;
+      y2: number;
+    };
+    rects: {
+      x1: number;
+      y1: number;
+      x2: number;
+      y2: number;
+      width: number;
+      height: number;
+    }[];
+    pageNumber: number;
+  };
+  comment: {
+    text: string;
+  };
+  id: string;
+};
+
+export const transformCoordinatesToHighlight = (coordinatesObject: CoOrdinatesObject, id: string): HighlightObject => {
+  // Extract the necessary information
+  const { valueString: text, boundingRegions } = coordinatesObject;
+  const { pageNumber, polygon } = boundingRegions[0];
+
+  // Calculate the bounding rectangle and dimensions from the polygon
+  const x1 = Math.min(polygon[0], polygon[2], polygon[4], polygon[6]);
+  const y1 = Math.min(polygon[1], polygon[3], polygon[5], polygon[7]);
+  const x2 = Math.max(polygon[0], polygon[2], polygon[4], polygon[6]);
+  const y2 = Math.max(polygon[1], polygon[3], polygon[5], polygon[7]);
+  const width = 1123;
+  const height = 849;
+
+  // Prepare the highlight object
+  const highlightObject: HighlightObject = {
+    position: {
+      boundingRect: {
+        x1: x1 * 100, // Adjust scaling here if necessary
+        y1: y1 * 100, // Adjust scaling here if necessary
+        x2: x2 * 100, // Adjust scaling here if necessary
+        y2: y2 * 100, // Adjust scaling here if necessary
+      },
+      rects: [
+        {
+          x1: x1 * 100, // Adjust scaling here if necessary
+          y1: y1 * 100, // Adjust scaling here if necessary
+          x2: x2 * 100, // Adjust scaling here if necessary
+          y2: y2 * 100, // Adjust scaling here if necessary
+          width: width, // Adjust scaling here if necessary
+          height: height, // Adjust scaling here if necessary
+        },
+      ],
+      pageNumber,
+    },
+    comment: {
+      text,
+    },
+    id,
+  };
+
+  return highlightObject;
+}
+
 
 
