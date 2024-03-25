@@ -3,16 +3,7 @@ import { PdfLoader, PdfHighlighter, Tip, Highlight, Popup, AreaHighlight } from 
 import { transformCoordinatesToHighlight } from "@/app/lib/utils/utils";
 
 const PdfHighlighterComponent = ({ url, initialHighlights, visibilityStates }) => {
-  // State to track visibility of each highlight
 
-
-  // useEffect(() => {
-  //   const newVisibilityStates = {};
-  //   Object.keys(initialHighlights).forEach(key => {
-  //     newVisibilityStates[key] = false; // Initialize all highlights as invisible
-  //   });
-  //   setVisibilityStates(newVisibilityStates);
-  // }, [initialHighlights]);
 
   // Convert initial highlights to their transformed version
   let highlightsArray = Object.keys(initialHighlights).map(key => {
@@ -59,11 +50,7 @@ const PdfHighlighterComponent = ({ url, initialHighlights, visibilityStates }) =
   
   return (
     <div style={{ width: "100%", overflow: "auto" }}>
-      {/* {Object.keys(initialHighlights).map(key => (
-        <button key={key} onClick={() => toggleHighlightVisibility(key)}>
-          Toggle Highlight {key}
-        </button>
-      ))} */}
+
       <PdfLoader url={url} beforeLoad={<div>Loading...</div>}>
         {pdfDocument => (
           <div style={{ width: "50%", overflow: "auto" }}>

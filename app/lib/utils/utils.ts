@@ -10,6 +10,12 @@ export const camelToKebab = (camelCase: string) => {
   });
 }
 
+export const camelToTitleCase = (str: string): string =>{
+  return str
+    .replace(/([A-Z])/g, ' $1') // insert a space before all capital letters
+    .replace(/^./, (str) => str.toUpperCase()); // capitalize the first letter
+}
+
 export const arrayToString = (arr: string[]) => {
   return arr.join(", ");
 };

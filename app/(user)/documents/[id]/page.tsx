@@ -1,18 +1,19 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { Collapse, Button } from 'antd';
+import { Collapse, Button, Input } from 'antd';
 import PdfHighlighterComponent from '@/app/ui/PdfViewer';
+import { camelToTitleCase } from '@/app/lib/utils/utils';
 
 const { Panel } = Collapse;
 const pdfFile = 'https://gl7crk93wzx1epaw.public.blob.vercel-storage.com/PO_M1_2324_124042-rpBY7jXOA8w0AtfAMjNoKMAsVUDbQl.pdf';
 interface HighlightObject {
     [key: string]: any;
-  }
-  
-  interface VisibilityStates {
+}
+
+interface VisibilityStates {
     [key: string]: boolean;
-  }
-  
+}
+
 const sampleCoordinatesObject = {
     "BillingAddress": {
         "type": "string",
@@ -261,55 +262,115 @@ const sampleCoordinatesObject = {
 
 const CollapsibleLayoutComponent = () => {
     const [visibilityStates, setVisibilityStates] = useState<VisibilityStates>({});
+    function darkenColor(color: string, amount: number): string {
+        let [r, g, b] = color.match(/\w\w/g)!.map((c) => parseInt(c, 16));
+        return (
+            "#" +
+            [r, g, b]
+                .map((c) => Math.max(0, Math.min(255, c - amount)).toString(16).padStart(2, "0"))
+                .join("")
+        );
+    }
+
+    type ColorPair = {
+        backgroundColor: string;
+        borderColor: string;
+    };
+
+    const getConfidenceColor = (confidence: number): ColorPair => {
+        const colors = {
+            red: '#FF8A65',
+            green: '#C8E6C9',
+            yellow: '#FFECB3',
+            orange: '#FFE0B2',
+        };
+
+        let color;
+        if (confidence >= 0.7) {
+            color = colors.green;
+        } else if (confidence >= 0.4) {
+            color = colors.yellow;
+        } else {
+            color = colors.orange;
+        }
+
+        const borderColor = darkenColor(color, 30); // Adjust the amount to get the desired darkness
+
+        return {
+            backgroundColor: color,
+            borderColor: borderColor,
+        };
+    };
 
     useEffect(() => {
-      const initialStates: VisibilityStates = {};
-      Object.keys(sampleCoordinatesObject).forEach(key => {
-        initialStates[key] = false; // Initialize all as not visible
-      });
-      setVisibilityStates(initialStates);
+        const initialStates: VisibilityStates = {};
+        Object.keys(sampleCoordinatesObject).forEach(key => {
+            initialStates[key] = false; // Initialize all as not visible
+        });
+        setVisibilityStates(initialStates);
     }, []);
-  
+
     const toggleHighlightVisibility = (key: string) => {
-      setVisibilityStates(prev => ({ ...prev, [key]: !prev[key] }));
+        setVisibilityStates(prev => ({ ...prev, [key]: !prev[key] }));
     };
-    
-  
+
+
     return (
-      <div style={{ display: 'flex' }}>
-         <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <div style={{ flex: 1 }}>
-          <Collapse defaultActiveKey={['1']}>
-            <Panel header="Top Half" key="1">
-              Content of Top Half
-            </Panel>
-          </Collapse>
-        </div>
-        <div style={{ flex: 1 }}>
-          <Collapse defaultActiveKey={['2']}>
-            <Panel header="Bottom Half" key="2">
-            {Object.keys(sampleCoordinatesObject).map(key => (
-            <Button key={key} onClick={() => toggleHighlightVisibility(key)}>
-            Highlight {key}
-            </Button>
-          ))}
-            </Panel>
-          </Collapse>
-        </div>
-      </div>
+        <div style={{ display: 'flex' }}>
+
+            <div className='pr-5' style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: '#f5f5f5' }}>
+                <div style={{ flex: 1 }}>
+                    <Collapse defaultActiveKey={['1']}>
+                        <Panel header="Top Half" key="1">
+                            Content of Top Half
+                        </Panel>
+                    </Collapse>
+                </div>
+
+
+                <div className='mt-5' >
+                    <Collapse bordered={false} defaultActiveKey={['1']} style={{ marginBottom: '20px', background: 'white' }}>
+                        <Panel header={<span className="font-bold">Document Data Fields</span>} key="1">
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
+                                {Object.entries(sampleCoordinatesObject).map(([key, { valueString, confidence }]) => (
+                                    <div key={key}>
+                                        <label style={{ display: 'block', marginBottom: '5px' }}>{camelToTitleCase(key)}</label>
+                                        <Input.TextArea
+                                            onClick={() => toggleHighlightVisibility(key)}
+                                            defaultValue={valueString}
+                                            autoSize={{ minRows: 1, maxRows: 6 }}
+                                            style={{
+                                                backgroundColor: getConfidenceColor(confidence).backgroundColor,
+                                                borderColor: getConfidenceColor(confidence).borderColor,
+                                            }}
+                                        />
+                                    </div>
+                                ))}
+                                <div style={{ gridColumn: '1 / -1' }}>
+                                    <label style={{ display: 'block', marginBottom: '5px' }}> Notes</label>
+                                    <Input.TextArea placeholder="Notes..." />
+                                </div>
+                            </div>
+
+                        </Panel>
+                    </Collapse>
+                </div>
+
+
+            </div>
 
 
 
-        <div style={{ flex: 1 }}>
-        
-          <PdfHighlighterComponent
-            url={pdfFile}
-            initialHighlights={sampleCoordinatesObject}
-            visibilityStates={visibilityStates}
-          />
+            <div style={{ flex: 1 }}>
+
+                <PdfHighlighterComponent
+                    url={pdfFile}
+                    initialHighlights={sampleCoordinatesObject}
+                    visibilityStates={visibilityStates}
+                />
+            </div>
         </div>
-      </div>
     );
-  };
+};
 
 export default CollapsibleLayoutComponent;
