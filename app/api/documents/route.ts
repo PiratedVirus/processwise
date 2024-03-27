@@ -3,6 +3,8 @@ import dbConnect from "@/app/lib/database/connectMongo";
 import { Customers } from "@/app/lib/database/models/Customers";
 import { createResponse } from "@/app/lib/utils/prismaUtils";
 import axios from "axios";
+import {v4 as uuidv4} from 'uuid';
+
 
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -44,6 +46,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         customerName: customerName,
         mailboxName: mailboxName,
         mailStatus: 'Unprocessed',
+        rowId: uuidv4()
     }));
 
     // Directly update the customer to add mails to the specific mailbox

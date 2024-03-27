@@ -3,6 +3,7 @@ import dbConnect from "@/app/lib/database/connectMongo";
 import { Customers } from "@/app/lib/database/models/Customers";
 import { createResponse } from "@/app/lib/utils/prismaUtils";
 import axios from "axios";
+import {v4 as uuidv4} from 'uuid';
 
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -41,6 +42,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         customerName: customerName,
         mailboxName: mailboxName,
         mailStatus: 'Unprocessed',
+        rowId: uuidv4()
     }));
 
     // Directly update the customer to add mails to the specific mailbox
@@ -59,6 +61,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     const { searchParams } = new URL(req.url);
     const customerName = searchParams.get('customer');
     const mailboxName = searchParams.get('mailbox');
+    const mailKey = searchParams.get('id');
 
     if (!customerName || !mailboxName) {
         return createResponse(400, 'Missing required parameters');
@@ -67,15 +70,23 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     try {
         const customer = await Customers.findOne({ customerName: customerName });
         if (!customer) {
-            return createResponse(404, 'Customer not found');
+            console.log(" /api/mails: Customer not found")
+            return createResponse(404, []);
         }
 
         const mailbox = customer.mailboxes.find((mb:any) => mb.mailboxName === mailboxName);
         if (!mailbox) {
-            return createResponse(404, 'Mailbox not found');
+            console.log(" /api/mails: Mailbox not found")
+            return createResponse(404, []);
         }
-        // console.log("mailbox.mails", mailbox.mails)
-        return createResponse(200, mailbox.mails);
+        let mails = mailbox.mails;
+        if (mailKey) {
+            
+            mails = mails.filter((mail: any) => mail.rowId === mailKey);
+            console.log(" /api/mails: Mail with ID found", mails)
+        }
+
+        return createResponse(200, mails);
     } catch (error) {
         console.error('Error fetching mails:', error);
         return createResponse(500, 'Failed to fetch mails');

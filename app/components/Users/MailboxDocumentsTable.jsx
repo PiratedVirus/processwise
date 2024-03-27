@@ -6,9 +6,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import {updateSelectedUserMailboxContent} from '@/redux/reducers/userReducer';
 import  MailboxTabs  from '@/app/ui/MailboxTabs';
 import FileUpload from '@/app/ui/Upload';
+import { useRouter } from 'next/navigation';
 
 export const MailboxDocumentTable = () => {
-  const dispatch = useDispatch();
   const tagColorMap = {
     'Unprocessed': 'blue',
     'Validated': 'geekblue',
@@ -16,15 +16,15 @@ export const MailboxDocumentTable = () => {
     'Pending approval': 'gold',
     'Rejected': 'volcano',
   };
-
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState('');
-  
   const documentStatus = useSelector((state) => state.userDashboardStore.selectedDocuementTab) || "All docs";
   const userMailsUnfiltered = useSelector((state) => state.userDashboardStore.selectedUserMailboxContent);
   const userMails = (documentStatus === "All docs" ) ? userMailsUnfiltered : userMailsUnfiltered?.filter((mail) => mail.mailStatus === documentStatus) || [];
   const isUserMailsLoading = useSelector((state) => state.userDashboardStore.isUserMailsLoading);
 
-
+ 
   
   
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
@@ -94,7 +94,7 @@ export const MailboxDocumentTable = () => {
       ...getColumnSearchProps(record => record.dateTime),
       render: (text, record) => (
         <div>
-          <div>{record.dateTime || ''}</div>
+          <div>{new Date(record.dateTime).toLocaleString() || ''}</div>
         </div>
       ),
     },
@@ -171,8 +171,9 @@ export const MailboxDocumentTable = () => {
   console.log("userMails" ,userMails?.error)
  
   return (
+    
     (userMails) ? (
-      
+    
     <Spin spinning={isUserMailsLoading} size="large">
       <div className="space-y-5">
         <Row justify="space-between" align="middle" className="px-4 pt-5">
@@ -201,6 +202,14 @@ export const MailboxDocumentTable = () => {
           columns={columns}
           dataSource={searchText ? globalSearch() : userMails}
           rowKey={record => record}
+          onRow={(record) => ({
+            onClick: () => {
+                router.push(`/documents/${record.rowId}`);
+            },
+            style: {
+              cursor: 'pointer',
+          },
+        })}
           
         />
       </div>
