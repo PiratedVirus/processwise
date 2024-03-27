@@ -88,7 +88,7 @@ const PDFUpload: React.FC = () => {
         ))}
       </div>
       <Upload {...props}>
-        <Button type='primary' disabled={isUploading} icon={<UploadOutlined />}>Upload to Mailbox</Button>
+        <Button type='primary' className='bg-blue-600 text-white' disabled={isUploading} icon={<UploadOutlined />}>Upload to Mailbox</Button>
       </Upload>
     </div>
   );

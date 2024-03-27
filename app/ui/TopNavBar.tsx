@@ -25,8 +25,10 @@ const TopNav: React.FC<TopNavProps> = () => {
 
   // Determine the current menu item based on the URL
   const pathname = usePathname()
-  const current = links.findIndex(link => pathname === link.href).toString() || '0';
-
+  let current = links.findIndex(link => pathname === link.href).toString() || '0';
+  if (pathname.includes('/documents')) {
+    current = links.findIndex(link => link.name === 'Document Processing').toString();
+  }
   return (
     <div className="flex items-center justify-between w-full">
       {/* Left-aligned logo */}

@@ -204,7 +204,10 @@ export const MailboxDocumentTable = () => {
           rowKey={record => record}
           onRow={(record) => ({
             onClick: () => {
+              const values = Object.values(record);
+              if (!values.some(value => value === "")) {
                 router.push(`/documents/${record.rowId}`);
+              }
             },
             style: {
               cursor: 'pointer',
