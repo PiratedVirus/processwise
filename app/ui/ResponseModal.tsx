@@ -9,17 +9,31 @@ interface ResponseModalProps {
     secondaryBtnText?: string;
     secondaryBtnValue?: string;
     showPrimaryBtn?: boolean;
+    onModalClose?: () => void; // Define the new prop
 }
 
-const ResponseModal: React.FC<ResponseModalProps> = ({ status, title, message, secondaryBtnText, secondaryBtnValue, showPrimaryBtn }) => {
+const ResponseModal: React.FC<ResponseModalProps> = ({
+    status,
+    title,
+    message,
+    secondaryBtnText,
+    secondaryBtnValue,
+    showPrimaryBtn,
+    onModalClose, // Destructure the new prop
+}) => {
     secondaryBtnValue = secondaryBtnValue ?? '/';
     const [isModalOpen, setIsModalOpen] = useState(true);
     const isPrimaryBtnHidden = status === 'success' ? (showPrimaryBtn ? false : true) : false;
     const cancelBtnText = status === 'success' ? 'Go Back' : 'Try Again';
+
     const handleCancel = () => {
         setIsModalOpen(false);
         console.log('Modal Closed');
+        if (onModalClose) {
+            onModalClose(); // Call the onModalClose prop function if provided
+        }
     };
+
     return (
         <Modal
             open={isModalOpen}
@@ -47,5 +61,6 @@ const ResponseModal: React.FC<ResponseModalProps> = ({ status, title, message, s
             />
         </Modal>
     );
-}
+};
+
 export default ResponseModal;

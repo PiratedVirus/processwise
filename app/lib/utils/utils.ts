@@ -34,7 +34,7 @@ type ColorPair = {
   backgroundColor: string;
   borderColor: string;
 };
-
+import { parse } from 'json2csv';
 export const camelToKebab = (camelCase: string) => {
   let result = camelCase
     .replace(/([a-z0-9]|(?=[A-Z]))([A-Z])/g, '$1 $2')
@@ -61,6 +61,66 @@ export const capitalizeAndConvert = (input: string): string =>  {
   });
 
   return str;
+}
+
+export const transformDataForCsv = (data: any): any[] => {
+  const rows: { [key: string]: any } = {};
+
+  Object.entries(data).forEach(([key, value]) => {
+    rows[key] = (value as any).valueString; // Type assertion to specify the type of 'value' as 'any'
+  });
+
+  return [rows]; // Wrap the result in an array because parse function expects an array
+}
+export const transformItemsForCsv = (data: any): any[] => {
+  const rows: { [key: string]: any } = {};
+
+  Object.entries(data).forEach(([key, value]) => {
+    const [_, rowKey, field] = key.split('-'); // Extract row number and field name
+    if (!rows[rowKey]) {
+      rows[rowKey] = {};
+    }
+    rows[rowKey][field] = (value as any).valueString ?? (value as any).valueNumber ?? ""; // Handle both string and number values
+  });
+
+  return Object.values(rows);
+}
+export const generateCsv = (data: any): void => {
+  const transformedItemsData = transformItemsForCsv(data.mailDataWithConvertedItems);
+  const transformedDetailsData = transformDataForCsv(data.mailDataWithoutItems);
+  const csvData = transformedDetailsData.map((item, i) => {
+    return {...item, ...transformedItemsData[i]};
+  });
+  
+  
+  try {
+    const csv = parse(csvData);
+    console.log(csv);
+
+    // Create a Blob from the CSV data
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+
+    // Create a URL for the Blob
+    const url = URL.createObjectURL(blob);
+
+    // Create a link element
+    const link = document.createElement('a');
+
+    // Set the href and download attributes of the link
+    link.href = url;
+    link.download = 'output.csv';
+
+    // Append the link to the body
+    document.body.appendChild(link);
+
+    // Programmatically click the link
+    link.click();
+
+    // Remove the link from the body
+    document.body.removeChild(link);
+  } catch (err) {
+    console.error('Could not generate CSV:', err);
+  }
 }
 
 export const darkenColor = (color: string, amount: number): string => {

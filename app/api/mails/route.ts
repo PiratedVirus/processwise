@@ -102,12 +102,10 @@ export async function PUT(req: NextRequest): Promise<NextResponse> {
     const mailboxName = searchParams.get('mailbox');
     const mailKey = searchParams.get('id');
     const mailStatus = searchParams.get('status');
-    console.log("#### STATUS", mailStatus)
     let status = '';
 
     if (mailStatus) {
         status = capitalizeAndConvert(mailStatus);
-        console.log("mail status is ", status)
     }
 
     await dbConnect();
@@ -165,7 +163,7 @@ export async function PUT(req: NextRequest): Promise<NextResponse> {
       if (!result) {
         return createResponse(404, 'Mail not found');
       }
-      return createResponse(200, 'Mail updated successfully');
+      return createResponse(200, { message: 'Mail updated successfully' });
     } catch (error) {
         console.error('Error updating mail:', error);
         return createResponse(500, 'Failed to update mail');

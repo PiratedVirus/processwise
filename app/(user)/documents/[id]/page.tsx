@@ -7,16 +7,27 @@ import { useSelector } from 'react-redux';
 import useFetchApiV2 from '@/app/hooks/useFetchApiV2';
 import { useSession } from 'next-auth/react';
 import { Spin } from 'antd';
+import axios from 'axios';
 
 
 interface VisibilityStates {
     [key: string]: boolean;
+}
+interface MailData {
+    mailDataWithConvertedItems: Record<string, any>;
+    convertedItemsFromMail: any; // Adjust the type according to the actual data structure
+    documentUrl: string;
+    mailDataWithoutItems: any;
+    // Define other properties returned by your API if needed
 }
 
 const CollapsibleLayoutComponent = () => {
     const { data: session } = useSession();
     const [visibilityStates, setVisibilityStates] = useState<VisibilityStates>({});
     const [userCompany, setUserCompany] = useState<string | null>(null);
+    const [data, setData] = useState<MailData | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isError, setIsError] = useState(false);
 
     useEffect(() => {
         if (session?.user?.userCompany) {
@@ -28,17 +39,32 @@ const CollapsibleLayoutComponent = () => {
     const currentMailId = typeof window !== 'undefined' ? window.location.pathname.split('/').pop() : '';
     const selectedMailbox = useSelector((state: any) => state.userDashboardStore.selectedUserMailboxInUserDashboard) || 'invoice@63qz7w.onmicrosoft.com';
 
-    const { data, isLoading, isError } = useFetchApiV2(`${process.env.NEXT_PUBLIC_API_URL}/preview-data?id=${currentMailId}&customer=${userCompany}&mailbox=${selectedMailbox}`);
-
+    useEffect(() => {
+        const fetchData = async () => {
+          try {
+            const result = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/preview-data?id=${currentMailId}&customer=${userCompany}&mailbox=${selectedMailbox}`);
+            setData(result.data);
+            setIsLoading(false);
+          } catch (error) {
+            setIsError(true);
+            setIsLoading(false);
+          }
+        };
+      
+        if (currentMailId && userCompany) {
+          fetchData();
+        }
+      }, [currentMailId, userCompany]);
 
     useEffect(() => {
         if (data && !isLoading && !isError) {
             const initialStates: VisibilityStates = {};
-            Object.keys(data.mailDataWithConvertedItems).forEach(key => {
+            Object.keys(data?.mailDataWithConvertedItems).forEach(key => {
                 initialStates[key] = false;
             });
             setVisibilityStates(initialStates);
         }
+        console.log("data is updating", data)
 
     }, [data, isLoading, isError]);
 
