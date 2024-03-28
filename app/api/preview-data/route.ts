@@ -46,7 +46,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     
         }
     
-        console.log('GET response extractedData:', mailRowdata);
+        // console.log('GET response extractedData:', mailRowdata);
         return createResponse(200, mailRowdata);  
     } catch (error) {
         console.error('Error fetching mailbox content:', error);

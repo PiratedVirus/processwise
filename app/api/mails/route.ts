@@ -4,6 +4,7 @@ import { Customers } from "@/app/lib/database/models/Customers";
 import { createResponse } from "@/app/lib/utils/prismaUtils";
 import axios from "axios";
 import {v4 as uuidv4} from 'uuid';
+import { NextApiRequest, NextApiResponse } from "next";
 
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -83,7 +84,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
         if (mailKey) {
             
             mails = mails.filter((mail: any) => mail.rowId === mailKey);
-            console.log(" /api/mails: Mail with ID found", mails)
+            // console.log(" /api/mails: Mail with ID found", mails)
         }
 
         return createResponse(200, mails);
@@ -93,3 +94,65 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     }
 }
 
+export async function PUT(req: NextRequest): Promise<NextResponse> {
+    const updateData  = await req.json();
+    const { searchParams } = new URL(req.url);
+    const customerName = searchParams.get('customer');
+    const mailboxName = searchParams.get('mailbox');
+    const mailKey = searchParams.get('id');
+
+    await dbConnect();
+    const rowId = searchParams.get('id');
+    console.log('PUT request body:', updateData);
+
+    if (!rowId || !updateData) {
+        return createResponse(400, 'Missing required parameters');
+    }
+  
+    try {
+        let combinedData = {};
+    if (updateData) {
+      
+        const customer = await Customers.findOne({ customerName: customerName });
+        if (!customer) {
+            console.log(" /api/mails: Customer not found")
+            return createResponse(404, []);
+        }
+
+        const mailbox = customer.mailboxes.find((mb:any) => mb.mailboxName === mailboxName);
+        if (!mailbox) {
+            console.log(" /api/mails: Mailbox not found")
+            return createResponse(404, []);
+        }
+        let mails = mailbox.mails;
+        if (mailKey) {
+            mails = mails.filter((mail: any) => mail.rowId === mailKey);
+        }
+        console.log("selected mail is ", mails[0].extractedData.fields)
+        const Items = {
+            Items: mails[0].extractedData.fields.Items
+        }
+        console.log("update data is ", updateData)
+        combinedData = {...updateData, ...Items}
+        console.log("combined data is ", combinedData)
+
+
+    }
+  
+      const result = await Customers.findOneAndUpdate(
+        { "mailboxes.mails.rowId": rowId },
+        { $set: { "mailboxes.$.mails.$[mail].extractedData.fields": combinedData } },
+        { arrayFilters: [{ "mail.rowId": rowId }], new: true }
+      );
+        console.log('PUT updateData:', JSON.stringify(combinedData));
+        console.log('PUT result:', result);
+
+      if (!result) {
+        return createResponse(404, 'Mail not found');
+      }
+      return createResponse(200, 'Mail updated successfully');
+    } catch (error) {
+        console.error('Error updating mail:', error);
+        return createResponse(500, 'Failed to update mail');
+    }
+  }
