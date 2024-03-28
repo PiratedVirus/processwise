@@ -48,11 +48,11 @@ interface TabItem {
 
 
 const tabItems: TabItem[] = [
-  { key: '1', title: 'All docs', content: 'Content of Tab 1', count: 123 },
+  { key: '1', title: 'All Docs', content: 'Content of Tab 1', count: 123 },
   { key: '2', title: 'Unprocessed', content: 'Content of Tab 2', count: 123 },
   { key: '3', title: 'Validated', content: 'Content of Tab 3', count: 123 },
   { key: '4', title: 'Approved', content: 'Content of Tab 3', count: 123 },
-  { key: '5', title: 'Pending approval', content: 'Content of Tab 4', count: 123 },
+  { key: '5', title: 'Pending Approval', content: 'Content of Tab 4', count: 123 },
   { key: '6', title: 'Rejected', content: 'Content of Tab 5', count: 123 },
 ];
 

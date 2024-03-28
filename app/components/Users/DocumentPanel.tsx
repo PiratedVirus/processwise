@@ -19,6 +19,8 @@ const DocumentPanel: React.FC<DocumentDataFieldsProps> = ({ sampleCoordinatesObj
   const { data: session } = useSession();
   const [userCompany, setUserCompany] = useState<string | null>(null);
   const [sendForApproval, setSendForApproval] = useState(false);
+  const [verification, setVerification] = useState(false);
+  const [rejection, setRejection] = useState(false);
 
   useEffect(() => {
       if (session?.user?.userCompany) {
@@ -62,12 +64,12 @@ const DocumentPanel: React.FC<DocumentDataFieldsProps> = ({ sampleCoordinatesObj
       
     };
 
-    const saveChanges = () => {
-      console.log('Saving changes 2:', inputValues2, " with approve status ", sendForApproval); 
-      const updateURL = sendForApproval ? 
-        `${process.env.NEXT_PUBLIC_API_URL}/mails?id=${currentMailId}&customer=${userCompany}&mailbox=${selectedMailbox}&sendForApproval=true` : 
-        `${process.env.NEXT_PUBLIC_API_URL}/mails?id=${currentMailId}&customer=${userCompany}&mailbox=${selectedMailbox}`;
+ 
 
+    const saveChanges = (status: string) => {
+      console.log('Saving changes 2:', inputValues2, " with approve status ", sendForApproval); 
+     
+      const updateURL = `${process.env.NEXT_PUBLIC_API_URL}/mails?id=${currentMailId}&customer=${userCompany}&mailbox=${selectedMailbox}&status=${status}`
 
       axios.put(updateURL, inputValues2)
       .then(response => {
@@ -171,8 +173,10 @@ const DocumentPanel: React.FC<DocumentDataFieldsProps> = ({ sampleCoordinatesObj
         ))}
      
           <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'center' }}>
-            <Button className='bg-blue-600 text-white mr-5' onClick={saveChanges} type="primary" style={{ marginTop: '20px' }}>Save Changes</Button>
-            <Button className='bg-blue-600 text-white ml-5' onClick={() => {setSendForApproval(true); saveChanges() }} type="primary" style={{ marginTop: '20px' }}>Save and Send for approval</Button>
+            <Button className='bg-blue-600 text-white mr-5' onClick={() => {saveChanges('validated')}} type="primary" style={{ marginTop: '20px' }}>Save Changes</Button>
+            {(session?.user?.role === 'approver') ? <Button className='bg-blue-600 text-white ml-5' onClick={() => {saveChanges('approved') }} type="primary" style={{ marginTop: '20px' }}>Approve</Button> : 
+            <Button className='bg-blue-600 text-white ml-5' onClick={() => {saveChanges('pending-approval') }} type="primary" style={{ marginTop: '20px' }}>Save and Send for approval</Button> }
+            <Button danger className='bg-red-600 text-white ml-5' onClick={() => {saveChanges('rejected') }} type="primary" style={{ marginTop: '20px' }}>Reject</Button>
             <Button className='bg-blue-600 text-white ml-5' onClick={() => { generateCsv(csvData) }} type="primary" style={{ marginTop: '20px' }}>Export</Button>
           </div>
       </div>

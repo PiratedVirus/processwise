@@ -13,15 +13,15 @@ export const MailboxDocumentTable = () => {
     'Unprocessed': 'blue',
     'Validated': 'geekblue',
     'Approved': 'green',
-    'Pending approval': 'gold',
+    'Pending Approval': 'gold',
     'Rejected': 'volcano',
   };
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState('');
-  const documentStatus = useSelector((state) => state.userDashboardStore.selectedDocuementTab) || "All docs";
+  const documentStatus = useSelector((state) => state.userDashboardStore.selectedDocuementTab) || "All Docs";
   const userMailsUnfiltered = useSelector((state) => state.userDashboardStore.selectedUserMailboxContent);
-  const userMails = (documentStatus === "All docs" ) ? userMailsUnfiltered : userMailsUnfiltered?.filter((mail) => mail.mailStatus === documentStatus) || [];
+  const userMails = (documentStatus === "All Docs" ) ? userMailsUnfiltered : userMailsUnfiltered?.filter((mail) => mail.mailStatus === documentStatus) || [];
   const isUserMailsLoading = useSelector((state) => state.userDashboardStore.isUserMailsLoading);
 
  

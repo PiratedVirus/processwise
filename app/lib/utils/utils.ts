@@ -51,6 +51,18 @@ export const camelToTitleCase = (str: string): string =>{
     .replace(/^./, (str) => str.toUpperCase()); // capitalize the first letter
 }
 
+export const capitalizeAndConvert = (input: string): string =>  {
+  // Replace hyphens with spaces and convert to lower case
+  let str = input.replace(/-/g, ' ').toLowerCase();
+
+  // Capitalize the first letter of each word
+  str = str.replace(/\b\w/g, function (char) {
+      return char.toUpperCase();
+  });
+
+  return str;
+}
+
 export const darkenColor = (color: string, amount: number): string => {
   let [r, g, b] = color.match(/\w\w/g)!.map((c) => parseInt(c, 16));
   return (
