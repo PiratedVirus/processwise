@@ -100,6 +100,7 @@ export async function PUT(req: NextRequest): Promise<NextResponse> {
     const customerName = searchParams.get('customer');
     const mailboxName = searchParams.get('mailbox');
     const mailKey = searchParams.get('id');
+    const sendForApproval = searchParams.get('sendForApproval');
 
     await dbConnect();
     const rowId = searchParams.get('id');
@@ -128,7 +129,8 @@ export async function PUT(req: NextRequest): Promise<NextResponse> {
         if (mailKey) {
             mails = mails.filter((mail: any) => mail.rowId === mailKey);
         }
-        console.log("selected mail is ", mails[0].extractedData.fields)
+        if(sendForApproval){ mails[0].mailStatus = 'Pending Approval'}
+        console.log("selected mail is ", mails[0])
         const Items = {
             Items: mails[0].extractedData.fields.Items
         }
@@ -141,7 +143,12 @@ export async function PUT(req: NextRequest): Promise<NextResponse> {
   
       const result = await Customers.findOneAndUpdate(
         { "mailboxes.mails.rowId": rowId },
-        { $set: { "mailboxes.$.mails.$[mail].extractedData.fields": combinedData } },
+        { 
+            $set: { 
+              "mailboxes.$.mails.$[mail].extractedData.fields": combinedData,
+              "mailboxes.$.mails.$[mail].mailStatus": "Pending approval"
+            } 
+          },
         { arrayFilters: [{ "mail.rowId": rowId }], new: true }
       );
         console.log('PUT updateData:', JSON.stringify(combinedData));

@@ -61,6 +61,7 @@ const CollapsibleLayoutComponent = () => {
                     <DocumentPanel
                         sampleCoordinatesObject={data.mailDataWithoutItems}
                         toggleHighlightVisibility={toggleHighlightVisibility}
+                        csvData = {data}
                     />
                 </div>
             </div>

@@ -1,19 +1,21 @@
 'use client'
-import { Collapse, Input,Button } from 'antd'; // or wherever you import these from
+import { Collapse, Input, Button, Row } from 'antd'; // or wherever you import these from
 import { camelToTitleCase,  getConfidenceColor } from '@/app/lib/utils/utils';
 import { useState } from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { useSession } from 'next-auth/react';
 import { useEffect } from 'react';
+import { parse } from 'json2csv';
 
 type DocumentDataFieldsProps = {
   sampleCoordinatesObject: any; // replace 'any' with the actual type
   toggleHighlightVisibility: (key: string) => void;
+  csvData: any;
 };
 const { Panel } = Collapse;
 
-const DocumentPanel: React.FC<DocumentDataFieldsProps> = ({ sampleCoordinatesObject, toggleHighlightVisibility }) => {
+const DocumentPanel: React.FC<DocumentDataFieldsProps> = ({ sampleCoordinatesObject, toggleHighlightVisibility, csvData }) => {
   const { data: session } = useSession();
   const [userCompany, setUserCompany] = useState<string | null>(null);
   const [sendForApproval, setSendForApproval] = useState(false);
@@ -59,11 +61,15 @@ const DocumentPanel: React.FC<DocumentDataFieldsProps> = ({ sampleCoordinatesObj
       });
       
     };
-    const saveChanges = () => {
-      console.log('Saving changes 2:', inputValues2);
-      
 
-      axios.put(`${process.env.NEXT_PUBLIC_API_URL}/mails?id=${currentMailId}&customer=${userCompany}&mailbox=${selectedMailbox}`, inputValues2)
+    const saveChanges = () => {
+      console.log('Saving changes 2:', inputValues2, " with approve status ", sendForApproval); 
+      const updateURL = sendForApproval ? 
+        `${process.env.NEXT_PUBLIC_API_URL}/mails?id=${currentMailId}&customer=${userCompany}&mailbox=${selectedMailbox}&sendForApproval=true` : 
+        `${process.env.NEXT_PUBLIC_API_URL}/mails?id=${currentMailId}&customer=${userCompany}&mailbox=${selectedMailbox}`;
+
+
+      axios.put(updateURL, inputValues2)
       .then(response => {
         if (response.data.message === 'Mail updated successfully') {
           console.log('Update successful');
@@ -75,6 +81,70 @@ const DocumentPanel: React.FC<DocumentDataFieldsProps> = ({ sampleCoordinatesObj
         console.error('Error:', error);
       });
     };
+
+
+    function transformDataForCsv(data: any): any[] {
+      const rows: { [key: string]: any } = {};
+
+      Object.entries(data).forEach(([key, value]) => {
+        rows[key] = (value as any).valueString; // Type assertion to specify the type of 'value' as 'any'
+      });
+
+      return [rows]; // Wrap the result in an array because parse function expects an array
+    }
+    function transformItemsForCsv(data: any): any[] {
+      const rows: { [key: string]: any } = {};
+    
+      Object.entries(data).forEach(([key, value]) => {
+        const [_, rowKey, field] = key.split('-'); // Extract row number and field name
+        if (!rows[rowKey]) {
+          rows[rowKey] = {};
+        }
+        rows[rowKey][field] = (value as any).valueString ?? (value as any).valueNumber ?? ""; // Handle both string and number values
+      });
+    
+      return Object.values(rows);
+    }
+    function generateCsv(data: any): void {
+      const transformedItemsData = transformItemsForCsv(data.mailDataWithConvertedItems);
+      const transformedDetailsData = transformDataForCsv(data.mailDataWithoutItems);
+      const csvData = transformedDetailsData.map((item, i) => {
+        return {...item, ...transformedItemsData[i]};
+      });
+      
+      
+      try {
+        const csv = parse(csvData);
+        console.log(csv);
+    
+        // Create a Blob from the CSV data
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    
+        // Create a URL for the Blob
+        const url = URL.createObjectURL(blob);
+    
+        // Create a link element
+        const link = document.createElement('a');
+    
+        // Set the href and download attributes of the link
+        link.href = url;
+        link.download = 'output.csv';
+    
+        // Append the link to the body
+        document.body.appendChild(link);
+    
+        // Programmatically click the link
+        link.click();
+    
+        // Remove the link from the body
+        document.body.removeChild(link);
+      } catch (err) {
+        console.error('Could not generate CSV:', err);
+      }
+    }
+  
+    
+  
 
 
   return (
@@ -99,12 +169,12 @@ const DocumentPanel: React.FC<DocumentDataFieldsProps> = ({ sampleCoordinatesObj
                 />
             </div>
         ))}
-        <div style={{ gridColumn: '1 / -1' }}>
-          <label style={{ display: 'block', marginBottom: '5px' }}> Notes</label>
-          <Input.TextArea onChange={(e) => handleInputChange('notes', e.target.value)} placeholder="Notes..." />
-        </div>
-        <Button onClick={saveChanges} type="primary" style={{ marginTop: '20px' }}>Save Changes</Button>
-        <Button onClick={() => setSendForApproval(true)} type="primary" style={{ marginTop: '20px' }}>Save Changes</Button>
+     
+          <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'center' }}>
+            <Button className='bg-blue-600 text-white mr-5' onClick={saveChanges} type="primary" style={{ marginTop: '20px' }}>Save Changes</Button>
+            <Button className='bg-blue-600 text-white ml-5' onClick={() => {setSendForApproval(true); saveChanges() }} type="primary" style={{ marginTop: '20px' }}>Save and Send for approval</Button>
+            <Button className='bg-blue-600 text-white ml-5' onClick={() => { generateCsv(csvData) }} type="primary" style={{ marginTop: '20px' }}>Export</Button>
+          </div>
       </div>
     </Panel>
   </Collapse>
